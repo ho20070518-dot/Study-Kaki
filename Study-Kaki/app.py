@@ -43,6 +43,13 @@ def profile():
     # Profile page: Displays the MMU student's academic expertise and badges
     return render_template('profile.html')
 
+# ==========================================
+# 4. Resource Board Module (Member 3)
+# ==========================================
+@app.route('/resources')
+def resources():
+    # Displays study resources shared by students
+    return render_template('resources.html')
 
 # ==========================================
 # Server Initialization
