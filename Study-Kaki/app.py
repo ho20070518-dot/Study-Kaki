@@ -1,7 +1,7 @@
 # app.py - Study Kaki Core System 
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 
 app = Flask(__name__)
 
@@ -10,8 +10,7 @@ app = Flask(__name__)
 # ==========================================
 @app.route('/')
 def home():
-    # Renders the landing page introducing the Study Kaki concept
-    return render_template('index.html')
+    return redirect(url_for('login'))
 
 
 # ==========================================
