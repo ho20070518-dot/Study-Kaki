@@ -47,7 +47,6 @@ def profile():
 # ==========================================
 @app.route('/resources')
 def resources():
-    # Displays study resources shared by students
     return render_template('resources.html')
 
 # ==========================================
