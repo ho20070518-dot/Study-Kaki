@@ -1,4 +1,17 @@
+
+__pycache__/
+*.pyc
+.env
+.venv/
+env/
+venv/
+.vscode/
+instance/
+*.sqlite3
+.DS_Store 
+=======
 **/venv/
 .venv/
 __pycache__/
 *.pyc
+
