@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyKaki - Modern Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ⬇️ 这里是极简 CSS，直接写在 HTML 里，方便你交功课 ⬇️ */
+        :root {
+            --primary-color: #4A90E2; /* 现代蓝 */
+            --bg-color: #f4f7f6; /* 极淡灰背景 */
+            --text-color: #333;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif; /* 使用现代字体 */
+        }
+
+        body {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            height: 100vh; /* 撑满屏幕高度 */
+            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* 渐变背景 */
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px; /* 圆角 */
+            box-shadow: 0 8px 30px var(--shadow-color); /* 现代阴影 */
+            width: 100%;
+            max-width: 380px; /* 限制宽度 */
+            transition: transform 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px); /* 悬停浮起特效 */
+        }
+
+        h2 {
+            text-align: center;
+            color: #2C3E50;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .sub-title {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            padding-left: 2px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        button.login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button.login-btn:hover {
+            background-color: #357ABD; /* 悬停颜色变深 */
+            transform: translateY(-1px);
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .footer-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Welcome to StudyKaki</h2>
+        <p class="sub-title">Initialize your study journey</p>
+        <form action="#" method="post">
+            <div class="input-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" placeholder="enter your username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="enter your password" required>
+            </div>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+        <div class="footer-links">
+            <p><a href="#">Forgot Password?</a></p>
+            <p>Don't have an account? <a href="#">Sign Up</a></p>
+        </div>
+    </div>
+</body>
+</html>
