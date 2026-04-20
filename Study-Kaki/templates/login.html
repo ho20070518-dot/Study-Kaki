@@ -1,149 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyKaki - Modern Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>StudyKaki - 登录</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ⬇️ 这里是极简 CSS，直接写在 HTML 里，方便你交功课 ⬇️ */
-        :root {
-            --primary-color: #4A90E2; /* 现代蓝 */
-            --bg-color: #f4f7f6; /* 极淡灰背景 */
-            --text-color: #333;
-            --shadow-color: rgba(0,0,0,0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif; /* 使用现代字体 */
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
+            font-family: 'Outfit', sans-serif;
+            /* 浅色系混合背景 */
+            background-color: #fdfaf6;
+            /* 利用 CSS 绘制精美的波点图案背景 */
+            background-image: radial-gradient(#d1d5db 2px, transparent 2px);
+            background-size: 30px 30px;
+            height: 100vh;
             display: flex;
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
-            height: 100vh; /* 撑满屏幕高度 */
-            background-color: var(--bg-color);
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* 渐变背景 */
+            justify-content: center;
+            align-items: center;
         }
 
-        .login-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px; /* 圆角 */
-            box-shadow: 0 8px 30px var(--shadow-color); /* 现代阴影 */
+        .login-card {
+            background: #ffffff;
+            padding: 45px 40px;
             width: 100%;
-            max-width: 380px; /* 限制宽度 */
-            transition: transform 0.3s ease;
-        }
-
-        .login-container:hover {
-            transform: translateY(-5px); /* 悬停浮起特效 */
-        }
-
-        h2 {
+            max-width: 420px;
             text-align: center;
-            color: #2C3E50;
-            margin-bottom: 8px;
+            
+            /* 关键设计：更加圆润的边角 */
+            border-radius: 35px; 
+            
+            /* 关键设计：黑色的实线边框 + 硬阴影（潮酷风格） */
+            border: 3px solid #111111;
+            box-shadow: 12px 12px 0px #ebf4ff, 12px 12px 0px 3px #111111;
+            transition: transform 0.2s ease;
+        }
+
+        .login-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 16px 16px 0px #ebf4ff, 16px 16px 0px 3px #111111;
+        }
+
+        h2 { 
+            color: #111; 
+            margin-bottom: 35px; 
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .input-group { 
+            margin-bottom: 25px; 
+            text-align: left; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 10px; 
+            color: #111; 
+            font-size: 15px; 
             font-weight: 600;
-        }
-
-        .sub-title {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 30px;
-            font-weight: 300;
-        }
-
-        .input-group {
-            margin-bottom: 18px;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            color: #7f8c8d;
-            margin-bottom: 6px;
-            padding-left: 2px;
         }
 
         input {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        input:focus {
+            padding: 15px 18px;
+            background-color: #f8f9fa;
+            /* 统一的圆润线框设计 */
+            border: 2px solid #111;
+            border-radius: 20px;
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
         }
 
-        button.login-btn {
+        input:focus { 
+            background-color: #fff;
+            box-shadow: 4px 4px 0px #ffe4e6, 4px 4px 0px 2px #111;
+            transform: translate(-2px, -2px);
+        }
+
+        button {
             width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 16px;
+            margin-top: 15px;
+            background: #c7d2fe; /* 浅柔的蓝紫色底色 */
+            color: #111;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            
+            /* 按钮也是圆润 + 黑线框 */
+            border: 3px solid #111;
+            border-radius: 20px;
+            box-shadow: 4px 4px 0px #111;
+            transition: all 0.2s;
         }
 
-        button.login-btn:hover {
-            background-color: #357ABD; /* 悬停颜色变深 */
-            transform: translateY(-1px);
+        button:hover { 
+            background: #a5b4fc; 
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #111;
         }
 
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #111;
+        }
+
+        .footer { 
+            margin-top: 25px; 
+            font-size: 14px; 
+            color: #666; 
+            font-weight: 600;
+        }
         .footer-links {
-            text-align: center;
             margin-top: 25px;
-            font-size: 13px;
-            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 700;
         }
 
         .footer-links a {
-            color: var(--primary-color);
+            color: #111;
             text-decoration: none;
-            font-weight: 400;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.2s ease;
         }
 
         .footer-links a:hover {
-            text-decoration: underline;
+            /* 鼠标放上去时出现黑色下划线 */
+            border-bottom: 2px solid #111; 
+            transform: translateY(-1px);
         }
-
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Welcome to StudyKaki</h2>
-        <p class="sub-title">Initialize your study journey</p>
-        <form action="#" method="post">
+
+    <div class="login-card">
+        <h2>StudyKaki</h2>
+        
+        <form action="{{ url_for('login') }}" method="POST">
             <div class="input-group">
-                <label for="username">Username or Email</label>
-                <input type="text" id="username" name="username" placeholder="enter your username" required>
+                <label>Student ID / Username</label>
+                <input type="text" name="username" placeholder="TP000000" required>
             </div>
+            
             <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="enter your password" required>
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required>
             </div>
-            <button type="submit" class="login-btn">Sign In</button>
+            
+            <button type="submit">Let's Study!</button>
         </form>
+        
         <div class="footer-links">
-            <p><a href="#">Forgot Password?</a></p>
-            <p>Don't have an account? <a href="#">Sign Up</a></p>
+            <a href="#">Forgot Password?</a>
+            <a href="#">Sign Up</a>
         </div>
     </div>
+
 </body>
 </html>
