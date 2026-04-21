@@ -3,61 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyKaki - Login Page</title>
+    <title>StudyKaki - 注册账号</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
             font-family: 'Outfit', sans-serif;
-            /* 浅色系混合背景 */
-            background-color: #fdfaf6;
-            /* 利用 CSS 绘制精美的波点图案背景 */
-            background-image: radial-gradient(#d1d5db 2px, transparent 2px);
-            background-size: 30px 30px;
-            height: 100vh;
+            background-color: #fafaf9;
+            /* 风格微调：换成了学习手账风格的网格背景 */
+            background-image: 
+                linear-gradient(#e5e7eb 2px, transparent 2px),
+                linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
-        .login-card {
+        .register-card {
             background: #ffffff;
             padding: 45px 40px;
             width: 100%;
-            max-width: 420px;
+            max-width: 450px; /* 注册表单稍微宽一点 */
             text-align: center;
             
-            /* 关键设计：更加圆润的边角 */
             border-radius: 35px; 
-            
-            /* 关键设计：黑色的实线边框 + 硬阴影（潮酷风格） */
             border: 3px solid #111111;
-            box-shadow: 12px 12px 0px #ebf4ff, 12px 12px 0px 3px #111111;
+            /* 风格微调：阴影变成了活力的浅绿色 */
+            box-shadow: 12px 12px 0px #dcfce7, 12px 12px 0px 3px #111111;
             transition: transform 0.2s ease;
         }
 
-        .login-card:hover {
+        .register-card:hover {
             transform: translate(-4px, -4px);
-            box-shadow: 16px 16px 0px #ebf4ff, 16px 16px 0px 3px #111111;
+            box-shadow: 16px 16px 0px #dcfce7, 16px 16px 0px 3px #111111;
         }
 
         h2 { 
             color: #111; 
-            margin-bottom: 35px; 
-            font-size: 28px;
+            margin-bottom: 10px; 
+            font-size: 32px;
             font-weight: 700;
             letter-spacing: 1px;
         }
 
+        p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
         .input-group { 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             text-align: left; 
         }
 
         label { 
             display: block; 
-            margin-bottom: 10px; 
+            margin-bottom: 8px; 
             color: #111; 
             font-size: 15px; 
             font-weight: 600;
@@ -65,9 +71,8 @@
 
         input {
             width: 100%;
-            padding: 15px 18px;
+            padding: 14px 18px;
             background-color: #f8f9fa;
-            /* 统一的圆润线框设计 */
             border: 2px solid #111;
             border-radius: 20px;
             outline: none;
@@ -78,21 +83,22 @@
 
         input:focus { 
             background-color: #fff;
-            box-shadow: 4px 4px 0px #ffe4e6, 4px 4px 0px 2px #111;
+            /* 激活状态也是浅绿色阴影 */
+            box-shadow: 4px 4px 0px #bbf7d0, 4px 4px 0px 2px #111;
             transform: translate(-2px, -2px);
         }
 
         button {
             width: 100%;
             padding: 16px;
-            margin-top: 15px;
-            background: #c7d2fe; /* 浅柔的蓝紫色底色 */
+            margin-top: 10px;
+            /* 风格微调：鲜艳活力的薄荷绿色按钮 */
+            background: #a7f3d0; 
             color: #111;
             font-size: 18px;
             font-weight: 700;
             cursor: pointer;
             
-            /* 按钮也是圆润 + 黑线框 */
             border: 3px solid #111;
             border-radius: 20px;
             box-shadow: 4px 4px 0px #111;
@@ -100,7 +106,7 @@
         }
 
         button:hover { 
-            background: #a5b4fc; 
+            background: #6ee7b7; 
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0px #111;
         }
@@ -110,18 +116,11 @@
             box-shadow: 0px 0px 0px #111;
         }
 
-        .footer { 
-            margin-top: 25px; 
-            font-size: 14px; 
-            color: #666; 
-            font-weight: 600;
-        }
         .footer-links {
             margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
             font-size: 15px;
             font-weight: 700;
+            color: #666;
         }
 
         .footer-links a {
@@ -130,10 +129,10 @@
             border-bottom: 2px solid transparent;
             padding-bottom: 2px;
             transition: all 0.2s ease;
+            margin-left: 5px;
         }
 
         .footer-links a:hover {
-            /* 鼠标放上去时出现黑色下划线 */
             border-bottom: 2px solid #111; 
             transform: translateY(-1px);
         }
@@ -141,27 +140,35 @@
 </head>
 <body>
 
-    <div class="login-card">
-        <h2>StudyKaki</h2>
+    <div class="register-card">
+        <h2>Join StudyKaki</h2>
+        <p class="subtitle">Find your perfect study partner today.</p>
         
-        <form action="{{ url_for('login') }}" method="POST">
+        <form action="{{ url_for('register') }}" method="POST">
+            
             <div class="input-group">
-                <label>Student ID / Username</label>
-                <input type="text" name="username" placeholder="TP000000" required>
+                <label>Full Name</label>
+                <input type="text" name="fullname" placeholder="e.g. Ali Bin Abu" required>
+            </div>
+
+            <div class="input-group">
+                <label>Student ID</label>
+                <input type="text" name="studentid" placeholder="TP000000" required>
             </div>
             
             <div class="input-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <input type="password" name="password" placeholder="Create a strong password" required>
             </div>
             
-            <button type="submit">Let's Study!</button>
+            <button type="submit">Create Account</button>
         </form>
         
         <div class="footer-links">
-            <a href="#">Forgot Password?</a>
-            <a href="{{ url_for('register') }}">Sign Up</a> 
+            Already have an account? 
+            <a href="{{ url_for('login') }}">Log in here</a>
         </div>
     </div>
+
 </body>
 </html>
