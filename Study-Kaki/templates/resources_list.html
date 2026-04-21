@@ -1,34 +1,96 @@
-<div style="background:#2c3e50; padding:12px; margin-bottom:20px;">
-    <a href="/resources" style="color:white; margin-right:10px;">Add Resource</a>
-    <a href="/resources-list" style="color:white; margin-right:10px;">View Resources</a>
-    <a href="/dashboard" style="color:white;">Dashboard</a>
-</div>
+<div style="
+    font-family:Arial;
+    min-height:100vh;
+    animation: gradientBG 15s ease infinite;
+    background: linear-gradient(-45deg, #ff9a9e, #a1c4fd, #c2ffd8, #fbc2eb);
+    background-size: 400% 400%;
+    overflow: auto;
+">
+    <div style="
+        max-width:900px;
+        margin:40px auto;
+        padding:25px;
+        background:rgba(255,255,255,0.75);
+        border-radius:16px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.15);
+        backdrop-filter: blur(8px);
+    ">
+        <!-- NAVBAR -->
+        <div style="background:#2c3e50; padding:12px; margin-bottom:20px;">
+            <a href="/resources" style="color:white; margin-right:10px; text-decoration:none;">Add Resource</a>
+            <a href="/resources-list" style="color:white; margin-right:10px; text-decoration:none;">View Resources</a>
+            <a href="/dashboard" style="color:white; text-decoration:none;">Dashboard</a>
+        </div>
 
-<h1>Resource Board</h1>
+        <h1 style="font-size:22px; margin-bottom:10px;">Resources</h1>
 
-<h1>Resources</h1>
+        {% if request.args.get('success') %}
+        <div style="color:green; margin-bottom:10px;">
+            Resource saved successfully!
+        </div>
+        {% endif %}
 
-<a href="/resources">
-    <button>Add Resource</button>
-</a>
+        <!-- SEARCH -->
+        <form method="get" action="/resources-list" style="margin-bottom:15px;">
+            <input type="text" name="q" placeholder="Search resources..." value="{{ query if query else '' }}"
+                style="padding:10px; width:250px; border:1px solid #ccc; border-radius:6px; outline:none;">
+            <button type="submit" style="padding:10px; border:none; border-radius:6px;">
+                Search
+            </button>
+        </form>
 
-<br><br>
+        <a href="/resources">
+            <button style="margin-bottom:15px; padding:8px 12px;">
+                Add Resource
+            </button>
+        </a>
 
-{% for r in resources %}
-    <div style="border:1px solid #ddd; padding:15px; margin-bottom:10px; border-radius:10px; background:#fafafa;">
+        {% if resources|length == 0 %}
+        <div style="text-align:center; color:#888; padding:20px;">
+            <h3>No resources found</h3>
+            <p>Add your first study resource to get started.</p>
+        </div>
+        {% endif %}
 
-        <h3 style="margin:0;">{{ r[1] }}</h3>
-        <p>{{ r[2] }}</p>
+        <!-- CARDS -->
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+            gap:12px;
+        ">
+            {% for r in resources %}
+            <div style="
+                background:white;
+                padding:15px;
+                border-radius:10px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.08);
+            ">
+                <h3 style="margin:0;">{{ r[1] }}</h3>
+                <p>{{ r[2] }}</p>
 
-        <div style="margin-top:10px;">
-            <a href="/edit-resource/{{ r[0] }}">
-                <button style="margin-right:5px;">Edit</button>
-            </a>
-
-            <a href="/delete-resource/{{ r[0] }}">
-                <button style="background:red; color:white;">Delete</button>
-            </a>
+                <div style="margin-top:10px; display:flex; gap:8px;">
+                    <a href="/edit-resource/{{ r[0] }}">
+                        <button style="background:#3498db; color:white; border:none; padding:7px 12px; border-radius:6px;">
+                            Edit
+                        </button>
+                    </a>
+                    <a href="/delete-resource/{{ r[0] }}">
+                        <button style="background:#e74c3c; color:white; border:none; padding:7px 12px; border-radius:6px;">
+                            Delete
+                        </button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
     </div>
-{% endfor %}
+</div>
+
+<style>
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+</style>

@@ -49,12 +49,6 @@ def register():
 # ==========================================
 # 3. Core Application Module
 # ==========================================
-@app.route('/dashboard')
-def dashboard():
-    # Main dashboard: Displays user analytics charts and recent sessions
-    # TODO: Fetch real user progress data from the database to pass to the frontend
-    return render_template('dashboard.html')
-
 @app.route('/profile')
 def profile():
     # Profile page: Displays the MMU student's academic expertise and badges
@@ -81,19 +75,25 @@ def add_resource():
     conn.commit()
     conn.close()
 
-    return "Resource saved!"
+    return redirect(url_for('resources_list', success=1))
 
 @app.route('/resources-list')
 def resources_list():
+    query = request.args.get('q')
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    c.execute("SELECT * FROM resources")
-    data = c.fetchall()
+    if query:
+        c.execute("SELECT * FROM resources WHERE title LIKE ? OR description LIKE ?",
+                  ('%' + query + '%', '%' + query + '%'))
+    else:
+        c.execute("SELECT * FROM resources")
 
+    data = c.fetchall()
     conn.close()
 
-    return render_template("resources_list.html", resources=data)
+    return render_template("resources_list.html", resources=data, query=query)
 
 @app.route('/delete-resource/<int:id>')
 def delete_resource(id):
@@ -108,6 +108,18 @@ def delete_resource(id):
     conn.close()
 
     return "DELETED"
+
+@app.route('/dashboard')
+def dashboard():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM resources")
+    total = c.fetchone()[0]
+
+    conn.close()
+
+    return render_template("dashboard.html", total_resources=total)
 
 # ==========================================
 # Server Initialization
