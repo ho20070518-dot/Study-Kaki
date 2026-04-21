@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyKaki - 注册账号</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #fafaf9;
+            /* 风格微调：换成了学习手账风格的网格背景 */
+            background-image: 
+                linear-gradient(#e5e7eb 2px, transparent 2px),
+                linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-card {
+            background: #ffffff;
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 450px; /* 注册表单稍微宽一点 */
+            text-align: center;
+            
+            border-radius: 35px; 
+            border: 3px solid #111111;
+            /* 风格微调：阴影变成了活力的浅绿色 */
+            box-shadow: 12px 12px 0px #dcfce7, 12px 12px 0px 3px #111111;
+            transition: transform 0.2s ease;
+        }
+
+        .register-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 16px 16px 0px #dcfce7, 16px 16px 0px 3px #111111;
+        }
+
+        h2 { 
+            color: #111; 
+            margin-bottom: 10px; 
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .input-group { 
+            margin-bottom: 20px; 
+            text-align: left; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #111; 
+            font-size: 15px; 
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #111;
+            border-radius: 20px;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus { 
+            background-color: #fff;
+            /* 激活状态也是浅绿色阴影 */
+            box-shadow: 4px 4px 0px #bbf7d0, 4px 4px 0px 2px #111;
+            transform: translate(-2px, -2px);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            /* 风格微调：鲜艳活力的薄荷绿色按钮 */
+            background: #a7f3d0; 
+            color: #111;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            
+            border: 3px solid #111;
+            border-radius: 20px;
+            box-shadow: 4px 4px 0px #111;
+            transition: all 0.2s;
+        }
+
+        button:hover { 
+            background: #6ee7b7; 
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #111;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #111;
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .footer-links a {
+            color: #111;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.2s ease;
+            margin-left: 5px;
+        }
+
+        .footer-links a:hover {
+            border-bottom: 2px solid #111; 
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-card">
+        <h2>Join StudyKaki</h2>
+        <p class="subtitle">Find your perfect study partner today.</p>
+        
+        <form action="{{ url_for('register') }}" method="POST">
+            
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" name="fullname" placeholder="e.g. Ali Bin Abu" required>
+            </div>
+
+            <div class="input-group">
+                <label>Student ID</label>
+                <input type="text" name="studentid" placeholder="TP000000" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a strong password" required>
+            </div>
+            
+            <button type="submit">Create Account</button>
+        </form>
+        
+        <div class="footer-links">
+            Already have an account? 
+            <a href="{{ url_for('login') }}">Log in here</a>
+        </div>
+    </div>
+
+</body>
+</html>

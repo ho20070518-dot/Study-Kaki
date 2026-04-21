@@ -1,0 +1,34 @@
+<div style="background:#2c3e50; padding:12px; margin-bottom:20px;">
+    <a href="/resources" style="color:white; margin-right:10px;">Add Resource</a>
+    <a href="/resources-list" style="color:white; margin-right:10px;">View Resources</a>
+    <a href="/dashboard" style="color:white;">Dashboard</a>
+</div>
+
+<h1>Resource Board</h1>
+
+<h1>Resources</h1>
+
+<a href="/resources">
+    <button>Add Resource</button>
+</a>
+
+<br><br>
+
+{% for r in resources %}
+    <div style="border:1px solid #ddd; padding:15px; margin-bottom:10px; border-radius:10px; background:#fafafa;">
+
+        <h3 style="margin:0;">{{ r[1] }}</h3>
+        <p>{{ r[2] }}</p>
+
+        <div style="margin-top:10px;">
+            <a href="/edit-resource/{{ r[0] }}">
+                <button style="margin-right:5px;">Edit</button>
+            </a>
+
+            <a href="/delete-resource/{{ r[0] }}">
+                <button style="background:red; color:white;">Delete</button>
+            </a>
+        </div>
+
+    </div>
+{% endfor %}

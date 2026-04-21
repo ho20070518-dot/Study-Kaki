@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyKaki - Login Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* 浅色系混合背景 */
+            background-color: #fdfaf6;
+            /* 利用 CSS 绘制精美的波点图案背景 */
+            background-image: radial-gradient(#d1d5db 2px, transparent 2px);
+            background-size: 30px 30px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            
+            /* 关键设计：更加圆润的边角 */
+            border-radius: 35px; 
+            
+            /* 关键设计：黑色的实线边框 + 硬阴影（潮酷风格） */
+            border: 3px solid #111111;
+            box-shadow: 12px 12px 0px #ebf4ff, 12px 12px 0px 3px #111111;
+            transition: transform 0.2s ease;
+        }
+
+        .login-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 16px 16px 0px #ebf4ff, 16px 16px 0px 3px #111111;
+        }
+
+        h2 { 
+            color: #111; 
+            margin-bottom: 35px; 
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .input-group { 
+            margin-bottom: 25px; 
+            text-align: left; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 10px; 
+            color: #111; 
+            font-size: 15px; 
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 18px;
+            background-color: #f8f9fa;
+            /* 统一的圆润线框设计 */
+            border: 2px solid #111;
+            border-radius: 20px;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus { 
+            background-color: #fff;
+            box-shadow: 4px 4px 0px #ffe4e6, 4px 4px 0px 2px #111;
+            transform: translate(-2px, -2px);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 15px;
+            background: #c7d2fe; /* 浅柔的蓝紫色底色 */
+            color: #111;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            
+            /* 按钮也是圆润 + 黑线框 */
+            border: 3px solid #111;
+            border-radius: 20px;
+            box-shadow: 4px 4px 0px #111;
+            transition: all 0.2s;
+        }
+
+        button:hover { 
+            background: #a5b4fc; 
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #111;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #111;
+        }
+
+        .footer { 
+            margin-top: 25px; 
+            font-size: 14px; 
+            color: #666; 
+            font-weight: 600;
+        }
+        .footer-links {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .footer-links a {
+            color: #111;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            /* 鼠标放上去时出现黑色下划线 */
+            border-bottom: 2px solid #111; 
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>StudyKaki</h2>
+        
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="input-group">
+                <label>Student ID / Username</label>
+                <input type="text" name="username" placeholder="TP000000" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit">Let's Study!</button>
+        </form>
+        
+        <div class="footer-links">
+            <a href="#">Forgot Password?</a>
+            <a href="{{ url_for('register') }}">Sign Up</a> 
+        </div>
+    </div>
+</body>
+</html>

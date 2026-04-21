@@ -1,17 +1,34 @@
 # app.py - Study Kaki Core System 
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
+import sqlite3
+from flask import request
 
 app = Flask(__name__)
+
+def init_db():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS resources (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
 
 # ==========================================
 # 1. Public Interface Module
 # ==========================================
 @app.route('/')
 def home():
-    # Renders the landing page introducing the Study Kaki concept
-    return render_template('index.html')
+    return redirect(url_for('login'))
 
 
 # ==========================================
@@ -43,6 +60,54 @@ def profile():
     # Profile page: Displays the MMU student's academic expertise and badges
     return render_template('profile.html')
 
+# ==========================================
+# 4. Resource Board Module (Member 3)
+# ==========================================
+@app.route('/resources')
+def resources():
+    return render_template('resources.html')
+
+@app.route('/add-resource', methods=['POST'])
+def add_resource():
+    title = request.form['title']
+    description = request.form['description']
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("INSERT INTO resources (title, description) VALUES (?, ?)",
+              (title, description))
+
+    conn.commit()
+    conn.close()
+
+    return "Resource saved!"
+
+@app.route('/resources-list')
+def resources_list():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM resources")
+    data = c.fetchall()
+
+    conn.close()
+
+    return render_template("resources_list.html", resources=data)
+
+@app.route('/delete-resource/<int:id>')
+def delete_resource(id):
+    print("DELETE ID:", id)
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("DELETE FROM resources WHERE id = ?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return "DELETED"
 
 # ==========================================
 # Server Initialization
