@@ -8,4 +8,5 @@ __pycache__/
 .vscode/
 instance/
 *.sqlite3
-.DS_Store 
+.DS_Store
+             
