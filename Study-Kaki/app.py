@@ -46,13 +46,22 @@ def register():
     return render_template('register.html')
 
 
+
 # ==========================================
 # 3. Core Application Module
 # ==========================================
 @app.route('/profile')
 def profile():
-    # Profile page: Displays the MMU student's academic expertise and badges
-    return render_template('profile.html')
+    # 模拟从数据库里抓取了当前登录用户的数据
+    # (以后我们会用真正的 SQLite 来替换这里)
+    current_user_info = {
+        "name": "Alex Chen",
+        "student_id": "TP088123",
+        "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
+    }
+    
+    # 关键点：把 current_user_info 这个字典，打包命名为 user_data 发给 profile.html
+    return render_template('profile.html', user_data=current_user_info)
 
 # ==========================================
 # 4. Resource Board Module (Member 3)
