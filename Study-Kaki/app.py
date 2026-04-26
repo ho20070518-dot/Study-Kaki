@@ -12,7 +12,7 @@ def init_db():
     c = conn.cursor()
 
     c.execute('''
-        CREATE TABLE IF NOT EXISTS resources (
+        CREATE TABLE IF NOT NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             description TEXT NOT NULL
@@ -49,7 +49,13 @@ def register():
 # ==========================================
 @app.route('/profile')
 def profile():
-    return render_template('profile.html')
+    current_user_info = {
+        "name": "Alex Chen",
+        "student_id": "TP088123",
+        "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
+    }
+
+    return render_template('profile.html', user_data=current_user_info)
 
 
 # ==========================================
@@ -102,7 +108,6 @@ def resources_list():
 
 @app.route('/delete-resource/<int:id>')
 def delete_resource(id):
-
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
