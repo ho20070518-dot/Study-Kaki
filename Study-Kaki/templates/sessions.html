@@ -6,21 +6,27 @@
 <title>Study Sessions</title>
 
 <style>
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #dbeafe, #eff6ff, #f8fbff);
     min-height: 100vh;
+    background-color: #ffffff;
+    background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
 }
 
 .container {
-    max-width: 750px;
+    max-width: 700px;
     margin: 60px auto;
     background: white;
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    padding: 40px;
+    border: 3px solid #111;
+    border-radius: 22px;
+    box-shadow: 18px 18px 0 #dbeafe;
 }
 
 .header {
@@ -30,69 +36,69 @@ body {
 
 .header h2 {
     margin: 0;
-    font-size: 32px;
-    color: #1e3a8a;
+    font-size: 26px;
+    color: #111;
 }
 
 .header p {
-    color: #6b7280;
     margin-top: 8px;
-}
-
-.create-btn {
-    display: block;
-    width: 240px;
-    margin: 25px auto;
-    text-align: center;
-    background: linear-gradient(to right, #2563eb, #1d4ed8);
-    color: white;
-    padding: 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: 0.3s ease;
-}
-
-.create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-}
-
-.session-card {
-    background: #f8fafc;
-    border-left: 6px solid #2563eb;
-    padding: 18px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    transition: 0.3s ease;
-}
-
-.session-card:hover {
-    transform: scale(1.01);
-}
-
-.session-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #1e3a8a;
-}
-
-.session-info {
-    margin-top: 6px;
-    color: #374151;
-}
-
-.empty-text {
-    text-align: center;
-    margin-top: 25px;
-    color: #9ca3af;
-    font-style: italic;
+    color: #333;
 }
 
 .icon {
     font-size: 40px;
 }
 
+.create-btn {
+    display: block;
+    width: 260px;
+    margin: 25px auto;
+    text-align: center;
+    background: #c7d2fe;
+    color: #111;
+    padding: 14px;
+    border-radius: 18px;
+    border: 3px solid #111;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 5px 5px 0 #111;
+}
+
+.session-card {
+    background: #f8fafc;
+    border: 2px solid #111;
+    padding: 18px;
+    border-radius: 18px;
+    margin-bottom: 18px;
+}
+
+.session-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
+}
+
+.session-info {
+    margin-top: 8px;
+    color: #333;
+}
+
+.session-link {
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.session-link:hover {
+    text-decoration: underline;
+}
+
+.empty-text {
+    text-align: center;
+    margin-top: 25px;
+    color: #777;
+    font-style: italic;
+}
 </style>
 </head>
 
@@ -100,43 +106,56 @@ body {
 
 <div class="container">
 
-<div class="header">
-<div class="icon">📅</div>
-<h2>Study Sessions</h2>
-<p>View and manage your study group sessions</p>
-</div>
+    <div class="header">
+        <div class="icon">📅</div>
+        <h2>Study Sessions</h2>
+        <p>View and manage your study group sessions</p>
+    </div>
 
-<a href="/create_session" class="create-btn">+ Create New Session</a>
+    <a href="/create_session" class="create-btn">+ Create New Session</a>
 
+    {% if sessions %}
 
-{% if sessions %}
-    {% for session in sessions %}
-        <div class="session-card">
+        {% for session in sessions %}
 
-            <div class="session-title">
-                {{ session.subject }}
+            <div class="session-card">
+
+                <div class="session-title">
+                    {{ session.subject }}
+                </div>
+
+                <div class="session-info">
+                    Topic: {{ session.topic }}
+                </div>
+
+                <div class="session-info">
+                    Date: {{ session.date }}
+                </div>
+
+                <div class="session-info">
+                    Type: {{ session.location_type }}
+                </div>
+
+                <div class="session-info">
+                    {% if session.location_type == "Physical" %}
+                        Location: {{ session.physical_location }}
+                    {% elif session.location_type == "Online" %}
+                        Meeting Link:
+                        <a href="{{ session.meeting_link }}" target="_blank" class="session-link">
+                            Join Online Session
+                        </a>
+                    {% endif %}
+                </div>
+
             </div>
 
-            <div class="session-info">
-                Topic: {{ session.topic }}
-            </div>
+        {% endfor %}
 
-            <div class="session-info">
-                Date: {{ session.date }}
-            </div>
+    {% else %}
 
-            <div class="session-info">
-                Location: {{ session.location }}
-            </div>
+        <p class="empty-text">No study sessions created yet.</p>
 
-        </div>
-    {% endfor %}
-
-{% else %}
-
-<p class="empty-text">No study sessions created yet.</p>
-
-{% endif %}
+    {% endif %}
 
 </div>
 

@@ -1,165 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Study Session</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Study Session</title>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #dbeafe, #eff6ff, #f8fbff);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        .form-container {
-            width: 100%;
-            max-width: 500px;
-            background: #ffffff;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+}
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+.form-container {
+    width: 520px;
+    background: white;
+    padding: 40px;
+    border: 3px solid #111;
+    border-radius: 22px;
+    box-shadow: 18px 18px 0 #dbeafe;
+}
 
-        .form-header h2 {
-            margin: 0;
-            color: #1e3a8a;
-            font-size: 32px;
-        }
+.form-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
 
-        .form-header p {
-            margin-top: 10px;
-            color: #6b7280;
-            font-size: 15px;
-        }
+.form-header h2 {
+    margin: 0;
+    font-size: 26px;
+    color: #111;
+}
 
-        .form-group {
-            margin-bottom: 18px;
-        }
+.form-header p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #374151;
-            font-size: 15px;
-        }
+.icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
 
-        input[type="text"],
-        input[type="date"] {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 15px;
-            background-color: #f8fafc;
-            transition: 0.3s ease;
-        }
+.form-group {
+    margin-bottom: 18px;
+}
 
-        input[type="text"]:focus,
-        input[type="date"]:focus {
-            outline: none;
-            border-color: #2563eb;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        }
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #111;
+    font-size: 14px;
+}
 
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(to right, #2563eb, #1d4ed8);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s ease;
-            margin-top: 10px;
-        }
+input,
+select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid #111;
+    border-radius: 18px;
+    font-size: 14px;
+    background-color: #f8fafc;
+}
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-        }
+input:focus,
+select:focus {
+    outline: none;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px #c7d2fe;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-        }
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #c7d2fe;
+    color: #111;
+    border: 3px solid #111;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 #111;
+    margin-top: 10px;
+}
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
+.back-link {
+    display: block;
+    margin-top: 22px;
+    text-align: center;
+    color: #111;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+}
 
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
+.hidden {
+    display: none;
+}
+</style>
 
-        @media (max-width: 600px) {
-            .form-container {
-                padding: 25px;
-            }
+<script>
+function toggleLocationFields() {
+    const locationType = document.getElementById("location_type").value;
+    const physicalField = document.getElementById("physical_location_group");
+    const onlineField = document.getElementById("meeting_link_group");
 
-            .form-header h2 {
-                font-size: 26px;
-            }
-        }
-    </style>
+    if (locationType === "Physical") {
+        physicalField.classList.remove("hidden");
+        onlineField.classList.add("hidden");
+    } else if (locationType === "Online") {
+        onlineField.classList.remove("hidden");
+        physicalField.classList.add("hidden");
+    } else {
+        physicalField.classList.add("hidden");
+        onlineField.classList.add("hidden");
+    }
+}
+</script>
 </head>
+
 <body>
 
-    <div class="form-container">
-        <div class="form-header">
-            <div class="icon">📚</div>
-            <h2>Create Study Session</h2>
-            <p>Organize a session and invite others to study together.</p>
+<div class="form-container">
+
+    <div class="form-header">
+        <div class="icon">📚</div>
+        <h2>Create Study Session</h2>
+        <p>Organize a session and invite others to study together.</p>
+    </div>
+
+    <form action="/sessions" method="POST">
+
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="e.g. Mathematics">
         </div>
 
-        <form action="/sessions" method="POST">
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="e.g. Mathematics">
-            </div>
+        <div class="form-group">
+            <label for="topic">Topic</label>
+            <input type="text" id="topic" name="topic" placeholder="e.g. Integration">
+        </div>
 
-            <div class="form-group">
-                <label for="topic">Topic</label>
-                <input type="text" id="topic" name="topic" placeholder="e.g. Integration">
-            </div>
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date">
+        </div>
 
-            <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" name="date">
-            </div>
+        <div class="form-group">
+            <label for="location_type">Location Type</label>
+            <select id="location_type" name="location_type" onchange="toggleLocationFields()" required>
+                <option value="">Select Location Type</option>
+                <option value="Physical">Physical</option>
+                <option value="Online">Online</option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="location">Location</label>
-                <input type="text" id="location" name="location" placeholder="e.g. MMU Library / Google Meet">
-            </div>
+        <div class="form-group hidden" id="physical_location_group">
+            <label for="physical_location">Physical Location</label>
+            <input type="text" id="physical_location" name="physical_location" placeholder="e.g. MMU Library">
+        </div>
 
-            <button type="submit" class="submit-btn">Create Session</button>
-        </form>
+        <div class="form-group hidden" id="meeting_link_group">
+            <label for="meeting_link">Meeting Link</label>
+            <input type="text" id="meeting_link" name="meeting_link" placeholder="Paste Google Meet link here">
+        </div>
 
-        <a href="/sessions" class="back-link">← Back to Sessions List</a>
-    </div>
+        <button type="submit" class="submit-btn">Create Session</button>
+
+    </form>
+
+    <a href="/sessions" class="back-link">← Back to Sessions List</a>
+
+</div>
 
 </body>
 </html>
