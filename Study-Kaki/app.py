@@ -116,8 +116,38 @@ def delete_resource(id):
     conn.commit()
     conn.close()
 
-    return "DELETED"
+    return redirect(url_for('resources_list', deleted=1))
 
+@app.route('/edit-resource/<int:id>')
+def edit_resource(id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM resources WHERE id = ?", (id,))
+    resource = c.fetchone()
+
+    conn.close()
+
+    return render_template("edit_resources.html", resource=resource)
+
+
+@app.route('/update-resource/<int:id>', methods=['POST'])
+def update_resource(id):
+    title = request.form['title']
+    description = request.form['description']
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute(
+        "UPDATE resources SET title=?, description=? WHERE id=?",
+        (title, description, id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('resources_list'))
 
 @app.route('/dashboard')
 def dashboard():
