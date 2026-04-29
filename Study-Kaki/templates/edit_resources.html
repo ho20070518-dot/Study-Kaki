@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit Resource</title>
+</head>
+<body>
+
+<h1>Edit Resource</h1>
+
+<form method="post" action="/update-resource/{{ resource[0] }}">
+    <input type="text" name="title" value="{{ resource[1] }}"><br><br>
+
+    <textarea name="description">{{ resource[2] }}</textarea><br><br>
+
+    <button type="submit">Update</button>
+</form>
+
+</body>
+</html>

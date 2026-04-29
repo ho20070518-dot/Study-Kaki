@@ -1,96 +1,187 @@
-<div style="
-    font-family:Arial;
-    min-height:100vh;
-    animation: gradientBG 15s ease infinite;
-    background: linear-gradient(-45deg, #ff9a9e, #a1c4fd, #c2ffd8, #fbc2eb);
-    background-size: 400% 400%;
-    overflow: auto;
-">
-    <div style="
-        max-width:900px;
-        margin:40px auto;
-        padding:25px;
-        background:rgba(255,255,255,0.75);
-        border-radius:16px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.15);
-        backdrop-filter: blur(8px);
-    ">
-        <!-- NAVBAR -->
-        <div style="background:#2c3e50; padding:12px; margin-bottom:20px;">
-            <a href="/resources" style="color:white; margin-right:10px; text-decoration:none;">Add Resource</a>
-            <a href="/resources-list" style="color:white; margin-right:10px; text-decoration:none;">View Resources</a>
-            <a href="/dashboard" style="color:white; text-decoration:none;">Dashboard</a>
-        </div>
-
-        <h1 style="font-size:22px; margin-bottom:10px;">Resources</h1>
-
-        {% if request.args.get('success') %}
-        <div style="color:green; margin-bottom:10px;">
-            Resource saved successfully!
-        </div>
-        {% endif %}
-
-        <!-- SEARCH -->
-        <form method="get" action="/resources-list" style="margin-bottom:15px;">
-            <input type="text" name="q" placeholder="Search resources..." value="{{ query if query else '' }}"
-                style="padding:10px; width:250px; border:1px solid #ccc; border-radius:6px; outline:none;">
-            <button type="submit" style="padding:10px; border:none; border-radius:6px;">
-                Search
-            </button>
-        </form>
-
-        <a href="/resources">
-            <button style="margin-bottom:15px; padding:8px 12px;">
-                Add Resource
-            </button>
-        </a>
-
-        {% if resources|length == 0 %}
-        <div style="text-align:center; color:#888; padding:20px;">
-            <h3>No resources found</h3>
-            <p>Add your first study resource to get started.</p>
-        </div>
-        {% endif %}
-
-        <!-- CARDS -->
-        <div style="
-            display:grid;
-            grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
-            gap:12px;
-        ">
-            {% for r in resources %}
-            <div style="
-                background:white;
-                padding:15px;
-                border-radius:10px;
-                box-shadow:0 2px 8px rgba(0,0,0,0.08);
-            ">
-                <h3 style="margin:0;">{{ r[1] }}</h3>
-                <p>{{ r[2] }}</p>
-
-                <div style="margin-top:10px; display:flex; gap:8px;">
-                    <a href="/edit-resource/{{ r[0] }}">
-                        <button style="background:#3498db; color:white; border:none; padding:7px 12px; border-radius:6px;">
-                            Edit
-                        </button>
-                    </a>
-                    <a href="/delete-resource/{{ r[0] }}">
-                        <button style="background:#e74c3c; color:white; border:none; padding:7px 12px; border-radius:6px;">
-                            Delete
-                        </button>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resources</title>
 
 <style>
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    min-height:100vh;
+    padding:40px 20px;
+
+    background-color:#fdfaf6;
+    background-image:radial-gradient(#d1d5db 2px, transparent 2px);
+    background-size:30px 30px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    padding:35px;
+    border-radius:28px;
+    border:3px solid #111;
+    box-shadow:12px 12px 0 #ebf4ff;
+}
+
+.navbar{
+    background:#111;
+    padding:14px;
+    border-radius:16px;
+    margin-bottom:30px;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    margin-right:18px;
+    font-weight:bold;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.search-box{
+    margin-bottom:20px;
+}
+
+input{
+    padding:12px;
+    width:260px;
+    border:2px solid #111;
+    border-radius:14px;
+}
+
+button{
+    padding:12px 16px;
+    border:none;
+    border-radius:14px;
+    background:#c7d2fe;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#a5b4fc;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+    margin-top:20px;
+}
+
+.card{
+    background:#f8fafc;
+    border:2px solid #111;
+    padding:18px;
+    border-radius:18px;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    margin-bottom:15px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.edit{
+    background:#60a5fa;
+    color:white;
+}
+
+.delete{
+    background:#ef4444;
+    color:white;
 }
 </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="navbar">
+        <a href="/resources">Add Resource</a>
+        <a href="/resources-list">View Resources</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+
+    <h1>Resources</h1>
+
+    {% if request.args.get('deleted') %}
+<div style="
+    background:#ffe5e5;
+    color:#c0392b;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:12px;
+    font-weight:bold;
+">
+    Resource deleted successfully.
+</div>
+    {% endif %}
+
+    {% if request.args.get('success') %}
+    <p style="color:green; margin-bottom:15px;">Resource saved successfully!</p>
+    {% endif %}
+
+    <form method="get" action="/resources-list" class="search-box">
+        <input type="text" name="q" placeholder="Search resources..." value="{{ query if query else '' }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if resources|length == 0 %}
+        <p style="margin-top:25px;">No resources found.</p>
+    {% endif %}
+
+    <div class="grid">
+
+        {% for r in resources %}
+        <div class="card">
+
+            <h3>{{ r[1] }}</h3>
+            <p>{{ r[2] }}</p>
+
+             <div class="actions">
+
+                <a href="/edit-resource/{{ r[0] }}">
+                   <button class="edit">Edit</button>
+                </a>
+
+                <a href="/delete-resource/{{ r[0] }}"
+                   onclick="return confirm('Delete this resource?')">
+                    <button class="delete">Delete</button>
+                </a>
+
+             </div>
+
+        </div>
+        {% endfor %}
+
+    {% if request.args.get('updated') %}
+    <p style="color:blue;">Resource updated successfully!</p>
+    {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
