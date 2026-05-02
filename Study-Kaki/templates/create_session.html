@@ -1,194 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Study Session</title>
+    <meta charset="UTF-8">
+    <title>Create Study Session</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-    background-size: 28px 28px;
-}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #ffffff;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 35px;
+        }
 
-.form-container {
-    width: 520px;
-    background: white;
-    padding: 40px;
-    border: 3px solid #111;
-    border-radius: 22px;
-    box-shadow: 18px 18px 0 #dbeafe;
-}
+        .form-card {
+            width: 480px;
+            background: white;
+            padding: 38px;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 14px 14px 0 #111;
+        }
 
-.form-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 28px;
+            color: #111;
+            font-size: 28px;
+        }
 
-.form-header h2 {
-    margin: 0;
-    font-size: 26px;
-    color: #111;
-}
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            color: #111;
+        }
 
-.form-header p {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #333;
-}
+        input, select {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid #111;
+            border-radius: 15px;
+            font-size: 15px;
+            outline: none;
+        }
 
-.icon {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
+        input:focus, select:focus {
+            border-color: #2563eb;
+        }
 
-.form-group {
-    margin-bottom: 18px;
-}
+        .location-section {
+            display: none;
+        }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #111;
-    font-size: 14px;
-}
+        .hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
 
-input,
-select {
-    width: 100%;
-    padding: 13px 16px;
-    border: 2px solid #111;
-    border-radius: 18px;
-    font-size: 14px;
-    background-color: #f8fafc;
-}
+        .submit-btn {
+            width: 100%;
+            margin-top: 28px;
+            padding: 14px;
+            border: 3px solid #111;
+            border-radius: 16px;
+            background: #c7d2fe;
+            color: #111;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 #111;
+        }
 
-input:focus,
-select:focus {
-    outline: none;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 3px #c7d2fe;
-}
+        .submit-btn:hover {
+            background: #a5b4fc;
+        }
 
-.submit-btn {
-    width: 100%;
-    padding: 14px;
-    background: #c7d2fe;
-    color: #111;
-    border: 3px solid #111;
-    border-radius: 18px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 5px 5px 0 #111;
-    margin-top: 10px;
-}
+        .bottom-link {
+            display: block;
+            text-align: center;
+            margin-top: 23px;
+            color: #111;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-.back-link {
-    display: block;
-    margin-top: 22px;
-    text-align: center;
-    color: #111;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.hidden {
-    display: none;
-}
-</style>
-
-<script>
-function toggleLocationFields() {
-    const locationType = document.getElementById("location_type").value;
-    const physicalField = document.getElementById("physical_location_group");
-    const onlineField = document.getElementById("meeting_link_group");
-
-    if (locationType === "Physical") {
-        physicalField.classList.remove("hidden");
-        onlineField.classList.add("hidden");
-    } else if (locationType === "Online") {
-        onlineField.classList.remove("hidden");
-        physicalField.classList.add("hidden");
-    } else {
-        physicalField.classList.add("hidden");
-        onlineField.classList.add("hidden");
-    }
-}
-</script>
+        .bottom-link:hover {
+            color: #2563eb;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="form-container">
+    <div class="form-card">
+        <h1>Create Study Session</h1>
 
-    <div class="form-header">
-        <div class="icon">📚</div>
-        <h2>Create Study Session</h2>
-        <p>Organize a 2-hour study session and invite others to study together.</p>
-    </div>
+        <form action="{{ url_for('study_session_routes.create_session') }}" method="POST">
 
-    <form action="/create_session" method="POST">
+            <label>Subject</label>
+            <input 
+                type="text" 
+                name="subject" 
+                placeholder="Example: Mathematics III" 
+                required
+            >
 
-        <div class="form-group">
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" placeholder="e.g. Mathematics" required>
-        </div>
+            <label>Topic</label>
+            <input 
+                type="text" 
+                name="topic" 
+                placeholder="Example: Chapter 3 Tutorial Questions" 
+                required
+            >
 
-        <div class="form-group">
-            <label for="topic">Topic</label>
-            <input type="text" id="topic" name="topic" placeholder="e.g. Integration" required>
-        </div>
+            <label>Date</label>
+            <input 
+                type="date" 
+                name="session_date" 
+                required
+            >
 
-        <div class="form-group">
-            <label for="date">Date</label>
-            <input type="date" id="date" name="date" required>
-        </div>
+            <label>Start Time</label>
+            <input 
+                type="time" 
+                name="session_time" 
+                required
+            >
 
-        <div class="form-group">
-            <label for="time">Start Time</label>
-            <input type="time" id="time" name="time" required>
-        </div>
+            <label>End Time</label>
+            <input 
+                type="time" 
+                name="end_time"
+            >
 
-        <div class="form-group">
-            <label for="location_type">Location Type</label>
-            <select id="location_type" name="location_type" onchange="toggleLocationFields()" required>
-                <option value="">Select Location Type</option>
+            <label>Location Type</label>
+            <select name="location_type" id="location_type" required onchange="showLocationInput()">
+                <option value="">-- Select Location Type --</option>
                 <option value="Physical">Physical</option>
                 <option value="Online">Online</option>
             </select>
-        </div>
 
-        <div class="form-group hidden" id="physical_location_group">
-            <label for="physical_location">Physical Location</label>
-            <input type="text" id="physical_location" name="physical_location" placeholder="e.g. MMU Library">
-        </div>
+            <div id="physical_location_section" class="location-section">
+                <label>Physical Location</label>
+                <input 
+                    type="text" 
+                    name="physical_location" 
+                    id="physical_location"
+                    placeholder="Example: MMU Library / FCI Room"
+                >
+                <div class="hint">Only needed for physical session.</div>
+            </div>
 
-        <div class="form-group hidden" id="meeting_link_group">
-            <label for="meeting_link">Meeting Link</label>
-            <input type="text" id="meeting_link" name="meeting_link" placeholder="Paste Google Meet link here">
-        </div>
+            <div id="meeting_link_section" class="location-section">
+                <label>Meeting Link</label>
+                <input 
+                    type="text" 
+                    name="meeting_link" 
+                    id="meeting_link"
+                    placeholder="Example: Google Meet / Zoom link"
+                >
+                <div class="hint">Only needed for online session.</div>
+            </div>
 
-        <button type="submit" class="submit-btn">Create Session</button>
+            <button type="submit" class="submit-btn">Create Session</button>
+        </form>
 
-    </form>
+        <a href="{{ url_for('study_session_routes.sessions') }}" class="bottom-link">
+            Back to Study Sessions
+        </a>
+    </div>
 
-    <a href="/sessions" class="back-link">← Back to Sessions List</a>
+    <script>
+        function showLocationInput() {
+            const locationType = document.getElementById("location_type").value;
 
-</div>
+            const physicalSection = document.getElementById("physical_location_section");
+            const meetingSection = document.getElementById("meeting_link_section");
+
+            const physicalInput = document.getElementById("physical_location");
+            const meetingInput = document.getElementById("meeting_link");
+
+            if (locationType === "Physical") {
+                physicalSection.style.display = "block";
+                meetingSection.style.display = "none";
+
+                physicalInput.required = true;
+                meetingInput.required = false;
+                meetingInput.value = "";
+            } 
+            else if (locationType === "Online") {
+                physicalSection.style.display = "none";
+                meetingSection.style.display = "block";
+
+                physicalInput.required = false;
+                meetingInput.required = true;
+                physicalInput.value = "";
+            } 
+            else {
+                physicalSection.style.display = "none";
+                meetingSection.style.display = "none";
+
+                physicalInput.required = false;
+                meetingInput.required = false;
+                physicalInput.value = "";
+                meetingInput.value = "";
+            }
+        }
+    </script>
 
 </body>
 </html>

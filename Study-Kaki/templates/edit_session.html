@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Study Session</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #ffffff;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 35px;
+        }
+
+        .form-container {
+            width: 560px;
+            background: white;
+            padding: 40px;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 18px 18px 0 #111;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #111;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #111;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: 2px solid #111;
+            border-radius: 10px;
+            background: #facc15;
+            color: #111;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 5px 5px 0 #111;
+        }
+
+        button:hover {
+            background: #eab308;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #111;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h1>Edit Study Session</h1>
+
+        <form action="{{ url_for('study_session_routes.edit_session', id=session[0]) }}" method="POST">
+
+            <label>Subject</label>
+            <input 
+                type="text" 
+                name="subject" 
+                value="{{ session[1] }}"
+                required
+            >
+
+            <label>Topic</label>
+            <input 
+                type="text" 
+                name="topic" 
+                value="{{ session[2] }}"
+                required
+            >
+
+            <label>Date</label>
+            <input 
+                type="date" 
+                name="session_date" 
+                value="{{ session[3] }}"
+                required
+            >
+
+            <label>Start Time</label>
+            <input 
+                type="time" 
+                name="session_time" 
+                value="{{ session[4] }}"
+                required
+            >
+
+            <label>End Time</label>
+            <input 
+                type="time" 
+                name="end_time"
+                value="{{ session[5] }}"
+            >
+
+            <label>Location Type</label>
+            <select name="location_type" required>
+                <option value="Physical" {% if session[6] == "Physical" %}selected{% endif %}>Physical</option>
+                <option value="Online" {% if session[6] == "Online" %}selected{% endif %}>Online</option>
+            </select>
+
+            <label>Physical Location</label>
+            <input 
+                type="text" 
+                name="physical_location" 
+                value="{{ session[7] }}"
+                placeholder="Example: MMU Library / FCI Room"
+            >
+            <div class="hint">Fill this in if the session is physical.</div>
+
+            <label>Meeting Link</label>
+            <input 
+                type="text" 
+                name="meeting_link" 
+                value="{{ session[8] }}"
+                placeholder="Example: Google Meet / Zoom link"
+            >
+            <div class="hint">Fill this in if the session is online.</div>
+
+            <button type="submit">Update Session</button>
+
+        </form>
+
+        <a href="{{ url_for('study_session_routes.sessions') }}" class="back-link">
+            Back to Study Sessions
+        </a>
+    </div>
+
+</body>
+</html>
