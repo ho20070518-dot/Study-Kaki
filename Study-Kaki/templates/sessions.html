@@ -1,231 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Sessions</title>
+    <meta charset="UTF-8">
+    <title>Study Sessions</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-    background-color: #ffffff;
-    background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-    background-size: 28px 28px;
-    padding: 40px;
-}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #ffffff;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            padding: 45px 25px;
+        }
 
-.page-container {
-    max-width: 900px;
-    margin: auto;
-}
+        .container {
+            max-width: 920px;
+            margin: auto;
+        }
 
-.header-card {
-    background: white;
-    padding: 30px;
-    border: 3px solid #111;
-    border-radius: 22px;
-    box-shadow: 14px 14px 0 #dbeafe;
-    margin-bottom: 30px;
-    text-align: center;
-}
+        .header-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 14px 14px 0 #111;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
 
-.header-card h1 {
-    margin: 0;
-    font-size: 30px;
-    color: #111;
-}
+        h1 {
+            margin: 0;
+            color: #111;
+            font-size: 30px;
+        }
 
-.header-card p {
-    color: #333;
-    font-size: 15px;
-}
+        .create-btn {
+            background: #c7d2fe;
+            color: #111;
+            padding: 13px 20px;
+            border: 3px solid #111;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 5px 5px 0 #111;
+        }
 
-.create-btn {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 13px 22px;
-    background: #c7d2fe;
-    color: #111;
-    border: 3px solid #111;
-    border-radius: 18px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 5px 5px 0 #111;
-}
+        .create-btn:hover {
+            background: #a5b4fc;
+        }
 
-.session-card {
-    background: white;
-    padding: 25px;
-    border: 3px solid #111;
-    border-radius: 22px;
-    box-shadow: 10px 10px 0 #e0f2fe;
-    margin-bottom: 25px;
-}
+        .search-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 22px;
+            margin-bottom: 30px;
+        }
 
-.session-card h2 {
-    margin-top: 0;
-    color: #111;
-}
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
 
-.session-info {
-    margin: 8px 0;
-    font-size: 15px;
-    color: #222;
-}
+        .search-form input {
+            flex: 1;
+            padding: 13px 16px;
+            border: 2px solid #111;
+            border-radius: 15px;
+            font-size: 15px;
+            outline: none;
+        }
 
-.badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border: 2px solid #111;
-    border-radius: 20px;
-    background: #fef3c7;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+        .search-form button {
+            padding: 13px 22px;
+            border: 2px solid #111;
+            border-radius: 15px;
+            background: #111;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.status-joined {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 7px 13px;
-    border: 2px solid #111;
-    border-radius: 20px;
-    background: #bbf7d0;
-    font-size: 13px;
-    font-weight: bold;
-}
+        .session-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-.status-not-joined {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 7px 13px;
-    border: 2px solid #111;
-    border-radius: 20px;
-    background: #fecaca;
-    font-size: 13px;
-    font-weight: bold;
-}
+        .session-card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #111;
+            font-size: 24px;
+        }
 
-.action-btn {
-    display: inline-block;
-    margin-top: 15px;
-    margin-right: 8px;
-    padding: 11px 18px;
-    background: #c7d2fe;
-    color: #111;
-    border: 3px solid #111;
-    border-radius: 16px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 4px 4px 0 #111;
-}
+        .session-card p {
+            margin: 9px 0;
+            color: #333;
+            font-size: 15px;
+        }
 
-.leave-btn {
-    background: #fecaca;
-}
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border: 2px solid #111;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
 
-.delete-btn {
-    background: #fca5a5;
-}
+        .joined {
+            background: #bbf7d0;
+        }
 
-.empty-box {
-    background: white;
-    padding: 30px;
-    border: 3px solid #111;
-    border-radius: 22px;
-    box-shadow: 10px 10px 0 #dbeafe;
-    text-align: center;
-    font-weight: bold;
-}
+        .not-joined {
+            background: #fef3c7;
+        }
 
-a {
-    color: #111;
-}
-</style>
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: 2px solid #111;
+            border-radius: 13px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 4px 4px 0 #111;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            color: #111;
+        }
+
+        .join-btn {
+            background: #bbf7d0;
+        }
+
+        .leave-btn {
+            background: #fed7aa;
+        }
+
+        .edit-btn {
+            background: #fde68a;
+        }
+
+        .delete-btn {
+            background: #fecaca;
+        }
+
+        .empty-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 45px;
+            text-align: center;
+            color: #333;
+        }
+
+        .bottom-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #111;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .bottom-link:hover {
+            color: #2563eb;
+        }
+
+        .link {
+            color: #2563eb;
+            word-break: break-all;
+        }
+
+        @media (max-width: 600px) {
+            .search-form {
+                flex-direction: column;
+            }
+
+            .create-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="page-container">
+    <div class="container">
 
-    <div class="header-card">
-        <h1>📚 Study Sessions</h1>
-        <p>View available 2-hour study sessions and join the sessions you are interested in.</p>
-        <a href="/create_session" class="create-btn">+ Create New Session</a>
-    </div>
+        <div class="header-card">
+            <h1>Study Sessions</h1>
 
-    {% if sessions %}
-        {% for session in sessions %}
-            <div class="session-card">
-
-                <span class="badge">{{ session[6] }}</span>
-
-                <h2>{{ session[1] }}</h2>
-
-                <p class="session-info">
-                    <strong>Topic:</strong> {{ session[2] }}
-                </p>
-
-                <p class="session-info">
-                    <strong>Date:</strong> {{ session[3] }}
-                </p>
-
-                <p class="session-info">
-                    <strong>Time:</strong> {{ session[4] }} - {{ session[5] }}
-                </p>
-
-                <p class="session-info">
-                    <strong>Duration:</strong> 2 hours
-                </p>
-
-                {% if session[6] == "Physical" %}
-                    <p class="session-info">
-                        <strong>Location:</strong> {{ session[7] }}
-                    </p>
-                {% elif session[6] == "Online" %}
-                    <p class="session-info">
-                        <strong>Meeting Link:</strong>
-                        <a href="{{ session[8] }}" target="_blank">{{ session[8] }}</a>
-                    </p>
-                {% endif %}
-
-                {% if session[9] == 1 %}
-                    <br>
-                    <span class="status-joined">Status: Joined</span>
-                    <br>
-                    <a href="/leave_session/{{ session[0] }}" class="action-btn leave-btn">
-                        Leave Session
-                    </a>
-                {% else %}
-                    <br>
-                    <span class="status-not-joined">Status: Not Joined</span>
-                    <br>
-                    <a href="/join_session/{{ session[0] }}" class="action-btn">
-                        Join Session
-                    </a>
-                {% endif %}
-
-                <a href="/delete_session/{{ session[0] }}"
-                   class="action-btn delete-btn"
-                   onclick="return confirm('Are you sure you want to delete this study session?');">
-                    Delete Session
-                </a>
-
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty-box">
-            No study sessions available yet.
+            <a href="{{ url_for('study_session_routes.create_session') }}" class="create-btn">
+                + Create Session
+            </a>
         </div>
-    {% endif %}
 
-</div>
+        <div class="search-card">
+            <form action="{{ url_for('study_session_routes.sessions') }}" method="GET" class="search-form">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search by subject, topic, or location"
+                    value="{{ search }}"
+                >
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        {% if sessions %}
+            {% for study_session in sessions %}
+                <div class="session-card">
+
+                    {% if study_session["joined"] == 1 %}
+                        <span class="badge joined">Joined</span>
+                    {% else %}
+                        <span class="badge not-joined">Not Joined</span>
+                    {% endif %}
+
+                    <h2>{{ study_session["subject"] }}</h2>
+
+                    <p><strong>Topic:</strong> {{ study_session["topic"] }}</p>
+                    <p><strong>Date:</strong> {{ study_session["session_date"] }}</p>
+
+                    {% if study_session["end_time"] %}
+                        <p><strong>Time:</strong> {{ study_session["session_time"] }} - {{ study_session["end_time"] }}</p>
+                    {% else %}
+                        <p><strong>Time:</strong> {{ study_session["session_time"] }}</p>
+                    {% endif %}
+
+                    <p><strong>Location Type:</strong> {{ study_session["location_type"] }}</p>
+
+                    {% if study_session["physical_location"] %}
+                        <p><strong>Physical Location:</strong> {{ study_session["physical_location"] }}</p>
+                    {% endif %}
+
+                    {% if study_session["meeting_link"] %}
+                        <p>
+                            <strong>Meeting Link:</strong>
+                            <a href="{{ study_session['meeting_link'] }}" class="link" target="_blank">
+                                {{ study_session["meeting_link"] }}
+                            </a>
+                        </p>
+                    {% endif %}
+
+                    <div class="actions">
+
+                        {% if study_session["joined"] == 1 %}
+                            <form action="{{ url_for('study_session_routes.leave_session', id=study_session['id']) }}" method="POST">
+                                <button type="submit" class="btn leave-btn">Leave</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('study_session_routes.join_session', id=study_session['id']) }}" method="POST">
+                                <button type="submit" class="btn join-btn">Join</button>
+                            </form>
+                        {% endif %}
+
+                        <a href="{{ url_for('study_session_routes.edit_session', id=study_session['id']) }}" class="btn edit-btn">
+                            Edit
+                        </a>
+
+                        <form action="{{ url_for('study_session_routes.delete_session', id=study_session['id']) }}" method="POST">
+                            <button type="submit" class="btn delete-btn">
+                                Delete
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-card">
+                <h2>No study sessions found.</h2>
+                <p>Click “Create Session” to add your first study session.</p>
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('dashboard') }}" class="bottom-link">Back to Dashboard</a>
+
+    </div>
 
 </body>
 </html>

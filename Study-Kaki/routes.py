@@ -1,72 +1,83 @@
-# routes.py - Member 2 Study Session Module
-# Create, Read, Join, Leave, Delete Study Sessions
+# routes.py - Member 2 Study Session Routes
 
 from flask import Blueprint, render_template, request, redirect, url_for
 import sqlite3
-from datetime import datetime, timedelta
 
-study_session_routes = Blueprint('study_session_routes', __name__)
+study_session_routes = Blueprint("study_session_routes", __name__)
+
+
+def get_db_connection():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 # ==========================================
-# Display Study Sessions
+# READ - Display all study sessions
 # ==========================================
-@study_session_routes.route('/sessions')
+@study_session_routes.route("/sessions")
 def sessions():
-    conn = sqlite3.connect('database.db')
+    search = request.args.get("search", "")
+
+    conn = get_db_connection()
     c = conn.cursor()
 
-    # Do not use SELECT *
-    # This keeps the order correct for sessions.html
-    c.execute("""
-        SELECT 
-            id,
-            subject,
-            topic,
-            session_date,
-            session_time,
-            end_time,
-            location_type,
-            physical_location,
-            meeting_link,
-            joined
-        FROM sessions
-    """)
+    if search:
+        c.execute("""
+            SELECT * FROM sessions
+            WHERE subject LIKE ?
+               OR topic LIKE ?
+               OR physical_location LIKE ?
+               OR meeting_link LIKE ?
+            ORDER BY id DESC
+        """, (
+            "%" + search + "%",
+            "%" + search + "%",
+            "%" + search + "%",
+            "%" + search + "%"
+        ))
+    else:
+        c.execute("SELECT * FROM sessions ORDER BY id DESC")
 
-    data = c.fetchall()
-
+    sessions_data = c.fetchall()
     conn.close()
 
-    return render_template('sessions.html', sessions=data)
+    return render_template(
+        "sessions.html",
+        sessions=sessions_data,
+        search=search
+    )
 
 
 # ==========================================
-# Create Study Session
+# CREATE - Create new study session
 # ==========================================
-@study_session_routes.route('/create_session', methods=['GET', 'POST'])
+@study_session_routes.route("/create-session", methods=["GET", "POST"])
 def create_session():
-    if request.method == 'POST':
-        subject = request.form['subject']
-        topic = request.form['topic']
-        session_date = request.form['date']
-        session_time = request.form['time']
-        location_type = request.form['location_type']
-        physical_location = request.form.get('physical_location')
-        meeting_link = request.form.get('meeting_link')
+    if request.method == "POST":
+        subject = request.form["subject"]
+        topic = request.form["topic"]
+        session_date = request.form["session_date"]
+        session_time = request.form["session_time"]
+        end_time = request.form.get("end_time", "")
+        location_type = request.form["location_type"]
 
-        # Automatically set fixed 2-hour duration
-        start_time = datetime.strptime(session_time, "%H:%M")
-        end_time = start_time + timedelta(hours=2)
-        end_time = end_time.strftime("%H:%M")
+        physical_location = request.form.get("physical_location", "")
+        meeting_link = request.form.get("meeting_link", "")
 
-        conn = sqlite3.connect('database.db')
+        if location_type == "Physical":
+            meeting_link = ""
+        elif location_type == "Online":
+            physical_location = ""
+
+        conn = get_db_connection()
         c = conn.cursor()
 
-        c.execute('''
-            INSERT INTO sessions 
-            (subject, topic, session_date, session_time, end_time, location_type, physical_location, meeting_link, joined)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
+        c.execute("""
+            INSERT INTO sessions
+            (subject, topic, session_date, session_time, end_time, location_type, physical_location, meeting_link)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
             subject,
             topic,
             session_date,
@@ -74,56 +85,82 @@ def create_session():
             end_time,
             location_type,
             physical_location,
-            meeting_link,
-            0
+            meeting_link
         ))
 
         conn.commit()
         conn.close()
 
-        return redirect(url_for('study_session_routes.sessions'))
+        return redirect(url_for("study_session_routes.sessions"))
 
-    return render_template('create_session.html')
+    return render_template("create_session.html")
 
 
 # ==========================================
-# Join Study Session
+# UPDATE - Edit study session
 # ==========================================
-@study_session_routes.route('/join_session/<int:id>')
-def join_session(id):
-    conn = sqlite3.connect('database.db')
+@study_session_routes.route("/edit-session/<int:id>", methods=["GET", "POST"])
+def edit_session(id):
+    conn = get_db_connection()
     c = conn.cursor()
 
-    c.execute("UPDATE sessions SET joined = 1 WHERE id = ?", (id,))
+    if request.method == "POST":
+        subject = request.form["subject"]
+        topic = request.form["topic"]
+        session_date = request.form["session_date"]
+        session_time = request.form["session_time"]
+        end_time = request.form.get("end_time", "")
+        location_type = request.form["location_type"]
 
-    conn.commit()
+        physical_location = request.form.get("physical_location", "")
+        meeting_link = request.form.get("meeting_link", "")
+
+        if location_type == "Physical":
+            meeting_link = ""
+        elif location_type == "Online":
+            physical_location = ""
+
+        c.execute("""
+            UPDATE sessions
+            SET subject = ?,
+                topic = ?,
+                session_date = ?,
+                session_time = ?,
+                end_time = ?,
+                location_type = ?,
+                physical_location = ?,
+                meeting_link = ?
+            WHERE id = ?
+        """, (
+            subject,
+            topic,
+            session_date,
+            session_time,
+            end_time,
+            location_type,
+            physical_location,
+            meeting_link,
+            id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("study_session_routes.sessions"))
+
+    c.execute("SELECT * FROM sessions WHERE id = ?", (id,))
+    study_session = c.fetchone()
     conn.close()
 
-    return redirect(url_for('study_session_routes.sessions'))
+    return render_template("edit_session.html", session=study_session)
 
 
 # ==========================================
-# Leave Study Session
+# DELETE - Delete study session
 # ==========================================
-@study_session_routes.route('/leave_session/<int:id>')
-def leave_session(id):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-
-    c.execute("UPDATE sessions SET joined = 0 WHERE id = ?", (id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for('study_session_routes.sessions'))
-
-
-# ==========================================
-# Delete Study Session
-# ==========================================
-@study_session_routes.route('/delete_session/<int:id>')
+@study_session_routes.route("/delete-session/<int:id>", methods=["POST"])
 def delete_session(id):
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     c = conn.cursor()
 
     c.execute("DELETE FROM sessions WHERE id = ?", (id,))
@@ -131,20 +168,36 @@ def delete_session(id):
     conn.commit()
     conn.close()
 
-    return redirect(url_for('study_session_routes.sessions'))
+    return redirect(url_for("study_session_routes.sessions"))
 
 
 # ==========================================
-# Future Feature: Filter Sessions
+# JOIN - Join study session
 # ==========================================
-@study_session_routes.route('/filter_sessions')
-def filter_sessions():
-    return "Session filtering feature coming soon"
+@study_session_routes.route("/join-session/<int:id>", methods=["POST"])
+def join_session(id):
+    conn = get_db_connection()
+    c = conn.cursor()
+
+    c.execute("UPDATE sessions SET joined = 1 WHERE id = ?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("study_session_routes.sessions"))
 
 
 # ==========================================
-# Future Feature: Notifications
+# LEAVE - Leave study session
 # ==========================================
-@study_session_routes.route('/notifications')
-def notifications():
-    return "Notifications feature coming soon"
+@study_session_routes.route("/leave-session/<int:id>", methods=["POST"])
+def leave_session(id):
+    conn = get_db_connection()
+    c = conn.cursor()
+
+    c.execute("UPDATE sessions SET joined = 0 WHERE id = ?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("study_session_routes.sessions"))
