@@ -90,6 +90,50 @@ body {
     margin-bottom: 10px;
 }
 
+.status-joined {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 13px;
+    border: 2px solid #111;
+    border-radius: 20px;
+    background: #bbf7d0;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status-not-joined {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 13px;
+    border: 2px solid #111;
+    border-radius: 20px;
+    background: #fecaca;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.action-btn {
+    display: inline-block;
+    margin-top: 15px;
+    margin-right: 8px;
+    padding: 11px 18px;
+    background: #c7d2fe;
+    color: #111;
+    border: 3px solid #111;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 4px 4px 0 #111;
+}
+
+.leave-btn {
+    background: #fecaca;
+}
+
+.delete-btn {
+    background: #fca5a5;
+}
+
 .empty-box {
     background: white;
     padding: 30px;
@@ -112,14 +156,15 @@ a {
 
     <div class="header-card">
         <h1>📚 Study Sessions</h1>
-        <p>View available study sessions created by students.</p>
+        <p>View available 2-hour study sessions and join the sessions you are interested in.</p>
         <a href="/create_session" class="create-btn">+ Create New Session</a>
     </div>
 
     {% if sessions %}
         {% for session in sessions %}
             <div class="session-card">
-                <span class="badge">{{ session[4] }}</span>
+
+                <span class="badge">{{ session[6] }}</span>
 
                 <h2>{{ session[1] }}</h2>
 
@@ -131,16 +176,47 @@ a {
                     <strong>Date:</strong> {{ session[3] }}
                 </p>
 
-                {% if session[4] == "Physical" %}
+                <p class="session-info">
+                    <strong>Time:</strong> {{ session[4] }} - {{ session[5] }}
+                </p>
+
+                <p class="session-info">
+                    <strong>Duration:</strong> 2 hours
+                </p>
+
+                {% if session[6] == "Physical" %}
                     <p class="session-info">
-                        <strong>Location:</strong> {{ session[5] }}
+                        <strong>Location:</strong> {{ session[7] }}
                     </p>
-                {% elif session[4] == "Online" %}
+                {% elif session[6] == "Online" %}
                     <p class="session-info">
                         <strong>Meeting Link:</strong>
-                        <a href="{{ session[6] }}" target="_blank">{{ session[6] }}</a>
+                        <a href="{{ session[8] }}" target="_blank">{{ session[8] }}</a>
                     </p>
                 {% endif %}
+
+                {% if session[9] == 1 %}
+                    <br>
+                    <span class="status-joined">Status: Joined</span>
+                    <br>
+                    <a href="/leave_session/{{ session[0] }}" class="action-btn leave-btn">
+                        Leave Session
+                    </a>
+                {% else %}
+                    <br>
+                    <span class="status-not-joined">Status: Not Joined</span>
+                    <br>
+                    <a href="/join_session/{{ session[0] }}" class="action-btn">
+                        Join Session
+                    </a>
+                {% endif %}
+
+                <a href="/delete_session/{{ session[0] }}"
+                   class="action-btn delete-btn"
+                   onclick="return confirm('Are you sure you want to delete this study session?');">
+                    Delete Session
+                </a>
+
             </div>
         {% endfor %}
     {% else %}

@@ -31,11 +31,32 @@ def init_db():
             subject TEXT NOT NULL,
             topic TEXT NOT NULL,
             session_date TEXT NOT NULL,
+            session_time TEXT,
+            end_time TEXT,
             location_type TEXT NOT NULL,
             physical_location TEXT,
-            meeting_link TEXT
+            meeting_link TEXT,
+            joined INTEGER DEFAULT 0
         )
     ''')
+
+    # Add session_time column if old database does not have it
+    try:
+        c.execute("ALTER TABLE sessions ADD COLUMN session_time TEXT")
+    except sqlite3.OperationalError:
+        pass
+
+    # Add end_time column if old database does not have it
+    try:
+        c.execute("ALTER TABLE sessions ADD COLUMN end_time TEXT")
+    except sqlite3.OperationalError:
+        pass
+
+    # Add joined column if old database does not have it
+    try:
+        c.execute("ALTER TABLE sessions ADD COLUMN joined INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
 
     conn.commit()
     conn.close()
@@ -77,7 +98,7 @@ def profile():
 
 
 # ==========================================
-# 4. Resource Board Module (Member 3)
+# 4. Resource Board Module - Member 3
 # ==========================================
 @app.route('/resources')
 def resources():
@@ -134,38 +155,8 @@ def delete_resource(id):
     conn.commit()
     conn.close()
 
-    return redirect(url_for('resources_list', deleted=1))
+    return "DELETED"
 
-@app.route('/edit-resource/<int:id>')
-def edit_resource(id):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM resources WHERE id = ?", (id,))
-    resource = c.fetchone()
-
-    conn.close()
-
-    return render_template("edit_resources.html", resource=resource)
-
-
-@app.route('/update-resource/<int:id>', methods=['POST'])
-def update_resource(id):
-    title = request.form['title']
-    description = request.form['description']
-
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-
-    c.execute(
-        "UPDATE resources SET title=?, description=? WHERE id=?",
-        (title, description, id)
-    )
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for('resources_list'))
 
 @app.route('/dashboard')
 def dashboard():
@@ -181,9 +172,10 @@ def dashboard():
 
 
 # ==========================================
-# Import Member 2 Study Session Routes
+# Register Member 2 Study Session Routes
 # ==========================================
-from routes import *
+from routes import study_session_routes
+app.register_blueprint(study_session_routes)
 
 
 # ==========================================
