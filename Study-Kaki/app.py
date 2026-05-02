@@ -11,11 +11,29 @@ def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
+    # ==========================================
+    # Resource Board Table - Member 3
+    # ==========================================
     c.execute('''
-        CREATE TABLE IF NOT NOT EXISTS resources (
+        CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             description TEXT NOT NULL
+        )
+    ''')
+
+    # ==========================================
+    # Study Session Table - Member 2
+    # ==========================================
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject TEXT NOT NULL,
+            topic TEXT NOT NULL,
+            session_date TEXT NOT NULL,
+            location_type TEXT NOT NULL,
+            physical_location TEXT,
+            meeting_link TEXT
         )
     ''')
 
@@ -172,4 +190,5 @@ from routes import *
 # Server Initialization
 # ==========================================
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
