@@ -141,27 +141,44 @@
 </head>
 <body>
 
-    <div class="login-card">
-        <h2>StudyKaki</h2>
+    {% extends "base.html" %}
+
+{% block title %}Log in - StudyKaki{% endblock %}
+
+{% block content %}
+    <div class="card-form">
+        <!-- 顶部撤回键：引导回到首页 -->
+        <div style="text-align: left; margin-bottom: 20px;">
+            <a href="{{ url_for('home') }}" style="text-decoration: none; color: #111; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+            ← 返回首页
+            </a>
+        </div>
+
+            <h2>Welcome Back</h2>
+            <p class="subtitle" style="color: #666; margin-bottom: 30px; font-weight: 600;">继续你的学习之旅</p>
+    
+            <form action="{{ url_for('login') }}" method="POST">
         
-        <form action="{{ url_for('login') }}" method="POST">
             <div class="input-group">
                 <label>Student ID / Username</label>
                 <input type="text" name="username" placeholder="TP000000" required>
             </div>
-            
+        
             <div class="input-group">
                 <label>Password</label>
                 <input type="password" name="password" placeholder="••••••••" required>
             </div>
-            
-            <button type="submit">Let's Study!</button>
-        </form>
         
-        <div class="footer-links">
-            <a href="#">Forgot Password?</a>
-            <a href="{{ url_for('register') }}">Sign Up</a> 
+        <!-- 使用你偏好的蓝紫色调按钮，但保持 Neo-Brutalism 的粗边框风格 -->
+            <button type="submit" style="background: #c7d2fe;">Let's Study!</button>
+        
+        </form>
+    
+        <div class="footer-links" style="margin-top: 25px; display: flex; justify-content: space-between; font-size: 15px; font-weight: 700;">
+            <a href="#" style="color: #666; text-decoration: none;">Forgot Password?</a>
+            <a href="{{ url_for('register') }}" style="color: #111; text-decoration: none; border-bottom: 2px solid #111;">Sign Up</a>
         </div>
     </div>
+{% endblock %}
 </body>
 </html>
