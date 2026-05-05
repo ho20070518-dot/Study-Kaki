@@ -1,144 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Sessions</title>
+    <meta charset="UTF-8">
+    <title>Study Sessions</title>
 
-<style>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #dbeafe, #eff6ff, #f8fbff);
-    min-height: 100vh;
-}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #ffffff;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            padding: 45px 25px;
+        }
 
-.container {
-    max-width: 750px;
-    margin: 60px auto;
-    background: white;
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-}
+        .container {
+            max-width: 920px;
+            margin: auto;
+        }
 
-.header {
-    text-align: center;
-    margin-bottom: 25px;
-}
+        .header-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 14px 14px 0 #111;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
 
-.header h2 {
-    margin: 0;
-    font-size: 32px;
-    color: #1e3a8a;
-}
+        h1 {
+            margin: 0;
+            color: #111;
+            font-size: 30px;
+        }
 
-.header p {
-    color: #6b7280;
-    margin-top: 8px;
-}
+        .create-btn {
+            background: #c7d2fe;
+            color: #111;
+            padding: 13px 20px;
+            border: 3px solid #111;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 5px 5px 0 #111;
+        }
 
-.create-btn {
-    display: block;
-    width: 240px;
-    margin: 25px auto;
-    text-align: center;
-    background: linear-gradient(to right, #2563eb, #1d4ed8);
-    color: white;
-    padding: 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: 0.3s ease;
-}
+        .create-btn:hover {
+            background: #a5b4fc;
+        }
 
-.create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-}
+        .search-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 22px;
+            margin-bottom: 30px;
+        }
 
-.session-card {
-    background: #f8fafc;
-    border-left: 6px solid #2563eb;
-    padding: 18px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    transition: 0.3s ease;
-}
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
 
-.session-card:hover {
-    transform: scale(1.01);
-}
+        .search-form input {
+            flex: 1;
+            padding: 13px 16px;
+            border: 2px solid #111;
+            border-radius: 15px;
+            font-size: 15px;
+            outline: none;
+        }
 
-.session-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #1e3a8a;
-}
+        .search-form button {
+            padding: 13px 22px;
+            border: 2px solid #111;
+            border-radius: 15px;
+            background: #111;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.session-info {
-    margin-top: 6px;
-    color: #374151;
-}
+        .session-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-.empty-text {
-    text-align: center;
-    margin-top: 25px;
-    color: #9ca3af;
-    font-style: italic;
-}
+        .session-card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #111;
+            font-size: 24px;
+        }
 
-.icon {
-    font-size: 40px;
-}
+        .session-card p {
+            margin: 9px 0;
+            color: #333;
+            font-size: 15px;
+        }
 
-</style>
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border: 2px solid #111;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .joined {
+            background: #bbf7d0;
+        }
+
+        .not-joined {
+            background: #fef3c7;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: 2px solid #111;
+            border-radius: 13px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 4px 4px 0 #111;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            color: #111;
+        }
+
+        .join-btn {
+            background: #bbf7d0;
+        }
+
+        .leave-btn {
+            background: #fed7aa;
+        }
+
+        .edit-btn {
+            background: #fde68a;
+        }
+
+        .delete-btn {
+            background: #fecaca;
+        }
+
+        .empty-card {
+            background: white;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 10px 10px 0 #111;
+            padding: 45px;
+            text-align: center;
+            color: #333;
+        }
+
+        .bottom-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #111;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .bottom-link:hover {
+            color: #2563eb;
+        }
+
+        .link {
+            color: #2563eb;
+            word-break: break-all;
+        }
+
+        @media (max-width: 600px) {
+            .search-form {
+                flex-direction: column;
+            }
+
+            .create-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<div class="header">
-<div class="icon">📅</div>
-<h2>Study Sessions</h2>
-<p>View and manage your study group sessions</p>
-</div>
+        <div class="header-card">
+            <h1>Study Sessions</h1>
 
-<a href="/create_session" class="create-btn">+ Create New Session</a>
-
-
-{% if sessions %}
-    {% for session in sessions %}
-        <div class="session-card">
-
-            <div class="session-title">
-                {{ session.subject }}
-            </div>
-
-            <div class="session-info">
-                Topic: {{ session.topic }}
-            </div>
-
-            <div class="session-info">
-                Date: {{ session.date }}
-            </div>
-
-            <div class="session-info">
-                Location: {{ session.location }}
-            </div>
-
+            <a href="{{ url_for('study_session_routes.create_session') }}" class="create-btn">
+                + Create Session
+            </a>
         </div>
-    {% endfor %}
 
-{% else %}
+        <div class="search-card">
+            <form action="{{ url_for('study_session_routes.sessions') }}" method="GET" class="search-form">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search by subject, topic, or location"
+                    value="{{ search }}"
+                >
+                <button type="submit">Search</button>
+            </form>
+        </div>
 
-<p class="empty-text">No study sessions created yet.</p>
+        {% if sessions %}
+            {% for study_session in sessions %}
+                <div class="session-card">
 
-{% endif %}
+                    {% if study_session["joined"] == 1 %}
+                        <span class="badge joined">Joined</span>
+                    {% else %}
+                        <span class="badge not-joined">Not Joined</span>
+                    {% endif %}
 
-</div>
+                    <h2>{{ study_session["subject"] }}</h2>
+
+                    <p><strong>Topic:</strong> {{ study_session["topic"] }}</p>
+                    <p><strong>Date:</strong> {{ study_session["session_date"] }}</p>
+
+                    {% if study_session["end_time"] %}
+                        <p><strong>Time:</strong> {{ study_session["session_time"] }} - {{ study_session["end_time"] }}</p>
+                    {% else %}
+                        <p><strong>Time:</strong> {{ study_session["session_time"] }}</p>
+                    {% endif %}
+
+                    <p><strong>Location Type:</strong> {{ study_session["location_type"] }}</p>
+
+                    {% if study_session["physical_location"] %}
+                        <p><strong>Physical Location:</strong> {{ study_session["physical_location"] }}</p>
+                    {% endif %}
+
+                    {% if study_session["meeting_link"] %}
+                        <p>
+                            <strong>Meeting Link:</strong>
+                            <a href="{{ study_session['meeting_link'] }}" class="link" target="_blank">
+                                {{ study_session["meeting_link"] }}
+                            </a>
+                        </p>
+                    {% endif %}
+
+                    <div class="actions">
+
+                        {% if study_session["joined"] == 1 %}
+                            <form action="{{ url_for('study_session_routes.leave_session', id=study_session['id']) }}" method="POST">
+                                <button type="submit" class="btn leave-btn">Leave</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('study_session_routes.join_session', id=study_session['id']) }}" method="POST">
+                                <button type="submit" class="btn join-btn">Join</button>
+                            </form>
+                        {% endif %}
+
+                        <a href="{{ url_for('study_session_routes.edit_session', id=study_session['id']) }}" class="btn edit-btn">
+                            Edit
+                        </a>
+
+                        <form action="{{ url_for('study_session_routes.delete_session', id=study_session['id']) }}" method="POST">
+                            <button type="submit" class="btn delete-btn">
+                                Delete
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-card">
+                <h2>No study sessions found.</h2>
+                <p>Click “Create Session” to add your first study session.</p>
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('dashboard') }}" class="bottom-link">Back to Dashboard</a>
+
+    </div>
 
 </body>
 </html>

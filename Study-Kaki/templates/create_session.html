@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Study Session</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -12,154 +12,214 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #dbeafe, #eff6ff, #f8fbff);
             min-height: 100vh;
+            background-color: #ffffff;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 30px;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 500px;
-            background: #ffffff;
             padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
 
-        .form-header {
+        .form-card {
+            width: 480px;
+            background: white;
+            padding: 38px;
+            border: 3px solid #111;
+            border-radius: 22px;
+            box-shadow: 14px 14px 0 #111;
+        }
+
+        h1 {
             text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .form-header h2 {
-            margin: 0;
-            color: #1e3a8a;
-            font-size: 32px;
-        }
-
-        .form-header p {
-            margin-top: 10px;
-            color: #6b7280;
-            font-size: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
+            margin-top: 0;
+            margin-bottom: 28px;
+            color: #111;
+            font-size: 28px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
             font-weight: bold;
-            color: #374151;
-            font-size: 15px;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            color: #111;
         }
 
-        input[type="text"],
-        input[type="date"] {
+        input, select {
             width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
+            padding: 13px 16px;
+            border: 2px solid #111;
+            border-radius: 15px;
             font-size: 15px;
-            background-color: #f8fafc;
-            transition: 0.3s ease;
+            outline: none;
         }
 
-        input[type="text"]:focus,
-        input[type="date"]:focus {
-            outline: none;
+        input:focus, select:focus {
             border-color: #2563eb;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .location-section {
+            display: none;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
         }
 
         .submit-btn {
             width: 100%;
+            margin-top: 28px;
             padding: 14px;
-            background: linear-gradient(to right, #2563eb, #1d4ed8);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border: 3px solid #111;
+            border-radius: 16px;
+            background: #c7d2fe;
+            color: #111;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s ease;
-            margin-top: 10px;
+            box-shadow: 6px 6px 0 #111;
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+            background: #a5b4fc;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #2563eb;
+        .bottom-link {
+            display: block;
+            text-align: center;
+            margin-top: 23px;
+            color: #111;
             text-decoration: none;
             font-weight: bold;
-            font-size: 14px;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .form-container {
-                padding: 25px;
-            }
-
-            .form-header h2 {
-                font-size: 26px;
-            }
+        .bottom-link:hover {
+            color: #2563eb;
         }
     </style>
 </head>
+
 <body>
 
-    <div class="form-container">
-        <div class="form-header">
-            <div class="icon">📚</div>
-            <h2>Create Study Session</h2>
-            <p>Organize a session and invite others to study together.</p>
-        </div>
+    <div class="form-card">
+        <h1>Create Study Session</h1>
 
-        <form action="/sessions" method="POST">
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="e.g. Mathematics">
+        <form action="{{ url_for('study_session_routes.create_session') }}" method="POST">
+
+            <label>Subject</label>
+            <input 
+                type="text" 
+                name="subject" 
+                placeholder="Example: Mathematics III" 
+                required
+            >
+
+            <label>Topic</label>
+            <input 
+                type="text" 
+                name="topic" 
+                placeholder="Example: Chapter 3 Tutorial Questions" 
+                required
+            >
+
+            <label>Date</label>
+            <input 
+                type="date" 
+                name="session_date" 
+                required
+            >
+
+            <label>Start Time</label>
+            <input 
+                type="time" 
+                name="session_time" 
+                required
+            >
+
+            <label>End Time</label>
+            <input 
+                type="time" 
+                name="end_time"
+            >
+
+            <label>Location Type</label>
+            <select name="location_type" id="location_type" required onchange="showLocationInput()">
+                <option value="">-- Select Location Type --</option>
+                <option value="Physical">Physical</option>
+                <option value="Online">Online</option>
+            </select>
+
+            <div id="physical_location_section" class="location-section">
+                <label>Physical Location</label>
+                <input 
+                    type="text" 
+                    name="physical_location" 
+                    id="physical_location"
+                    placeholder="Example: MMU Library / FCI Room"
+                >
+                <div class="hint">Only needed for physical session.</div>
             </div>
 
-            <div class="form-group">
-                <label for="topic">Topic</label>
-                <input type="text" id="topic" name="topic" placeholder="e.g. Integration">
-            </div>
-
-            <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" name="date">
-            </div>
-
-            <div class="form-group">
-                <label for="location">Location</label>
-                <input type="text" id="location" name="location" placeholder="e.g. MMU Library / Google Meet">
+            <div id="meeting_link_section" class="location-section">
+                <label>Meeting Link</label>
+                <input 
+                    type="text" 
+                    name="meeting_link" 
+                    id="meeting_link"
+                    placeholder="Example: Google Meet / Zoom link"
+                >
+                <div class="hint">Only needed for online session.</div>
             </div>
 
             <button type="submit" class="submit-btn">Create Session</button>
         </form>
 
-        <a href="/sessions" class="back-link">← Back to Sessions List</a>
+        <a href="{{ url_for('study_session_routes.sessions') }}" class="bottom-link">
+            Back to Study Sessions
+        </a>
     </div>
+
+    <script>
+        function showLocationInput() {
+            const locationType = document.getElementById("location_type").value;
+
+            const physicalSection = document.getElementById("physical_location_section");
+            const meetingSection = document.getElementById("meeting_link_section");
+
+            const physicalInput = document.getElementById("physical_location");
+            const meetingInput = document.getElementById("meeting_link");
+
+            if (locationType === "Physical") {
+                physicalSection.style.display = "block";
+                meetingSection.style.display = "none";
+
+                physicalInput.required = true;
+                meetingInput.required = false;
+                meetingInput.value = "";
+            } 
+            else if (locationType === "Online") {
+                physicalSection.style.display = "none";
+                meetingSection.style.display = "block";
+
+                physicalInput.required = false;
+                meetingInput.required = true;
+                physicalInput.value = "";
+            } 
+            else {
+                physicalSection.style.display = "none";
+                meetingSection.style.display = "none";
+
+                physicalInput.required = false;
+                meetingInput.required = false;
+                physicalInput.value = "";
+                meetingInput.value = "";
+            }
+        }
+    </script>
 
 </body>
 </html>
