@@ -1,63 +1,23 @@
-<!-- 导航栏容器：设置为 100% 宽度，并使用 space-between -->
-<nav style="
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 20px 40px; /* 左右留出 40px 的内边距，防止贴死边缘 */
-    background-color: #fff; 
-    border-bottom: 4px solid #111; /* Neo-Brutalism 标志性粗黑线 */
-    width: 100%;
-">
 
-    <!-- 左侧：StudyKaki Logo -->
-    <div class="nav-left">
-        <a href="{{ url_for('home') }}" style="
-            text-decoration: none; 
-            color: #111; 
-            font-size: 2rem; 
-            font-weight: 900; 
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        ">
-            StudyKaki
-        </a>
-    </div>
-
-    <!-- 右侧：Profile 模板入口 -->
-    <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
-        
-        <!-- 可以加一个欢迎语，增加亲切感 -->
-        <span style="font-weight: 700; color: #111; font-size: 1.1rem;">
-            Hello, TP06XXXX
-        </span>
-
-        <!-- Profile 链接 -->
-        <a href="{{ url_for('profile') }}" style="text-decoration: none;">
-            <div class="profile-box" style="
-                width: 50px; 
-                height: 50px; 
-                background: #c7d2fe; /* 之前用的蓝紫色 */
-                border: 3px solid #111; 
-                border-radius: 50%; /* 圆形头像 */
-                display: flex; 
-                justify-content: center; 
-                align-items: center; 
-                font-size: 1.5rem;
-                box-shadow: 4px 4px 0px #111; /* 硬阴影 */
-                transition: all 0.2s;
-                cursor: pointer;
-            " 
-            onmouseover="this.style.transform='translate(-2px, -2px)'; this.style.boxShadow='6px 6px 0px #111';"
-            onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='4px 4px 0px #111';">
-                👤
-            </div>
-        </a>
-    </div>
-</nav>
 {% extends "base.html" %}
 
 {% block content %}
 <!-- 这是一个简单的顶部状态条 -->
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;">
+    <div class="logo" style="font-weight: 800; font-size: 1.5rem;">StudyKaki</div>
+    
+    <!-- 🌟 这里就是你预留的 Profile 入口 -->
+    <div class="user-controls" style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-weight: 600; color: #666;">Hi, TP06XXXX</span>
+        <a href="{{ url_for('profile') }}" style="text-decoration: none;">
+            <div style="width: 45px; height: 45px; background: #eee; border: 3px solid #111; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: 0.2s;" 
+                 onmouseover="this.style.transform='scale(1.1)'" 
+                 onmouseout="this.style.transform='scale(1)'">
+                👤
+            </div>
+        </a>
+    </div>
+</header>
 <div class="bento-container">
     
     <!-- A. 欢迎区 -->

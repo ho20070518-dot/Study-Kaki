@@ -138,31 +138,64 @@
     </style>
 </head>
 <body>
+    <!-- Insert this updated section into your .profile-card div -->
 
-    <div class="navbar">
-        <h1>StudyKaki.</h1>
-        <a href="{{ url_for('dashboard') }}" class="btn-nav">Back to Dashboard</a>
+<div class="profile-card">
+    
+    <!-- Header Section (Keep existing) -->
+    <div class="avatar-section">
+        <div class="avatar">{{ user_data.name[0] }}</div>
+        <div class="user-title">
+            <h2>{{ user_data.name }}</h2>
+            <p>IT & Software Engineering | TP06XXXX</p> # Student details from your profile
+        </div>
     </div>
 
-    <div class="profile-card">
-        
-        <div class="avatar-section">
-            <div class="avatar">{{ user_data.name[0] }}</div>
-            <div class="user-title">
-                <h2>{{ user_data.name }}</h2>
-                <p>Student ID: {{ user_data.student_id }}</p>
-            </div>
+    <!-- 1. Kaki Stats (New Gamified Module) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+        <div class="info-box" style="text-align: center; background: #fff;">
+            <label style="margin-bottom: 5px;">🪙 Kaki Coins</label>
+            <div style="font-size: 20px; font-weight: 800;">450</div>
         </div>
-
-        <div class="info-group">
-            <label>About Me / Study Goals</label>
-            <div class="info-box">
-                {{ user_data.bio }}
-            </div>
+        <div class="info-box" style="text-align: center; background: #fff;">
+            <label style="margin-bottom: 5px;">🔥 Quests Done</label>
+            <div style="font-size: 20px; font-weight: 800;">12</div>
         </div>
-
-        <button class="btn-edit">Edit Profile</button>
     </div>
+
+    <!-- 2. About Me (Existing) -->
+    <div class="info-group">
+        <label>Study Goals & Bio</label>
+        <div class="info-box">
+            {{ user_data.bio }}
+        </div>
+    </div>
+
+    <!-- 3. Tech Stack (New Skill Tags) -->
+    <div class="info-group">
+        <label>Expertise / Tech Stack</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+            # These tags match your IT background
+            <span style="border: 2px solid #111; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #fde047;">Python</span>
+            <span style="border: 2px solid #111; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #fff;">SQL</span>
+            <span style="border: 2px solid #111; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #fff;">Flask</span>
+            <span style="border: 2px solid #111; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #fff;">Backend</span>
+        </div>
+    </div>
+
+    <!-- 4. Beyond Coding (New Personal Stats) -->
+    <div class="info-group">
+        <label>Beyond Coding </label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="info-box" style="font-size: 14px; padding: 10px;"></div>
+            <h></h> 
+            <div class="info-box" style="font-size: 14px; padding: 10px;"></div>
+        </div>
+    </div>
+
+    <!-- 指向 Python 里的 edit_profile 函数 -->
+    <a href="{{ url_for('edit_profile') }}" class="btn-edit">Edit Profile</a>
+</div>
 
 </body>
 </html>

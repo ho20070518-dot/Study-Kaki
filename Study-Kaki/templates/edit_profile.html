@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - StudyKaki{% endblock %}
+
+{% block content %}
+<div class="edit-container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    
+    <!-- Navbar Module -->
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <a href="{{ url_for('profile') }}" style="text-decoration: none; color: #111; font-weight: 800; font-size: 0.9rem;">← CANCEL</a>
+        <h1 style="font-size: 1.5rem; font-weight: 900;">EDIT PROFILE</h1>
+    </nav>
+
+    <!-- Main Edit Form Module -->
+    <div style="background: #fff; border: 3px solid #111; border-radius: 25px; padding: 40px; box-shadow: 10px 10px 0px #fde047;">
+        <form action="{{ url_for('edit_profile') }}" method="POST">
+            
+            # 1. Basic Identity
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">FULL NAME</label>
+                <input type="text" name="name" value="{{ user_data.name }}" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa;">
+            </div>
+
+            # 2. Bio / Study Goals (IT Logic Focus)
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">STUDY GOALS / BIO</label>
+                <textarea name="bio" rows="3" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; resize: none;">{{ user_data.bio }}</textarea>
+            </div>
+
+            # 3. Tech Stack (Comma separated)
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">TECH STACK (E.G. PYTHON, SQL, FLASK)</label>
+                <input type="text" name="tech_stack" placeholder="Python, SQL, Flask..." style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #fdfaf6;">
+            </div>
+
+            # 4. Life Beyond Code (Gym & Sports Stats)
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">GYM PR (SQ/BP)</label>
+                    <input type="text" name="gym_pr" placeholder="90kg / 60kg" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">SPORTS</label>
+                    <input type="text" name="sports" placeholder="Basketball" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700;">
+                </div>
+            </div>
+
+            # Action Buttons
+            <button type="submit" style="width: 100%; padding: 15px; background: #111; color: #fff; border: 2px solid #111; border-radius: 15px; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0px #a7f3d0; transition: 0.2s;">
+                SAVE CHANGES
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px #a7f3d0 !important;
+    }
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #fde047 !important;
+        background: #fff !important;
+    }
+</style>
+{% endblock %}
