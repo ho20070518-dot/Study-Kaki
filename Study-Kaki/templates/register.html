@@ -7,7 +7,6 @@
     <!-- 1. 顶部撤回键 -->
     <!-- 1. 顶部撤回键 -->
     <div style="text-align: left; margin-bottom: 20px;">
-    # 修正：使用函数名 'index' 而不是文件名 'index.html'
         <a href="{{ url_for('index') }}" style="text-decoration: none; color: #111; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
             ← Back to Home
         </a>
@@ -21,12 +20,12 @@
         </a>
     </div>
 
-    <p class="subtitle" style="text-align: left; margin-bottom: 25px;">新同学，加入 StudyKaki 寻找搭子吧！</p>
+    <p class="subtitle" style="text-align: left; margin-bottom: 25px;">Welcome to Study Kaki!</p>
     
     <form action="{{ url_for('register') }}" method="POST">
         <div class="input-group">
             <label>Full Name</label>
-            <input type="text" name="fullname" placeholder="例如: Ali Bin Abu" required>
+            <input type="text" name="fullname" placeholder="exp: Ali Bin Abu" required>
         </div>
 
         <div class="input-group">
@@ -36,7 +35,7 @@
         
         <div class="input-group">
             <label>Password</label>
-            <input type="password" name="password" placeholder="设置一个强密码" required>
+            <input type="password" name="password" placeholder="set a strong password" required>
         </div>
         
         <!-- 保持你喜欢的薄荷绿 -->

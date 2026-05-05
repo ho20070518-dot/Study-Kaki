@@ -21,7 +21,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-
+init_db()
 
 # ==========================================
 # 1. Public Interface Module

@@ -138,7 +138,25 @@
     </style>
 </head>
 <body>
-    <!-- Insert this updated section into your .profile-card div -->
+    <!-- 1. 顶部返回键：指向 dashboard 函数 -->
+    <div style="text-align: left; margin-bottom: 25px;">
+        <a href="{{ url_for('dashboard') }}" style="
+            text-decoration: none; 
+            color: #111; 
+            font-weight: 800; 
+            font-size: 0.9rem; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+            padding: 8px 15px;
+            border: 2px solid #111;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 4px 4px 0px #111;
+            transition: 0.2s;">
+            ← BACK TO DASHBOARD
+        </a>
+    </div>
 
 <div class="profile-card">
     
