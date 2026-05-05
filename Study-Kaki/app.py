@@ -28,7 +28,7 @@ def init_db():
 # ==========================================
 @app.route('/')
 def home():
-    return redirect(url_for('login'))
+    return render_template('dashboard.html')
 
 
 # ==========================================
@@ -44,6 +44,10 @@ def login():
 def register():
     # TODO: Backend team will integrate user data storage logic here
     return render_template('register.html')
+
+@app.route('/')
+def index():  # <--- 这个名字就是 url_for 找的目标
+    return render_template('index.html')
 
 
 
@@ -62,6 +66,21 @@ def profile():
     
     # 关键点：把 current_user_info 这个字典，打包命名为 user_data 发给 profile.html
     return render_template('profile.html', user_data=current_user_info)
+
+# --- Edit Profile 页面路由 ---
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def edit_profile():
+    current_user_info = {
+        "name": "Alex Chen",
+        "student_id": "TP088123",
+        "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
+    }
+    # GET 请求：展示编辑表格
+    # POST 请求：处理用户提交的数据
+    return render_template('edit_profile.html',user_data=current_user_info)
+
+
+
 
 # ==========================================
 # 4. Resource Board Module (Member 3)
