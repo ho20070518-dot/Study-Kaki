@@ -1,10 +1,17 @@
 # app.py - Study Kaki Core System
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory
 import sqlite3
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
 
 # Needed for Flask session
 app.secret_key = "study_kaki_secret_key"
@@ -21,9 +28,15 @@ def init_db():
         CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            description TEXT NOT NULL
+            description TEXT NOT NULL,
+            file_name TEXT
         )
     ''')
+
+    try:
+        c.execute("ALTER TABLE resources ADD COLUMN file_name TEXT")
+    except sqlite3.OperationalError:
+        pass
 
     # ==========================================
     # Study Session Table - Member 2
@@ -147,19 +160,62 @@ def resources():
 def add_resource():
     title = request.form['title']
     description = request.form['description']
+    file = request.files['file']
+
+    if title.strip() == "" or description.strip() == "":
+        return "Fields cannot be empty"
+
+    filename = None
+
+    if file and file.filename != "":
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
     c.execute(
-        "INSERT INTO resources (title, description) VALUES (?, ?)",
-        (title, description)
+        "INSERT INTO resources (title, description, file_name) VALUES (?, ?, ?)",
+        (title, description, filename)
     )
 
     conn.commit()
     conn.close()
 
     return redirect(url_for('resources_list', success=1))
+
+@app.route('/edit-resource/<int:id>')
+def edit_resource(id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM resources WHERE id = ?", (id,))
+    resource = c.fetchone()
+
+    conn.close()
+
+    return render_template("edit_resources.html", resource=resource)
+
+@app.route('/update-resource/<int:id>', methods=['POST'])
+def update_resource(id):
+    title = request.form['title']
+    description = request.form['description']
+    
+    if title.strip() == "" or description.strip() == "":
+        return "Fields cannot be empty"
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute(
+        "UPDATE resources SET title=?, description=? WHERE id=?",
+        (title, description, id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('resources_list', updated=1))
 
 
 @app.route('/resources-list')
@@ -208,6 +264,9 @@ def dashboard():
 
     return render_template("dashboard.html", total_resources=total)
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ==========================================
 # Register Member 2 Study Session Routes
