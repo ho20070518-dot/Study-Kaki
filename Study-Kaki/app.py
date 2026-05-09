@@ -1,10 +1,13 @@
 # app.py - Study Kaki Core System
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 
 app = Flask(__name__)
+
+# Needed for Flask session
+app.secret_key = "study_kaki_secret_key"
 
 
 def init_db():
@@ -36,7 +39,8 @@ def init_db():
             location_type TEXT NOT NULL,
             physical_location TEXT,
             meeting_link TEXT,
-            joined INTEGER DEFAULT 0
+            joined INTEGER DEFAULT 0,
+            created_by TEXT
         )
     ''')
 
@@ -58,9 +62,18 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    # Add created_by column if old database does not have it
+    try:
+        c.execute("ALTER TABLE sessions ADD COLUMN created_by TEXT")
+    except sqlite3.OperationalError:
+        pass
+
     conn.commit()
     conn.close()
+
+
 init_db()
+
 
 # ==========================================
 # 1. Public Interface Module
@@ -75,16 +88,26 @@ def home():
 # ==========================================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+
+        # Save current user into Flask session
+        session['user_id'] = username
+
+        return redirect(url_for('dashboard'))
+
     return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return render_template('register.html')
-
-@app.route('/')
-def index():  # <--- 这个名字就是 url_for 找的目标
-    return render_template('index.html')
 
 
 # ==========================================
@@ -93,24 +116,23 @@ def index():  # <--- 这个名字就是 url_for 找的目标
 @app.route('/profile')
 def profile():
     current_user_info = {
-        "name": "Alex Chen",
-        "student_id": "TP088123",
+        "name": session.get("user_id", "Alex Chen"),
+        "student_id": session.get("user_id", "TP088123"),
         "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
     }
 
     return render_template('profile.html', user_data=current_user_info)
 
-# --- Edit Profile 页面路由 ---
+
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def edit_profile():
     current_user_info = {
-        "name": "Alex Chen",
-        "student_id": "TP088123",
+        "name": session.get("user_id", "Alex Chen"),
+        "student_id": session.get("user_id", "TP088123"),
         "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
     }
-    # GET 请求：展示编辑表格
-    # POST 请求：处理用户提交的数据
-    return render_template('edit_profile.html',user_data=current_user_info)
+
+    return render_template('edit_profile.html', user_data=current_user_info)
 
 
 # ==========================================
@@ -171,7 +193,7 @@ def delete_resource(id):
     conn.commit()
     conn.close()
 
-    return "DELETED"
+    return redirect(url_for('resources_list'))
 
 
 @app.route('/dashboard')
