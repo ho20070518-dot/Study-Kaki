@@ -1,6 +1,4 @@
-# routes.py - Member 2 Study Session Routes
-
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 import sqlite3
 
 study_session_routes = Blueprint("study_session_routes", __name__)
@@ -12,71 +10,46 @@ def get_db_connection():
     return conn
 
 
-# ==========================================
-# READ - Display all study sessions
-# ==========================================
 @study_session_routes.route("/sessions")
 def sessions():
-    search = request.args.get("search", "")
+    # Get current logged-in user from login system
+    # If login system not ready yet, it will use "guest"
+    current_user = session.get("user_id", "guest")
 
     conn = get_db_connection()
-    c = conn.cursor()
-
-    if search:
-        c.execute("""
-            SELECT * FROM sessions
-            WHERE subject LIKE ?
-               OR topic LIKE ?
-               OR physical_location LIKE ?
-               OR meeting_link LIKE ?
-            ORDER BY id DESC
-        """, (
-            "%" + search + "%",
-            "%" + search + "%",
-            "%" + search + "%",
-            "%" + search + "%"
-        ))
-    else:
-        c.execute("SELECT * FROM sessions ORDER BY id DESC")
-
-    sessions_data = c.fetchall()
+    sessions = conn.execute("""
+        SELECT * FROM sessions
+        ORDER BY session_date, session_time
+    """).fetchall()
     conn.close()
 
     return render_template(
         "sessions.html",
-        sessions=sessions_data,
-        search=search
+        sessions=sessions,
+        current_user=current_user
     )
 
 
-# ==========================================
-# CREATE - Create new study session
-# ==========================================
-@study_session_routes.route("/create-session", methods=["GET", "POST"])
+@study_session_routes.route("/create_session", methods=["GET", "POST"])
 def create_session():
+    current_user = session.get("user_id", "guest")
+
     if request.method == "POST":
         subject = request.form["subject"]
         topic = request.form["topic"]
         session_date = request.form["session_date"]
         session_time = request.form["session_time"]
-        end_time = request.form.get("end_time", "")
+        end_time = request.form["end_time"]
         location_type = request.form["location_type"]
-
-        physical_location = request.form.get("physical_location", "")
-        meeting_link = request.form.get("meeting_link", "")
-
-        if location_type == "Physical":
-            meeting_link = ""
-        elif location_type == "Online":
-            physical_location = ""
+        physical_location = request.form.get("physical_location")
+        meeting_link = request.form.get("meeting_link")
 
         conn = get_db_connection()
-        c = conn.cursor()
 
-        c.execute("""
+        conn.execute("""
             INSERT INTO sessions
-            (subject, topic, session_date, session_time, end_time, location_type, physical_location, meeting_link)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (subject, topic, session_date, session_time, end_time, location_type, physical_location, meeting_link, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             subject,
             topic,
@@ -85,7 +58,8 @@ def create_session():
             end_time,
             location_type,
             physical_location,
-            meeting_link
+            meeting_link,
+            current_user
         ))
 
         conn.commit()
@@ -96,31 +70,37 @@ def create_session():
     return render_template("create_session.html")
 
 
-# ==========================================
-# UPDATE - Edit study session
-# ==========================================
-@study_session_routes.route("/edit-session/<int:id>", methods=["GET", "POST"])
-def edit_session(id):
+@study_session_routes.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
+def edit_session(session_id):
+    current_user = session.get("user_id", "guest")
+
     conn = get_db_connection()
-    c = conn.cursor()
+
+    study_session = conn.execute(
+        "SELECT * FROM sessions WHERE id = ?",
+        (session_id,)
+    ).fetchone()
+
+    if study_session is None:
+        conn.close()
+        return "Session not found", 404
+
+    # Only creator can edit
+    if study_session["created_by"] != current_user:
+        conn.close()
+        return "You are not allowed to edit this session.", 403
 
     if request.method == "POST":
         subject = request.form["subject"]
         topic = request.form["topic"]
         session_date = request.form["session_date"]
         session_time = request.form["session_time"]
-        end_time = request.form.get("end_time", "")
+        end_time = request.form["end_time"]
         location_type = request.form["location_type"]
+        physical_location = request.form.get("physical_location")
+        meeting_link = request.form.get("meeting_link")
 
-        physical_location = request.form.get("physical_location", "")
-        meeting_link = request.form.get("meeting_link", "")
-
-        if location_type == "Physical":
-            meeting_link = ""
-        elif location_type == "Online":
-            physical_location = ""
-
-        c.execute("""
+        conn.execute("""
             UPDATE sessions
             SET subject = ?,
                 topic = ?,
@@ -140,7 +120,7 @@ def edit_session(id):
             location_type,
             physical_location,
             meeting_link,
-            id
+            session_id
         ))
 
         conn.commit()
@@ -148,22 +128,34 @@ def edit_session(id):
 
         return redirect(url_for("study_session_routes.sessions"))
 
-    c.execute("SELECT * FROM sessions WHERE id = ?", (id,))
-    study_session = c.fetchone()
     conn.close()
-
     return render_template("edit_session.html", session=study_session)
 
 
-# ==========================================
-# DELETE - Delete study session
-# ==========================================
-@study_session_routes.route("/delete-session/<int:id>", methods=["POST"])
-def delete_session(id):
-    conn = get_db_connection()
-    c = conn.cursor()
+@study_session_routes.route("/delete_session/<int:session_id>")
+def delete_session(session_id):
+    current_user = session.get("user_id", "guest")
 
-    c.execute("DELETE FROM sessions WHERE id = ?", (id,))
+    conn = get_db_connection()
+
+    study_session = conn.execute(
+        "SELECT * FROM sessions WHERE id = ?",
+        (session_id,)
+    ).fetchone()
+
+    if study_session is None:
+        conn.close()
+        return "Session not found", 404
+
+    # Only creator can delete
+    if study_session["created_by"] != current_user:
+        conn.close()
+        return "You are not allowed to delete this session.", 403
+
+    conn.execute(
+        "DELETE FROM sessions WHERE id = ?",
+        (session_id,)
+    )
 
     conn.commit()
     conn.close()
@@ -171,15 +163,30 @@ def delete_session(id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# ==========================================
-# JOIN - Join study session
-# ==========================================
-@study_session_routes.route("/join-session/<int:id>", methods=["POST"])
-def join_session(id):
-    conn = get_db_connection()
-    c = conn.cursor()
+@study_session_routes.route("/join_session/<int:session_id>")
+def join_session(session_id):
+    current_user = session.get("user_id", "guest")
 
-    c.execute("UPDATE sessions SET joined = 1 WHERE id = ?", (id,))
+    conn = get_db_connection()
+
+    study_session = conn.execute(
+        "SELECT * FROM sessions WHERE id = ?",
+        (session_id,)
+    ).fetchone()
+
+    if study_session is None:
+        conn.close()
+        return "Session not found", 404
+
+    # Creator cannot join own session
+    if study_session["created_by"] == current_user:
+        conn.close()
+        return redirect(url_for("study_session_routes.sessions"))
+
+    conn.execute(
+        "UPDATE sessions SET joined = 1 WHERE id = ?",
+        (session_id,)
+    )
 
     conn.commit()
     conn.close()
@@ -187,15 +194,30 @@ def join_session(id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# ==========================================
-# LEAVE - Leave study session
-# ==========================================
-@study_session_routes.route("/leave-session/<int:id>", methods=["POST"])
-def leave_session(id):
-    conn = get_db_connection()
-    c = conn.cursor()
+@study_session_routes.route("/leave_session/<int:session_id>")
+def leave_session(session_id):
+    current_user = session.get("user_id", "guest")
 
-    c.execute("UPDATE sessions SET joined = 0 WHERE id = ?", (id,))
+    conn = get_db_connection()
+
+    study_session = conn.execute(
+        "SELECT * FROM sessions WHERE id = ?",
+        (session_id,)
+    ).fetchone()
+
+    if study_session is None:
+        conn.close()
+        return "Session not found", 404
+
+    # Creator cannot leave own session
+    if study_session["created_by"] == current_user:
+        conn.close()
+        return redirect(url_for("study_session_routes.sessions"))
+
+    conn.execute(
+        "UPDATE sessions SET joined = 0 WHERE id = ?",
+        (session_id,)
+    )
 
     conn.commit()
     conn.close()

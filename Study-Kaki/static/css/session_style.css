@@ -1,0 +1,221 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    color: #111;
+    background-color: #ffffff;
+    background-image:
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+/* Header with thick line */
+.top-header {
+    width: 850px;
+    max-width: 90%;
+    margin: 60px auto 0 auto;
+    padding-bottom: 25px;
+    border-bottom: 4px solid #111;
+}
+
+/* Study Kaki logo */
+.logo-text {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #111;
+}
+
+.logo-text span {
+    color: #9eeecb;
+}
+
+/* Main container */
+.page-container,
+.form-container {
+    width: 850px;
+    max-width: 90%;
+    margin: 55px auto 60px auto;
+}
+
+/* Heading */
+h1 {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin: 0 0 25px 0;
+}
+
+/* Form box */
+.form-box {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 12px 12px 0 #111;
+}
+
+/* Labels */
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 13px;
+    border: 2px solid #111;
+    border-radius: 10px;
+    font-size: 15px;
+    background: white;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px #9eeecb;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Hide physical / online field first */
+.location-box {
+    display: none;
+}
+
+/* Buttons */
+button,
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 13px 26px;
+    background: #9eeecb;
+    color: #111;
+    border: 2px solid #111;
+    border-radius: 10px;
+    font-weight: 900;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 #111;
+}
+
+button:hover,
+.btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 #111;
+}
+
+.btn-secondary {
+    background: white;
+}
+
+.btn-danger {
+    background: #ffb4b4;
+}
+
+/* Button row */
+.button-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Top action area */
+.top-actions {
+    margin-bottom: 30px;
+}
+
+/* Session card */
+.session-card {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 10px 10px 0 #111;
+}
+
+.session-card h2 {
+    font-size: 26px;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.session-card p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 8px 0;
+}
+
+/* Card buttons */
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.card-actions .btn {
+    margin-top: 10px;
+}
+
+/* Empty message */
+.empty-message {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 10px 10px 0 #111;
+    font-weight: bold;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .top-header {
+        margin: 35px auto 0 auto;
+        padding-bottom: 20px;
+    }
+
+    .logo-text {
+        font-size: 24px;
+    }
+
+    .page-container,
+    .form-container {
+        margin: 35px auto;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    .form-box,
+    .session-card {
+        padding: 25px;
+    }
+
+    button,
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .button-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
