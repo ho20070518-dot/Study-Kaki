@@ -1,0 +1,134 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    background-image:
+        linear-gradient(#eeeeee 1px, transparent 1px),
+        linear-gradient(90deg, #eeeeee 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: #111111;
+}
+
+.edit-page {
+    width: 900px;
+    margin: 60px auto;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #111111;
+}
+
+.logo-text span {
+    color: #7ee0bd;
+}
+
+.top-line {
+    border: none;
+    border-top: 4px solid #111111;
+    margin: 25px 0 55px 0;
+}
+
+h1 {
+    font-size: 42px;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    font-weight: 900;
+}
+
+.edit-form {
+    background-color: #ffffff;
+    border: 3px solid #111111;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 10px 10px 0px #111111;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+}
+
+.button-area {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.update-btn,
+.back-btn {
+    padding: 14px 28px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 5px 5px 0px #111111;
+}
+
+.update-btn {
+    background-color: #9ff0d0;
+    color: #111111;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.back-btn {
+    background-color: #ffffff;
+    color: #111111;
+}
+
+.update-btn:hover,
+.back-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0px #111111;
+}
+
+@media screen and (max-width: 950px) {
+    .edit-page {
+        width: 90%;
+        margin: 40px auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .button-area {
+        flex-direction: column;
+    }
+
+    .update-btn,
+    .back-btn {
+        text-align: center;
+    }
+}
