@@ -63,6 +63,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
+            student_id TEXT NOT NULL,
             bio TEXT DEFAULT 'New Kaki here!'
         )
     ''')
@@ -123,7 +124,7 @@ def login():
         conn = sqlite3.connect('database.db')
         db = conn.cursor()
         # 🌟 查出密码和 ID
-        db.execute("SELECT id, password FROM users WHERE username = ?", (u,))
+        db.execute("SELECT id, password FROM users WHERE username = ? OR student_id = ?", (u, u))
         result = db.fetchone()
         conn.close()
 
@@ -147,33 +148,32 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        u = request.form.get('username')
+        # 🌟 名字必须和 HTML 里的 name="xxx" 一模一样
+        u = request.form.get('username')   # 对应 HTML 的 fullname
+        sid = request.form.get('studentid') # 对应 HTML 的 studentid
         p = request.form.get('password')
-        cp = request.form.get('confirm_password')
 
-        # 1. 基础逻辑检查：两次密码对吗？
-        if p != cp:
-            return render_template('register.html', error="Passwords do not match!")
+        # 既然你的 HTML 删掉了“确认密码”，我们就先把那个 if p != cp 删掉
+        # 或者你在 HTML 里加一个 confirm_password 的输入框
 
         conn = sqlite3.connect('database.db')
         db = conn.cursor()
 
-        # 2. 检查：这个名字是不是被人取了？
+        # 检查是否已注册 (用 Student ID 检查更准)
         db.execute("SELECT * FROM users WHERE username = ?", (u,))
         if db.fetchone() is not None:
             conn.close()
-            return render_template('register.html', error="Username already exists!")
+            return render_template('register.html', error="User already exists!")
 
-        # 3. 🌟 核心动作：把新用户塞进数据库
-        # 注意：这里用的是 INSERT INTO 而不是 SELECT
-        db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (u, p))
+        # 写入数据库
+        db.execute("INSERT INTO users (username, student_id, password) VALUES (?, ?, ?)", 
+                   (u, sid, p)), 
         
-        # 4. 🚀 关键：必须 COMMIT 才会真的写入硬盘！
-        conn.commit() 
+        conn.commit()
         conn.close()
 
-        # 注册成功，送他去登录页面
-        return redirect(url_for('login'))
+        print(f"🎉 注册成功: {u}")
+        return redirect(url_for('home')) # 或者跳到 login
 
     return render_template('register.html')
 
