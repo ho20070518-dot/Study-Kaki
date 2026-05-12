@@ -1,11 +1,21 @@
 # app.py - Study Kaki Core System
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory
 import sqlite3
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'studykaki_secret_key_123'
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
+
+# Needed for Flask session
+app.secret_key = "study_kaki_secret_key"
 
 
 def init_db():
@@ -19,9 +29,15 @@ def init_db():
         CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            description TEXT NOT NULL
+            description TEXT NOT NULL,
+            file_name TEXT
         )
     ''')
+
+    try:
+        c.execute("ALTER TABLE resources ADD COLUMN file_name TEXT")
+    except sqlite3.OperationalError:
+        pass
 
     # ==========================================
     # Study Session Table - Member 2
@@ -37,7 +53,8 @@ def init_db():
             location_type TEXT NOT NULL,
             physical_location TEXT,
             meeting_link TEXT,
-            joined INTEGER DEFAULT 0
+            joined INTEGER DEFAULT 0,
+            created_by TEXT
         )
     ''')
 
@@ -68,9 +85,18 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    # Add created_by column if old database does not have it
+    try:
+        c.execute("ALTER TABLE sessions ADD COLUMN created_by TEXT")
+    except sqlite3.OperationalError:
+        pass
+
     conn.commit()
     conn.close()
+
+
 init_db()
+
 
 # ==========================================
 # 1. Public Interface Module
@@ -111,6 +137,12 @@ def login():
             return render_template('login.html', error="Invalid username or password!")
 
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -168,17 +200,16 @@ def profile():
     }
     return render_template('profile.html', user_data=current_user_info)
 
-# --- Edit Profile 页面路由 ---
+
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def edit_profile():
     current_user_info = {
-        "name": "Alex Chen",
-        "student_id": "TP088123",
+        "name": session.get("user_id", "Alex Chen"),
+        "student_id": session.get("user_id", "TP088123"),
         "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
     }
-    # GET 请求：展示编辑表格
-    # POST 请求：处理用户提交的数据
-    return render_template('edit_profile.html',user_data=current_user_info)
+
+    return render_template('edit_profile.html', user_data=current_user_info)
 
 
 # ==========================================
@@ -193,19 +224,62 @@ def resources():
 def add_resource():
     title = request.form['title']
     description = request.form['description']
+    file = request.files['file']
+
+    if title.strip() == "" or description.strip() == "":
+        return "Fields cannot be empty"
+
+    filename = None
+
+    if file and file.filename != "":
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
     c.execute(
-        "INSERT INTO resources (title, description) VALUES (?, ?)",
-        (title, description)
+        "INSERT INTO resources (title, description, file_name) VALUES (?, ?, ?)",
+        (title, description, filename)
     )
 
     conn.commit()
     conn.close()
 
     return redirect(url_for('resources_list', success=1))
+
+@app.route('/edit-resource/<int:id>')
+def edit_resource(id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM resources WHERE id = ?", (id,))
+    resource = c.fetchone()
+
+    conn.close()
+
+    return render_template("edit_resources.html", resource=resource)
+
+@app.route('/update-resource/<int:id>', methods=['POST'])
+def update_resource(id):
+    title = request.form['title']
+    description = request.form['description']
+    
+    if title.strip() == "" or description.strip() == "":
+        return "Fields cannot be empty"
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute(
+        "UPDATE resources SET title=?, description=? WHERE id=?",
+        (title, description, id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('resources_list', updated=1))
 
 
 @app.route('/resources-list')
@@ -239,7 +313,7 @@ def delete_resource(id):
     conn.commit()
     conn.close()
 
-    return "DELETED"
+    return redirect(url_for('resources_list'))
 
 
 @app.route('/dashboard')
@@ -254,6 +328,9 @@ def dashboard():
 
     return render_template("dashboard.html", total_resources=total)
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ==========================================
 # Register Member 2 Study Session Routes

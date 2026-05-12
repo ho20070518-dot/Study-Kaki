@@ -1,0 +1,263 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    background-image:
+        linear-gradient(#eeeeee 1px, transparent 1px),
+        linear-gradient(90deg, #eeeeee 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: #111111;
+}
+
+.session-page {
+    width: 900px;
+    margin: 60px auto;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #111111;
+}
+
+.logo-text span {
+    color: #7ee0bd;
+}
+
+.top-line {
+    border: none;
+    border-top: 4px solid #111111;
+    margin: 25px 0 55px 0;
+}
+
+h1 {
+    font-size: 42px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    font-weight: 900;
+}
+
+.current-user {
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.create-session-btn,
+.notification-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    color: #111111;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 5px 5px 0px #111111;
+    margin-bottom: 25px;
+    margin-right: 10px;
+}
+
+.create-session-btn {
+    background-color: #9ff0d0;
+}
+
+.notification-btn {
+    background-color: #ffffff;
+}
+
+.create-session-btn:hover,
+.notification-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0px #111111;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.search-form input {
+    width: 420px;
+    padding: 13px 15px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #ffffff;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-form input:focus {
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.search-form button,
+.reset-btn {
+    padding: 13px 24px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.search-form button {
+    background-color: #9ff0d0;
+    color: #111111;
+    cursor: pointer;
+}
+
+.reset-btn {
+    background-color: #ffffff;
+    color: #111111;
+    display: inline-block;
+}
+
+.search-form button:hover,
+.reset-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #111111;
+}
+
+.search-result-text {
+    font-size: 15px;
+    margin: 10px 0 20px 0;
+}
+
+.notification-box {
+    background-color: #e8fff5;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 20px 0;
+    font-weight: bold;
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.notification-box p {
+    margin: 0;
+}
+
+.session-card {
+    background-color: #ffffff;
+    border: 3px solid #111111;
+    border-radius: 10px;
+    padding: 25px 30px;
+    margin: 28px 0;
+    box-shadow: 10px 10px 0px #111111;
+}
+
+.session-card h2 {
+    font-size: 28px;
+    margin: 0 0 15px 0;
+    font-weight: 900;
+}
+
+.session-card p {
+    font-size: 16px;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.session-card a {
+    color: #111111;
+}
+
+.status-joined {
+    color: #008f5a;
+    font-weight: bold;
+}
+
+.status-not-joined {
+    color: #cc6600;
+    font-weight: bold;
+}
+
+.button-area {
+    margin-top: 20px;
+}
+
+.join-btn,
+.leave-btn,
+.edit-btn,
+.delete-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 10px;
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.join-btn {
+    background-color: #9ff0d0;
+    color: #111111;
+}
+
+.leave-btn {
+    background-color: #ffffff;
+    color: #111111;
+}
+
+.edit-btn {
+    background-color: #fff2a8;
+    color: #111111;
+}
+
+.delete-btn {
+    background-color: #ffb3b3;
+    color: #111111;
+}
+
+.join-btn:hover,
+.leave-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #111111;
+}
+
+.no-result {
+    margin-top: 30px;
+    padding: 20px;
+    border: 3px solid #111111;
+    border-radius: 10px;
+    background-color: #fff3f3;
+    font-weight: bold;
+    box-shadow: 6px 6px 0px #111111;
+}
+
+@media screen and (max-width: 950px) {
+    .session-page {
+        width: 90%;
+        margin: 40px auto;
+    }
+
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-form input {
+        width: 100%;
+    }
+
+    .search-form button,
+    .reset-btn,
+    .create-session-btn,
+    .notification-btn {
+        text-align: center;
+    }
+
+    .join-btn,
+    .leave-btn,
+    .edit-btn,
+    .delete-btn {
+        display: block;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+}

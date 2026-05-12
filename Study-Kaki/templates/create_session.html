@@ -1,225 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Study Session</title>
+{% extends "base.html" %}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block title %}Create Study Session - StudyKaki{% endblock %}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background-color: #ffffff;
-            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-            background-size: 28px 28px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 35px;
-        }
+{% block content %}
 
-        .form-card {
-            width: 480px;
-            background: white;
-            padding: 38px;
-            border: 3px solid #111;
-            border-radius: 22px;
-            box-shadow: 14px 14px 0 #111;
-        }
+<link rel="stylesheet" href="{{ url_for('static', filename='css/create_session.css') }}">
 
-        h1 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 28px;
-            color: #111;
-            font-size: 28px;
-        }
+<div class="create-page">
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 7px;
-            color: #111;
-        }
+    <div class="logo-text">
+        STUDY<span>KAKI</span>
+    </div>
 
-        input, select {
-            width: 100%;
-            padding: 13px 16px;
-            border: 2px solid #111;
-            border-radius: 15px;
-            font-size: 15px;
-            outline: none;
-        }
+    <hr class="top-line">
 
-        input:focus, select:focus {
-            border-color: #2563eb;
-        }
+    <h1>Create Study Session</h1>
 
-        .location-section {
-            display: none;
-        }
+    <form method="POST" action="{{ url_for('study_session_routes.create_session') }}" class="create-form">
 
-        .hint {
-            font-size: 13px;
-            color: #666;
-            margin-top: 6px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            margin-top: 28px;
-            padding: 14px;
-            border: 3px solid #111;
-            border-radius: 16px;
-            background: #c7d2fe;
-            color: #111;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 6px 6px 0 #111;
-        }
-
-        .submit-btn:hover {
-            background: #a5b4fc;
-        }
-
-        .bottom-link {
-            display: block;
-            text-align: center;
-            margin-top: 23px;
-            color: #111;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .bottom-link:hover {
-            color: #2563eb;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="form-card">
-        <h1>Create Study Session</h1>
-
-        <form action="{{ url_for('study_session_routes.create_session') }}" method="POST">
-
-            <label>Subject</label>
+        <div class="form-group">
+            <label for="subject">Subject</label>
             <input 
                 type="text" 
+                id="subject" 
                 name="subject" 
-                placeholder="Example: Mathematics III" 
+                placeholder="Example: Mathematics II"
                 required
             >
+        </div>
 
-            <label>Topic</label>
+        <div class="form-group">
+            <label for="topic">Topic</label>
             <input 
                 type="text" 
+                id="topic" 
                 name="topic" 
-                placeholder="Example: Chapter 3 Tutorial Questions" 
+                placeholder="Example: Matrix Revision"
                 required
             >
+        </div>
 
-            <label>Date</label>
-            <input 
-                type="date" 
-                name="session_date" 
+        <div class="form-row">
+
+            <div class="form-group">
+                <label for="session_date">Date</label>
+                <input 
+                    type="date" 
+                    id="session_date" 
+                    name="session_date" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="session_time">Start Time</label>
+                <input 
+                    type="time" 
+                    id="session_time" 
+                    name="session_time" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="end_time">End Time</label>
+                <input 
+                    type="time" 
+                    id="end_time" 
+                    name="end_time" 
+                    required
+                >
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="location_type">Session Type</label>
+            <select 
+                id="location_type" 
+                name="location_type" 
+                onchange="showLocationField()" 
                 required
             >
-
-            <label>Start Time</label>
-            <input 
-                type="time" 
-                name="session_time" 
-                required
-            >
-
-            <label>End Time</label>
-            <input 
-                type="time" 
-                name="end_time"
-            >
-
-            <label>Location Type</label>
-            <select name="location_type" id="location_type" required onchange="showLocationInput()">
-                <option value="">-- Select Location Type --</option>
+                <option value="">Select session type</option>
                 <option value="Physical">Physical</option>
                 <option value="Online">Online</option>
             </select>
+        </div>
 
-            <div id="physical_location_section" class="location-section">
-                <label>Physical Location</label>
-                <input 
-                    type="text" 
-                    name="physical_location" 
-                    id="physical_location"
-                    placeholder="Example: MMU Library / FCI Room"
-                >
-                <div class="hint">Only needed for physical session.</div>
-            </div>
+        <div class="form-group" id="physical-box" style="display: none;">
+            <label for="physical_location">Physical Location</label>
+            <input 
+                type="text" 
+                id="physical_location" 
+                name="physical_location" 
+                placeholder="Example: MMU Library"
+            >
+        </div>
 
-            <div id="meeting_link_section" class="location-section">
-                <label>Meeting Link</label>
-                <input 
-                    type="text" 
-                    name="meeting_link" 
-                    id="meeting_link"
-                    placeholder="Example: Google Meet / Zoom link"
-                >
-                <div class="hint">Only needed for online session.</div>
-            </div>
+        <div class="form-group" id="online-box" style="display: none;">
+            <label for="meeting_link">Meeting Link</label>
+            <input 
+                type="url" 
+                id="meeting_link" 
+                name="meeting_link" 
+                placeholder="Example: https://meet.google.com/abc-defg"
+            >
+        </div>
 
-            <button type="submit" class="submit-btn">Create Session</button>
-        </form>
+        <div class="button-area">
 
-        <a href="{{ url_for('study_session_routes.sessions') }}" class="bottom-link">
-            Back to Study Sessions
-        </a>
-    </div>
+            <button type="submit" class="create-btn">
+                Create Session
+            </button>
 
-    <script>
-        function showLocationInput() {
-            const locationType = document.getElementById("location_type").value;
+            <a href="{{ url_for('study_session_routes.sessions') }}" class="back-btn">
+                Back
+            </a>
 
-            const physicalSection = document.getElementById("physical_location_section");
-            const meetingSection = document.getElementById("meeting_link_section");
+        </div>
 
-            const physicalInput = document.getElementById("physical_location");
-            const meetingInput = document.getElementById("meeting_link");
+    </form>
 
-            if (locationType === "Physical") {
-                physicalSection.style.display = "block";
-                meetingSection.style.display = "none";
+</div>
 
-                physicalInput.required = true;
-                meetingInput.required = false;
-                meetingInput.value = "";
-            } 
-            else if (locationType === "Online") {
-                physicalSection.style.display = "none";
-                meetingSection.style.display = "block";
+<script>
+    function showLocationField() {
+        let sessionType = document.getElementById("location_type").value;
+        let physicalBox = document.getElementById("physical-box");
+        let onlineBox = document.getElementById("online-box");
+        let physicalInput = document.getElementById("physical_location");
+        let onlineInput = document.getElementById("meeting_link");
 
-                physicalInput.required = false;
-                meetingInput.required = true;
-                physicalInput.value = "";
-            } 
-            else {
-                physicalSection.style.display = "none";
-                meetingSection.style.display = "none";
-
-                physicalInput.required = false;
-                meetingInput.required = false;
-                physicalInput.value = "";
-                meetingInput.value = "";
-            }
+        if (sessionType === "Physical") {
+            physicalBox.style.display = "block";
+            onlineBox.style.display = "none";
+            physicalInput.required = true;
+            onlineInput.required = false;
+            onlineInput.value = "";
+        } 
+        else if (sessionType === "Online") {
+            physicalBox.style.display = "none";
+            onlineBox.style.display = "block";
+            physicalInput.required = false;
+            onlineInput.required = true;
+            physicalInput.value = "";
+        } 
+        else {
+            physicalBox.style.display = "none";
+            onlineBox.style.display = "none";
+            physicalInput.required = false;
+            onlineInput.required = false;
         }
-    </script>
+    }
+</script>
 
-</body>
-</html>
+{% endblock %}
