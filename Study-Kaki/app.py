@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, url_for, request
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = 'studykaki_secret_key_123'
 
 
 def init_db():
@@ -40,6 +41,15 @@ def init_db():
         )
     ''')
 
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            bio TEXT DEFAULT 'New Kaki here!'
+        )
+    ''')
+
     # Add session_time column if old database does not have it
     try:
         c.execute("ALTER TABLE sessions ADD COLUMN session_time TEXT")
@@ -67,37 +77,95 @@ init_db()
 # ==========================================
 @app.route('/')
 def home():
-    return render_template('dashboard.html')
+    return render_template('index.html')
 
 
 # ==========================================
 # 2. Authentication Module
 # ==========================================
+@app.route('/') # 访问主域名时触发
+def index():
+    # 直接渲染，不要重定向到文件名
+    return render_template('index.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'POST':
+        u = request.form.get('username')
+        p = request.form.get('password')
 
+        conn = sqlite3.connect('database.db')
+        db = conn.cursor()
+        # 🌟 查出密码和 ID
+        db.execute("SELECT id, password FROM users WHERE username = ?", (u,))
+        result = db.fetchone()
+        conn.close()
+
+        # 检查用户是否存在且密码正确
+        if result and result[1] == p:
+            # 🌟 关键：登录成功，把名字存进 session 
+            session['user_id'] = result[0]
+            session['username'] = u
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('login.html', error="Invalid username or password!")
+
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        u = request.form.get('username')
+        p = request.form.get('password')
+        cp = request.form.get('confirm_password')
+
+        # 1. 基础逻辑检查：两次密码对吗？
+        if p != cp:
+            return render_template('register.html', error="Passwords do not match!")
+
+        conn = sqlite3.connect('database.db')
+        db = conn.cursor()
+
+        # 2. 检查：这个名字是不是被人取了？
+        db.execute("SELECT * FROM users WHERE username = ?", (u,))
+        if db.fetchone() is not None:
+            conn.close()
+            return render_template('register.html', error="Username already exists!")
+
+        # 3. 🌟 核心动作：把新用户塞进数据库
+        # 注意：这里用的是 INSERT INTO 而不是 SELECT
+        db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (u, p))
+        
+        # 4. 🚀 关键：必须 COMMIT 才会真的写入硬盘！
+        conn.commit() 
+        conn.close()
+
+        # 注册成功，送他去登录页面
+        return redirect(url_for('login'))
+
     return render_template('register.html')
-
-@app.route('/')
-def index():  # <--- 这个名字就是 url_for 找的目标
-    return render_template('index.html')
-
 
 # ==========================================
 # 3. Core Application Module
 # ==========================================
 @app.route('/profile')
 def profile():
-    current_user_info = {
-        "name": "Alex Chen",
-        "student_id": "TP088123",
-        "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
-    }
+    # 1. 拦截未登录用户：没登录的人不准看 profile
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
+    # 2. 从数据库抓取当前登录用户的最新资料
+    conn = sqlite3.connect('database.db')
+    db = conn.cursor()
+    db.execute("SELECT username, bio FROM users WHERE username = ?", (session['username'],))
+    user = db.fetchone()
+    conn.close()
+
+    # 3. 将真实数据传给模板
+    current_user_info = {
+        "name": user[0],
+        "bio": user[1]
+    }
     return render_template('profile.html', user_data=current_user_info)
 
 # --- Edit Profile 页面路由 ---
