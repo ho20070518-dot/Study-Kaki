@@ -11,8 +11,9 @@ def get_db_connection():
     return conn
 
 
-def create_notifications_table():
+def add_notification(user_id, message):
     conn = get_db_connection()
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS notifications (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,31 +22,26 @@ def create_notifications_table():
             created_at TEXT NOT NULL
         )
     """)
-    conn.commit()
-    conn.close()
 
-
-def add_notification(user_id, message):
-    create_notifications_table()
-
-    conn = get_db_connection()
     conn.execute("""
         INSERT INTO notifications (user_id, message, created_at)
         VALUES (?, ?, ?)
     """, (
-        user_id,
+        str(user_id),
         message,
         datetime.now().strftime("%Y-%m-%d %H:%M")
     ))
+
     conn.commit()
     conn.close()
 
 
 @study_session_routes.route("/sessions")
 def sessions():
-    create_notifications_table()
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-    current_user = session.get("user_id", "guest")
+    current_user = str(session.get("user_id", "guest"))
     search_query = request.args.get("search", "").strip()
 
     conn = get_db_connection()
@@ -92,7 +88,10 @@ def sessions():
 
 @study_session_routes.route("/create_session", methods=["GET", "POST"])
 def create_session():
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     if request.method == "POST":
         subject = request.form["subject"]
@@ -133,7 +132,10 @@ def create_session():
 
 @study_session_routes.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
 def edit_session(session_id):
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
@@ -147,7 +149,7 @@ def edit_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if study_session["created_by"] != current_user:
+    if str(study_session["created_by"]) != current_user:
         conn.close()
         flash("You are not allowed to edit this session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -197,7 +199,10 @@ def edit_session(session_id):
 
 @study_session_routes.route("/delete_session/<int:session_id>")
 def delete_session(session_id):
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
@@ -211,7 +216,7 @@ def delete_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if study_session["created_by"] != current_user:
+    if str(study_session["created_by"]) != current_user:
         conn.close()
         flash("You are not allowed to delete this session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -230,7 +235,10 @@ def delete_session(session_id):
 
 @study_session_routes.route("/join_session/<int:session_id>")
 def join_session(session_id):
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
@@ -244,7 +252,7 @@ def join_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if study_session["created_by"] == current_user:
+    if str(study_session["created_by"]) == current_user:
         conn.close()
         flash("You cannot join your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -278,7 +286,10 @@ def join_session(session_id):
 
 @study_session_routes.route("/leave_session/<int:session_id>")
 def leave_session(session_id):
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
@@ -292,7 +303,7 @@ def leave_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if study_session["created_by"] == current_user:
+    if str(study_session["created_by"]) == current_user:
         conn.close()
         flash("You cannot leave your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -316,9 +327,10 @@ def leave_session(session_id):
 
 @study_session_routes.route("/notifications")
 def notifications():
-    create_notifications_table()
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-    current_user = session.get("user_id", "guest")
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
@@ -339,7 +351,10 @@ def notifications():
 
 @study_session_routes.route("/clear_notifications")
 def clear_notifications():
-    current_user = session.get("user_id", "guest")
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = str(session.get("user_id", "guest"))
 
     conn = get_db_connection()
 
