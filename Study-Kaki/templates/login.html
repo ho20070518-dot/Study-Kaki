@@ -156,8 +156,16 @@
 
             <h2>Welcome Back</h2>
             <p class="subtitle" style="color: #666; margin-bottom: 30px; font-weight: 600;">continue with your study journey!</p>
-    
-            <form action="{{ url_for('login') }}" method="POST">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div style="background: #fee2e2; color: #b91c1c; padding: 12px; border: 2px solid #111; border-radius: 10px; margin-bottom: 20px; box-shadow: 3px 3px 0px #111; font-weight: 600; font-size: 14px; display: flex; align-items: center;">
+                    <span style="margin-right: 8px;">⚠️</span> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('login') }}" method="POST">
         
             <div class="input-group">
                 <label>Student ID / Username</label>

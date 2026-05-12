@@ -1,7 +1,7 @@
 # app.py - Study Kaki Core System
 # Developer: Frontend & UI Lead
 
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
@@ -130,12 +130,12 @@ def login():
 
         # 检查用户是否存在且密码正确
         if result and result[1] == p:
-            # 🌟 关键：登录成功，把名字存进 session 
-            session['user_id'] = result[0]
-            session['username'] = u
+            # ... 登录成功的代码保持不变 ...
             return redirect(url_for('dashboard'))
         else:
-            return render_template('login.html', error="Invalid username or password!")
+            # 🌟 只改这三行：
+            flash("Invalid Student ID or Password!", "danger")
+            return redirect(url_for('login'))
 
     return render_template('login.html')
 
