@@ -110,11 +110,50 @@ button:hover{
 
     <h1>Study Materials</h1>
 
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="
+              background:#fee2e2;
+              color:#991b1b;
+              padding:10px;
+              border-radius:10px;
+              margin-bottom:15px;
+              border:2px solid #111;
+          ">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <form action="/add-resource" method="post" enctype="multipart/form-data">
 
-        <input type="text" name="title" placeholder="Title">
+        <input type="text" name="subject" placeholder="Enter Subject Name (e.g. Math)"
+               value="{{ old_subject if old_subject else '' }}"
+               style="{% if error and not old_subject %}border:2px solid red{% endif %}">
 
-        <textarea name="description" placeholder="Description"></textarea>
+        {% if error and not old_subject is defined %}
+        <p style="color:red; font-size:12px;">Subject is required</p>
+        {% endif %}
+
+        <input type="text" name="title" placeholder="Enter Title (e.g. Chapter 1, Past Year Exam Paper)"
+               value="{{ old_title if old_title else '' }}"
+               style="{% if error and not old_title %}border:2px solid red{% endif %}">
+
+        {% if error and not old_title %}
+        <p style="color:red; font-size:12px;">Title is required</p>
+        {% endif %}
+
+        <textarea name="description" 
+               placeholder="Enter description (e.g. Tutorial 1, Lecture Notes, Set 1)"
+                  style="{% if error and not old_description %}border:2px solid red{% endif %}">
+        {{ old_description if old_description else '' }}
+        </textarea>
+        
+        {% if error and not old_description %}
+        <p style="color:red; font-size:12px;">Description is required</p>
+        {% endif %}
 
         <input type="file" name="file">
 

@@ -30,6 +30,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             description TEXT NOT NULL,
+            subject TEXT NOT NULL,
             file_name TEXT
         )
     ''')
@@ -222,12 +223,21 @@ def resources():
 
 @app.route('/add-resource', methods=['POST'])
 def add_resource():
+    subject = request.form['subject']
     title = request.form['title']
     description = request.form['description']
     file = request.files['file']
 
-    if title.strip() == "" or description.strip() == "":
-        return "Fields cannot be empty"
+    if subject.strip() == "" or title.strip() == "" or description.strip() == "":
+        error = "Please fill in all required fields"
+
+        return render_template(
+            "resources.html",
+            error=error,
+            old_subject=subject,
+            old_title=title,
+            old_description=description
+        )
 
     filename = None
 
@@ -239,8 +249,8 @@ def add_resource():
     c = conn.cursor()
 
     c.execute(
-        "INSERT INTO resources (title, description, file_name) VALUES (?, ?, ?)",
-        (title, description, filename)
+        "INSERT INTO resources (subject, title, description, file_name) VALUES (?, ?, ?, ?)",
+        (subject, title, description, filename)
     )
 
     conn.commit()
@@ -285,14 +295,20 @@ def update_resource(id):
 @app.route('/resources-list')
 def resources_list():
     query = request.args.get('q')
+    subject_filter = request.args.get('subject')
 
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    if query:
+    if subject_filter:
         c.execute(
-            "SELECT * FROM resources WHERE title LIKE ? OR description LIKE ?",
-            ('%' + query + '%', '%' + query + '%')
+            "SELECT * FROM resources WHERE subject = ?",
+            (subject_filter,)
+        )
+    elif query:
+        c.execute(
+            "SELECT * FROM resources WHERE title LIKE ? OR description LIKE ? OR subject LIKE ?",
+            ('%' + query + '%', '%' + query + '%', '%' + query + '%')
         )
     else:
         c.execute("SELECT * FROM resources")
