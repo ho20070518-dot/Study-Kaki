@@ -155,6 +155,10 @@ button:hover{
     </div>
 
     <h1>Material Hub</h1>
+        <form method="get" action="/resources-list" style="margin-bottom:15px;">
+            <input type="text" name="q" placeholder="Search subject, title or description" value="{{ query if query else '' }}">
+            <button type="submit">Search</button>
+        </form>
 
     {% if request.args.get('deleted') %}
 <div style="
@@ -187,45 +191,55 @@ button:hover{
     <p style="color:green; margin-bottom:15px;">Resource saved successfully!</p>
     {% endif %}
 
-    <form method="get" action="/resources-list" class="search-box">
-        <input type="text" name="q" placeholder="Search resources..." value="{{ query if query else '' }}">
-        <button type="submit">Search</button>
-    </form>
-
     {% if resources|length == 0 %}
         <p style="margin-top:25px;">No resources found.</p>
     {% endif %}
 
     <div class="grid">
 
+        {% set subjects = {} %}
         {% for r in resources %}
-        <div class="card">
+            {% set _ = subjects.update({r[3]: subjects.get(r[3], []) + [r]}) %}
+        {% endfor %}
 
-            <h3>{{ r[1] }}</h3>
-            <p style="margin-bottom:12px;">{{ r[2] }}</p>
+        {% for subject, items in subjects.items() %}
+            <div style="margin-top:30px;">
+                
+                <h2 style="margin-top:25px;">
+                    📘 
+                   <a href="/resources-list?subject={{ subject }}"
+                      style="text-decoration:none; color:#111; border-bottom:2px solid #111;">
+                       {{ subject }}
+                   </a>
+                </h2>
 
-            {% if r[3] %}
-                <div style="margin-top:10px; margin-bottom:12px;">
-                    <a href="/uploads/{{ r[3] }}" download>
-                        <button class="download">Download File</button>
-                    </a>
-                </div>
-            {% endif %}
+             <div class="grid">
+                {% for r in items %}
+                  <div class="card">
 
-             <div class="actions">
+                    <h3>{{ r[1] }}</h3>
+                    <p>{{ r[2] }}</p>
 
-                <a href="/edit-resource/{{ r[0] }}">
-                   <button class="edit">Edit</button>
-                </a>
+                    {% if r[4] %}
+                        <a href="/uploads/{{ r[4] }}" download>
+                            <button class="download">{{ r[4] }}</button>
+                        </a>
+                    {% endif %}
 
-                <a href="/delete-resource/{{ r[0] }}"
-                   onclick="return confirm('Delete this resource?')">
-                    <button class="delete">Delete</button>
-                </a>
+                    <div class="actions">
+                        <a href="/edit-resource/{{ r[0] }}">
+                            <button class="edit">Edit</button>
+                        </a>
 
+                        <a href="/delete-resource/{{ r[0] }}">
+                            <button class="delete">Delete</button>
+                        </a>
+                    </div>
+
+                  </div>
+                {% endfor %}
              </div>
-
-        </div>
+            </div>
         {% endfor %}
 
     {% if request.args.get('updated') %}
