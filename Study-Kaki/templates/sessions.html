@@ -26,6 +26,10 @@
 
     <a href="{{ url_for('study_session_routes.notifications') }}" class="notification-btn">
         View Notifications
+
+        {% if unread_count and unread_count > 0 %}
+            <span class="notification-badge">{{ unread_count }}</span>
+        {% endif %}
     </a>
 
     <form method="GET" action="{{ url_for('study_session_routes.sessions') }}" class="search-form">
@@ -74,6 +78,7 @@
 
                 {% if session.location_type == "Physical" %}
                     <p><strong>Location:</strong> {{ session.physical_location }}</p>
+
                 {% elif session.location_type == "Online" %}
                     <p>
                         <strong>Meeting Link:</strong>
@@ -91,10 +96,18 @@
 
                 {% if session.created_by == current_user %}
                     <p><strong>Status:</strong> Your Session</p>
+
                 {% elif session.joined == 1 %}
-                    <p><strong>Status:</strong> <span class="status-joined">Joined</span></p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="status-joined">Joined</span>
+                    </p>
+
                 {% else %}
-                    <p><strong>Status:</strong> <span class="status-not-joined">Not Joined</span></p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="status-not-joined">Not Joined</span>
+                    </p>
                 {% endif %}
 
                 <div class="button-area">
