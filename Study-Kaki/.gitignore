@@ -1,4 +1,7 @@
 database.db
 **/database.db
+index.db
+**/index.db
+
 __pycache__/
 **/__pycache__/
