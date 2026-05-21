@@ -62,10 +62,13 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL,
+            student_id TEXT NOT NULL, 
             password TEXT NOT NULL,
-            student_id TEXT NOT NULL,
-            bio TEXT DEFAULT 'New Kaki here!'
+            bio TEXT,
+            tech_stack TEXT,
+            exp_1 TEXT,
+            exp_2 TEXT
         )
     ''')
 
@@ -124,17 +127,20 @@ def login():
 
         conn = sqlite3.connect('database.db')
         db = conn.cursor()
-        # 🌟 查出密码和 ID
-        db.execute("SELECT id, password FROM users WHERE username = ? OR student_id = ?", (u, u))
+        
+        # 🌟 1. 修改修改：把 student_id 也查出来
+        # 现在 result[0]是id, result[1]是student_id, result[2]是password
+        db.execute("SELECT id, student_id, password FROM users WHERE username = ? OR student_id = ?", (u, u))
         result = db.fetchone()
         conn.close()
 
-        # 检查用户是否存在且密码正确
-        if result and result[1] == p:
-            # ... 登录成功的代码保持不变 ...
+        if result and result[2] == p: # 密码现在是索引 2
+            # 🌟 2. 核心修改：把你朋友要的“真实学号/名字”存进 session['user_id']
+            session['user_id'] = result[1]  # 👈 以前这里存的是 result[0](数字)，现在改成 result[1](学号/名字)
+            session['username'] = u
+            
             return redirect(url_for('dashboard'))
         else:
-            # 🌟 只改这三行：
             flash("Invalid Student ID or Password!", "danger")
             return redirect(url_for('login'))
 
@@ -183,35 +189,64 @@ def register():
 # ==========================================
 @app.route('/profile')
 def profile():
-    # 1. 拦截未登录用户：没登录的人不准看 profile
-    if 'username' not in session:
+    # 1. 如果连 session 都没有，踢回登录
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 2. 从数据库抓取当前登录用户的最新资料
     conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
     db = conn.cursor()
-    db.execute("SELECT username, bio FROM users WHERE username = ?", (session['username'],))
-    user = db.fetchone()
+    
+    # 2. 去数据库找人
+    db.execute("SELECT * FROM users WHERE student_id = ? OR id = ?", (session['user_id'], session['user_id']))
+    user_data = db.fetchone()
     conn.close()
 
-    # 3. 将真实数据传给模板
-    current_user_info = {
-        "name": user[0],
-        "bio": user[1]
-    }
-    return render_template('profile.html', user_data=current_user_info)
+    # 🌟 3. 核心防爆机制：如果数据库查不到这个人（比如删库重造了）
+    if user_data is None:
+        session.clear() # 清空旧的错误记忆
+        flash("Session expired or user not found. Please login again.", "danger")
+        return redirect(url_for('login')) # 踢回登录页重新注册/登录
 
+    return render_template('profile.html', user_data=user_data)
 
-@app.route('/profile/edit', methods=['GET', 'POST'])
+@app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
-    current_user_info = {
-        "name": session.get("user_id", "Alex Chen"),
-        "student_id": session.get("user_id", "TP088123"),
-        "bio": "Deep thinker. Looking for study buddies to discuss Python, Flask, and maybe plan a weekend hike at Broga Hill!"
-    }
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
-    return render_template('edit_profile.html', user_data=current_user_info)
+    if request.method == 'POST':
+        # 1. 接收前端表单发来的所有数据
+        new_name = request.form.get('name')
+        new_bio = request.form.get('bio')
+        new_tech = request.form.get('tech_stack')
+        new_exp1 = request.form.get('exp_1')
+        new_exp2 = request.form.get('exp_2')
 
+        # 2. 更新到数据库
+        conn = sqlite3.connect('database.db')
+        db = conn.cursor()
+        db.execute("""
+            UPDATE users 
+            SET username = ?, bio = ?, tech_stack = ?, exp_1 = ?, exp_2 = ?
+            WHERE student_id = ?
+        """, (new_name, new_bio, new_tech, new_exp1, new_exp2, session['user_id']))
+        
+        conn.commit()
+        conn.close()
+        
+        # 3. 存完之后，跳回展示页
+        return redirect(url_for('profile'))
+
+    # 如果是 GET 请求（刚点开编辑页面），我们要先把旧数据查出来，填在输入框里
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    db = conn.cursor()
+    db.execute("SELECT * FROM users WHERE student_id = ?", (session['user_id'],))
+    user_data = db.fetchone()
+    conn.close()
+
+    return render_template('edit_profile.html', user_data=user_data)
 
 # ==========================================
 # 4. Resource Board Module - Member 3

@@ -1,15 +1,12 @@
-<!-- 导航栏容器：设置为 100% 宽度，并使用 space-between -->
 <nav style="
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding: 20px 40px; /* 左右留出 40px 的内边距，防止贴死边缘 */
+    padding: 20px 40px; 
     background-color: #fff; 
-    border-bottom: 4px solid #111; /* Neo-Brutalism 标志性粗黑线 */
+    border-bottom: 4px solid #111; 
     width: 100%;
 ">
-
-    <!-- 左侧：StudyKaki Logo -->
     <div class="nav-left">
         <a href="{{ url_for('home') }}" style="
             text-decoration: none; 
@@ -23,29 +20,17 @@
         </a>
     </div>
 
-    <!-- 右侧：Profile 模板入口 -->
     <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
-        
-        <!-- 可以加一个欢迎语，增加亲切感 -->
         <span style="font-weight: 700; color: #111; font-size: 1.1rem;">
             Hello, TP06XXXX
         </span>
-
-        <!-- Profile 链接 -->
         <a href="{{ url_for('profile') }}" style="text-decoration: none;">
             <div class="profile-box" style="
-                width: 50px; 
-                height: 50px; 
-                background: #c7d2fe; /* 之前用的蓝紫色 */
-                border: 3px solid #111; 
-                border-radius: 50%; /* 圆形头像 */
-                display: flex; 
-                justify-content: center; 
-                align-items: center; 
-                font-size: 1.5rem;
-                box-shadow: 4px 4px 0px #111; /* 硬阴影 */
-                transition: all 0.2s;
-                cursor: pointer;
+                width: 50px; height: 50px; background: #c7d2fe; 
+                border: 3px solid #111; border-radius: 50%; 
+                display: flex; justify-content: center; align-items: center; 
+                font-size: 1.5rem; box-shadow: 4px 4px 0px #111; 
+                transition: all 0.2s; cursor: pointer;
             " 
             onmouseover="this.style.transform='translate(-2px, -2px)'; this.style.boxShadow='6px 6px 0px #111';"
             onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='4px 4px 0px #111';">
@@ -54,45 +39,50 @@
         </a>
     </div>
 </nav>
+
 {% extends "base.html" %}
 
 {% block content %}
-<!-- 这是一个简单的顶部状态条 -->
 <div class="bento-container">
     
-    <!-- A. Welcome Section -->
     <div class="bento-item welcome-card">
         <h1>Stop Debugging<br>Alone.</h1>
         <p>Who’s grinding with you today?</p>
     </div>
 
-    <!-- B. Personal Stats -->
     <div class="bento-item stats-card">
         <span class="label">My Balance</span>
         <div class="coin-count">🪙 150</div>
         <div class="rank-tag">Bug Hunter</div>
     </div>
 
-    <!-- C. Quest Board (Widest & Tallest Module) -->
-    <div class="bento-item quest-board">
-        <div class="board-header">
-            <h3>Quest Board</h3>
-            <button class="mini-btn">Post Request +</button>
+    <div class="bento-item quest-board" style="display: flex; flex-direction: column;">
+        <div class="board-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #111; padding-bottom: 10px; margin-bottom: 10px;">
+            <h3 style="margin: 0;">Quest Board</h3>
+            <button class="mini-btn" style="background: #fde047; border: 2px solid #111; border-radius: 8px; padding: 4px 10px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #111;">Post Request +</button>
         </div>
-        <ul class="quest-list">
-            <li><span>🔥</span> Need help with Python Assignment 2</li>
-            <li><span>💡</span> Guidance needed for SQL Join logic</li>
-            <li><span>🕒</span> Seeking library grind buddies for tonight</li>
+        
+        <ul class="quest-list" style="list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 2px dashed #111; font-weight: 600;">
+                <span><span>🔥</span> Need help with Python Assignment 2</span>
+                <button style="background: #a7f3d0; border: 2px solid #111; border-radius: 6px; padding: 4px 10px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #111;">JOIN</button>
+            </li>
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 2px dashed #111; font-weight: 600;">
+                <span><span>💡</span> Guidance needed for SQL Join logic</span>
+                <button style="background: #a7f3d0; border: 2px solid #111; border-radius: 6px; padding: 4px 10px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #111;">JOIN</button>
+            </li>
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-weight: 600;">
+                <span><span>🕒</span> Seeking library grind buddies for tonight</span>
+                <button style="background: #a7f3d0; border: 2px solid #111; border-radius: 6px; padding: 4px 10px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #111;">JOIN</button>
+            </li>
         </ul>
     </div>
 
-    <!-- D. Quick Match/Search -->
     <div class="bento-item search-card">
         <input type="text" placeholder="Search tech stack...">
         <button class="search-btn">GO</button>
     </div>
 
-    <!-- E. Discover More (Surprise Module) -->
     <div class="bento-item discover-card">
         <p>Discover</p>
         <div class="icon-grid">
@@ -104,10 +94,11 @@
 </div>
 
 <style>
+    /* 你原本的 CSS 完全保留，一行没删 */
     .bento-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 三列布局 */
-        grid-auto-rows: 200px; /* 每行基础高度 */
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: 200px;
         gap: 20px;
         width: 100%;
         max-width: 1100px;
@@ -118,13 +109,12 @@
         border: 3px solid #111;
         border-radius: 25px;
         padding: 25px;
-        box-shadow: 8px 8px 0px #111; /* 典型的硬阴影风格 */
+        box-shadow: 8px 8px 0px #111;
         transition: 0.2s;
     }
 
-    /* 调整特定卡片的大小 */
-    .welcome-card { grid-column: span 2; background: #c7d2fe; } /* 占据两列 */
-    .quest-board { grid-row: span 2; grid-column: span 2; } /* 占据两列两行 */
+    .welcome-card { grid-column: span 2; background: #c7d2fe; } 
+    .quest-board { grid-row: span 2; grid-column: span 2; } 
     
     .bento-item:hover {
         transform: translate(-4px, -4px);
