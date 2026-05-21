@@ -11,7 +11,10 @@ def get_db_connection():
     return conn
 
 
-def add_notification(user_id, message):
+# =========================
+# Notifications database table
+# =========================
+def create_notifications_table():
     conn = get_db_connection()
 
     conn.execute("""
@@ -19,15 +22,31 @@ def add_notification(user_id, message):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT NOT NULL,
             message TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
             created_at TEXT NOT NULL
         )
     """)
 
+    # This part is for old database that already has notifications table
+    # but does not have is_read column yet.
+    try:
+        conn.execute("ALTER TABLE notifications ADD COLUMN is_read INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+
+    conn.commit()
+    conn.close()
+
+
+def add_notification(user_id, message):
+    create_notifications_table()
+
+    conn = get_db_connection()
     conn.execute("""
-        INSERT INTO notifications (user_id, message, created_at)
-        VALUES (?, ?, ?)
+        INSERT INTO notifications (user_id, message, is_read, created_at)
+        VALUES (?, ?, 0, ?)
     """, (
-        str(user_id),
+        user_id,
         message,
         datetime.now().strftime("%Y-%m-%d %H:%M")
     ))
@@ -36,13 +55,32 @@ def add_notification(user_id, message):
     conn.close()
 
 
+def get_unread_notification_count(user_id):
+    create_notifications_table()
+
+    conn = get_db_connection()
+
+    unread_count = conn.execute("""
+        SELECT COUNT(*) AS total
+        FROM notifications
+        WHERE user_id = ? AND is_read = 0
+    """, (user_id,)).fetchone()["total"]
+
+    conn.close()
+
+    return unread_count
+
+
+# =========================
+# Sessions page
+# =========================
 @study_session_routes.route("/sessions")
 def sessions():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    create_notifications_table()
 
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
     search_query = request.args.get("search", "").strip()
+    unread_count = get_unread_notification_count(current_user)
 
     conn = get_db_connection()
 
@@ -82,16 +120,18 @@ def sessions():
         "sessions.html",
         sessions=sessions,
         current_user=current_user,
-        search_query=search_query
+        search_query=search_query,
+        unread_count=unread_count
     )
 
 
+# =========================
+# Create session
+# =========================
 @study_session_routes.route("/create_session", methods=["GET", "POST"])
 def create_session():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
+    unread_count = get_unread_notification_count(current_user)
 
     if request.method == "POST":
         subject = request.form["subject"]
@@ -127,15 +167,19 @@ def create_session():
         flash("Study session created successfully.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    return render_template("create_session.html")
+    return render_template(
+        "create_session.html",
+        unread_count=unread_count
+    )
 
 
+# =========================
+# Edit session
+# =========================
 @study_session_routes.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
 def edit_session(session_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
+    unread_count = get_unread_notification_count(current_user)
 
     conn = get_db_connection()
 
@@ -149,7 +193,7 @@ def edit_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if str(study_session["created_by"]) != current_user:
+    if study_session["created_by"] != current_user:
         conn.close()
         flash("You are not allowed to edit this session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -194,15 +238,20 @@ def edit_session(session_id):
         return redirect(url_for("study_session_routes.sessions"))
 
     conn.close()
-    return render_template("edit_session.html", session=study_session)
+
+    return render_template(
+        "edit_session.html",
+        session=study_session,
+        unread_count=unread_count
+    )
 
 
+# =========================
+# Delete session
+# =========================
 @study_session_routes.route("/delete_session/<int:session_id>")
 def delete_session(session_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
 
     conn = get_db_connection()
 
@@ -216,7 +265,7 @@ def delete_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if str(study_session["created_by"]) != current_user:
+    if study_session["created_by"] != current_user:
         conn.close()
         flash("You are not allowed to delete this session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -233,12 +282,12 @@ def delete_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
+# =========================
+# Join session
+# =========================
 @study_session_routes.route("/join_session/<int:session_id>")
 def join_session(session_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
 
     conn = get_db_connection()
 
@@ -252,7 +301,7 @@ def join_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if str(study_session["created_by"]) == current_user:
+    if study_session["created_by"] == current_user:
         conn.close()
         flash("You cannot join your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -284,12 +333,12 @@ def join_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
+# =========================
+# Leave session
+# =========================
 @study_session_routes.route("/leave_session/<int:session_id>")
 def leave_session(session_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
 
     conn = get_db_connection()
 
@@ -303,7 +352,7 @@ def leave_session(session_id):
         flash("Session not found.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    if str(study_session["created_by"]) == current_user:
+    if study_session["created_by"] == current_user:
         conn.close()
         flash("You cannot leave your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -325,17 +374,21 @@ def leave_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
+# =========================
+# Notifications page
+# =========================
 @study_session_routes.route("/notifications")
 def notifications():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    create_notifications_table()
 
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
+    unread_count = get_unread_notification_count(current_user)
 
     conn = get_db_connection()
 
     notifications = conn.execute("""
-        SELECT * FROM notifications
+        SELECT id, message, is_read, created_at
+        FROM notifications
         WHERE user_id = ?
         ORDER BY id DESC
     """, (current_user,)).fetchall()
@@ -345,16 +398,39 @@ def notifications():
     return render_template(
         "notifications.html",
         notifications=notifications,
-        current_user=current_user
+        current_user=current_user,
+        unread_count=unread_count
     )
 
 
+# =========================
+# Mark all notifications as read
+# =========================
+@study_session_routes.route("/mark_notifications_read", methods=["POST"])
+def mark_notifications_read():
+    current_user = session.get("user_id", "guest")
+
+    conn = get_db_connection()
+
+    conn.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE user_id = ?
+    """, (current_user,))
+
+    conn.commit()
+    conn.close()
+
+    flash("All notifications marked as read.")
+    return redirect(url_for("study_session_routes.notifications"))
+
+
+# =========================
+# Clear all notifications
+# =========================
 @study_session_routes.route("/clear_notifications")
 def clear_notifications():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    current_user = str(session.get("user_id", "guest"))
+    current_user = session.get("user_id", "guest")
 
     conn = get_db_connection()
 

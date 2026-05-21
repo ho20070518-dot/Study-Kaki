@@ -60,8 +60,33 @@ h1 {
     background-color: #9ff0d0;
 }
 
+/* View Notifications button */
 .notification-btn {
     background-color: #ffffff;
+    position: relative;
+}
+
+/* Red small number badge */
+.notification-badge {
+    position: absolute;
+    top: -13px;
+    right: -13px;
+
+    background-color: #ef4444;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    min-width: 25px;
+    height: 25px;
+    line-height: 21px;
+
+    border-radius: 50%;
+    text-align: center;
+
+    border: 2px solid #111111;
+    box-shadow: 2px 2px 0px #111111;
 }
 
 .create-session-btn:hover,
