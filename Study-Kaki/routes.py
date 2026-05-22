@@ -1,12 +1,20 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import sqlite3
+import os
 from datetime import datetime
 
 study_session_routes = Blueprint("study_session_routes", __name__)
 
+# =========================
+# Fixed database path
+# =========================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
 
 def get_db_connection():
-    conn = sqlite3.connect("database.db")
+    print("Using database:", DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -27,8 +35,6 @@ def create_notifications_table():
         )
     """)
 
-    # This part is for old database that already has notifications table
-    # but does not have is_read column yet.
     try:
         conn.execute("ALTER TABLE notifications ADD COLUMN is_read INTEGER DEFAULT 0")
     except sqlite3.OperationalError:
@@ -67,7 +73,6 @@ def get_unread_notification_count(user_id):
     """, (user_id,)).fetchone()["total"]
 
     conn.close()
-
     return unread_count
 
 
@@ -113,6 +118,11 @@ def sessions():
             SELECT * FROM sessions
             ORDER BY session_date, session_time
         """).fetchall()
+
+    print("Total sessions found:", len(sessions))
+
+    for s in sessions:
+        print(dict(s))
 
     conn.close()
 
