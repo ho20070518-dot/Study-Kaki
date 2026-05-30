@@ -1,3 +1,4 @@
+/* Page Background */
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff;
@@ -8,11 +9,13 @@ body {
     color: #111111;
 }
 
+/* Main Container */
 .edit-page {
     width: 900px;
     margin: 60px auto;
 }
 
+/* Logo */
 .logo-text {
     font-size: 24px;
     font-weight: 900;
@@ -24,12 +27,25 @@ body {
     color: #7ee0bd;
 }
 
+/* Clickable Logo Link */
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.logo-link:hover {
+    cursor: pointer;
+}
+
+/* Top Line */
 .top-line {
     border: none;
     border-top: 4px solid #111111;
     margin: 25px 0 55px 0;
 }
 
+/* Page Title */
 h1 {
     font-size: 42px;
     letter-spacing: 3px;
@@ -37,6 +53,7 @@ h1 {
     font-weight: 900;
 }
 
+/* Form Box */
 .edit-form {
     background-color: #ffffff;
     border: 3px solid #111111;
@@ -45,6 +62,7 @@ h1 {
     box-shadow: 10px 10px 0px #111111;
 }
 
+/* Form Group */
 .form-group {
     margin-bottom: 22px;
 }
@@ -56,6 +74,7 @@ h1 {
     font-size: 16px;
 }
 
+/* Inputs and Select */
 .form-group input,
 .form-group select {
     width: 100%;
@@ -73,18 +92,50 @@ h1 {
     box-shadow: 4px 4px 0px #111111;
 }
 
+/* Date and Time Row */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 18px;
 }
 
+/* 24-hour Time Selector */
+.time-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-select-row select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+    font-weight: bold;
+}
+
+.time-select-row select:focus {
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.time-colon {
+    font-size: 22px;
+    font-weight: 900;
+    color: #111111;
+}
+
+/* Button Area */
 .button-area {
     display: flex;
     gap: 15px;
     margin-top: 30px;
 }
 
+/* Buttons */
 .update-btn,
 .back-btn {
     padding: 14px 28px;
@@ -113,6 +164,7 @@ h1 {
     box-shadow: 3px 3px 0px #111111;
 }
 
+/* Responsive */
 @media screen and (max-width: 950px) {
     .edit-page {
         width: 90%;

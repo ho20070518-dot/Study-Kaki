@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+
 <div class="notifications-container">
 
     <div class="notification-title-wrapper">
@@ -19,117 +21,41 @@
     </p>
 
     {% if notifications %}
+
+        <form method="POST" action="{{ url_for('study_session_routes.clear_notifications') }}">
+            <button type="submit" class="clear-notification-btn">
+                Clear All Notifications
+            </button>
+        </form>
+
         <div class="notification-list">
             {% for notification in notifications %}
-                <div class="notification-card {% if notification[2] == 0 %}unread{% endif %}">
-                    <p class="notification-message">
-                        {{ notification[1] }}
-                    </p>
 
-                    <small class="notification-time">
-                        {{ notification[3] }}
-                    </small>
-                </div>
+                <a href="{{ url_for('study_session_routes.read_notification', notification_id=notification[0]) }}" class="notification-link">
+
+                    <div class="notification-card {% if notification[2] == 0 %}unread{% endif %}">
+                        <p class="notification-message">
+                            {{ notification[1] }}
+                        </p>
+
+                        <small class="notification-time">
+                            {{ notification[3] }}
+                        </small>
+                    </div>
+
+                </a>
+
             {% endfor %}
         </div>
+
     {% else %}
+
         <div class="empty-notification">
             <p>No notifications yet.</p>
         </div>
+
     {% endif %}
 
 </div>
-
-<style>
-    .notifications-container {
-        background: #ffffff;
-        padding: 40px;
-        width: 100%;
-        max-width: 650px;
-        border-radius: 35px;
-        border: 3px solid #111;
-        box-shadow: 12px 12px 0px #dcfce7, 12px 12px 0px 3px #111;
-    }
-
-    .notification-title-wrapper {
-        position: relative;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
-
-    .notification-title-wrapper h2 {
-        font-size: 32px;
-        font-weight: 800;
-        color: #111;
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -12px;
-        right: -28px;
-
-        background-color: #ef4444;
-        color: white;
-
-        font-size: 13px;
-        font-weight: 800;
-
-        min-width: 24px;
-        height: 24px;
-        line-height: 20px;
-
-        border-radius: 50%;
-        text-align: center;
-
-        border: 2px solid #111;
-        box-shadow: 2px 2px 0px #111;
-    }
-
-    .notification-subtitle {
-        color: #666;
-        font-weight: 600;
-        margin-bottom: 25px;
-    }
-
-    .notification-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .notification-card {
-        background: #fafaf9;
-        border: 2px solid #111;
-        border-radius: 20px;
-        padding: 18px 20px;
-        box-shadow: 4px 4px 0px #111;
-    }
-
-    .notification-card.unread {
-        background: #dcfce7;
-    }
-
-    .notification-message {
-        font-size: 16px;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 8px;
-    }
-
-    .notification-time {
-        color: #666;
-        font-weight: 600;
-    }
-
-    .empty-notification {
-        background: #fafaf9;
-        border: 2px dashed #111;
-        border-radius: 20px;
-        padding: 25px;
-        text-align: center;
-        font-weight: 700;
-        color: #666;
-    }
-</style>
 
 {% endblock %}

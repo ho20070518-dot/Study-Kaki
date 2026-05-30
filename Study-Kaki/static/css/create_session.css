@@ -27,6 +27,17 @@ body {
     color: #7ee0bd;
 }
 
+/* Clickable Logo Link */
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.logo-link:hover {
+    cursor: pointer;
+}
+
 /* Top Line */
 .top-line {
     border: none;
@@ -86,6 +97,35 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 18px;
+}
+
+/* 24-hour Time Selector */
+.time-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-select-row select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+    font-weight: bold;
+}
+
+.time-select-row select:focus {
+    box-shadow: 4px 4px 0px #111111;
+}
+
+.time-colon {
+    font-size: 22px;
+    font-weight: 900;
+    color: #111111;
 }
 
 /* Button Area */
