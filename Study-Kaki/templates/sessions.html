@@ -8,9 +8,11 @@
 
 <div class="session-page">
 
-    <div class="logo-text">
-        STUDY<span>KAKI</span>
-    </div>
+    <a href="/dashboard" class="logo-link">
+        <div class="logo-text">
+            STUDY<span>KAKI</span>
+        </div>
+    </a>
 
     <hr class="top-line">
 
@@ -92,9 +94,16 @@
                     </p>
                 {% endif %}
 
-                <p><strong>Created By:</strong> {{ session.created_by }}</p>
+                <p>
+                    <strong>Created By:</strong>
+                    {% if session.creator_name %}
+                        {{ session.creator_name }}
+                    {% else %}
+                        Unknown User
+                    {% endif %}
+                </p>
 
-                {% if session.created_by == current_user %}
+                {% if session.created_by|string == current_user_id|string %}
                     <p><strong>Status:</strong> Your Session</p>
 
                 {% elif session.joined == 1 %}
@@ -112,7 +121,7 @@
 
                 <div class="button-area">
 
-                    {% if session.created_by == current_user %}
+                    {% if session.created_by|string == current_user_id|string %}
 
                         <a href="{{ url_for('study_session_routes.edit_session', session_id=session.id) }}" class="edit-btn">
                             Edit

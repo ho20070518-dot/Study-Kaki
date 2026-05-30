@@ -8,15 +8,17 @@
 
 <div class="edit-page">
 
-    <div class="logo-text">
-        STUDY<span>KAKI</span>
-    </div>
+    <a href="/dashboard" class="logo-link">
+        <div class="logo-text">
+            STUDY<span>KAKI</span>
+        </div>
+    </a>
 
     <hr class="top-line">
 
     <h1>Edit Study Session</h1>
 
-    <form method="POST" action="{{ url_for('study_session_routes.edit_session', session_id=session.id) }}" class="edit-form">
+    <form method="POST" action="{{ url_for('study_session_routes.edit_session', session_id=session.id) }}" class="edit-form" onsubmit="combineTimeValues()">
 
         <div class="form-group">
             <label for="subject">Subject</label>
@@ -54,24 +56,68 @@
             </div>
 
             <div class="form-group">
-                <label for="session_time">Start Time</label>
+                <label>Start Time</label>
+
+                <div class="time-select-row">
+                    <select id="start_hour" required>
+                        {% for h in range(0, 24) %}
+                            {% set hour = "%02d"|format(h) %}
+                            <option value="{{ hour }}" {% if session.session_time[:2] == hour %}selected{% endif %}>
+                                {{ hour }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <span class="time-colon">:</span>
+
+                    <select id="start_minute" required>
+                        {% for m in range(0, 60) %}
+                            {% set minute = "%02d"|format(m) %}
+                            <option value="{{ minute }}" {% if session.session_time[3:5] == minute %}selected{% endif %}>
+                                {{ minute }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <input 
-                    type="time" 
+                    type="hidden" 
                     id="session_time" 
                     name="session_time" 
-                    value="{{ session.session_time }}"
-                    required
+                    value="{{ session.session_time[:5] }}"
                 >
             </div>
 
             <div class="form-group">
-                <label for="end_time">End Time</label>
+                <label>End Time</label>
+
+                <div class="time-select-row">
+                    <select id="end_hour" required>
+                        {% for h in range(0, 24) %}
+                            {% set hour = "%02d"|format(h) %}
+                            <option value="{{ hour }}" {% if session.end_time[:2] == hour %}selected{% endif %}>
+                                {{ hour }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <span class="time-colon">:</span>
+
+                    <select id="end_minute" required>
+                        {% for m in range(0, 60) %}
+                            {% set minute = "%02d"|format(m) %}
+                            <option value="{{ minute }}" {% if session.end_time[3:5] == minute %}selected{% endif %}>
+                                {{ minute }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <input 
-                    type="time" 
+                    type="hidden" 
                     id="end_time" 
                     name="end_time" 
-                    value="{{ session.end_time }}"
-                    required
+                    value="{{ session.end_time[:5] }}"
                 >
             </div>
 
@@ -136,6 +182,16 @@
 </div>
 
 <script>
+    function combineTimeValues() {
+        let startHour = document.getElementById("start_hour").value;
+        let startMinute = document.getElementById("start_minute").value;
+        let endHour = document.getElementById("end_hour").value;
+        let endMinute = document.getElementById("end_minute").value;
+
+        document.getElementById("session_time").value = startHour + ":" + startMinute;
+        document.getElementById("end_time").value = endHour + ":" + endMinute;
+    }
+
     function showLocationField() {
         let sessionType = document.getElementById("location_type").value;
         let physicalBox = document.getElementById("physical-box");
@@ -148,12 +204,14 @@
             onlineBox.style.display = "none";
             physicalInput.required = true;
             onlineInput.required = false;
+            onlineInput.value = "";
         } 
         else if (sessionType === "Online") {
             physicalBox.style.display = "none";
             onlineBox.style.display = "block";
             physicalInput.required = false;
             onlineInput.required = true;
+            physicalInput.value = "";
         } 
         else {
             physicalBox.style.display = "none";
@@ -163,7 +221,10 @@
         }
     }
 
-    window.onload = showLocationField;
+    window.onload = function() {
+        showLocationField();
+        combineTimeValues();
+    };
 </script>
 
 {% endblock %}

@@ -24,6 +24,17 @@ body {
     color: #7ee0bd;
 }
 
+/* Clickable Logo Link */
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.logo-link:hover {
+    cursor: pointer;
+}
+
 .top-line {
     border: none;
     border-top: 4px solid #111111;
