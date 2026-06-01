@@ -14,6 +14,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 # Needed for Flask session
 app.secret_key = "study_kaki_secret_key"
 
@@ -278,19 +282,30 @@ def add_resource():
     filename = None
 
     if file and file.filename != "":
+
+        if not allowed_file(file.filename):
+            flash("Invalid file type. Only PDF, DOCX, PPTX, PNG, JPG and JPEG are allowed.")
+            return redirect(url_for('resources'))
+
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
 
-    c.execute(
-        "INSERT INTO resources (subject, title, description, file_name) VALUES (?, ?, ?, ?)",
-        (subject, title, description, filename)
-    )
+        c.execute(
+            "INSERT INTO resources (subject, title, description, file_name) VALUES (?, ?, ?, ?)",
+            (subject, title, description, filename)
+        )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}"
+
+    finally:
+        conn.close()
 
     return redirect(url_for('resources_list', success=1))
 
@@ -303,6 +318,9 @@ def edit_resource(id):
     resource = c.fetchone()
 
     conn.close()
+ 
+    if resource is None:
+        return "Resource not found"
 
     return render_template("edit_resources.html", resource=resource)
 
@@ -312,18 +330,25 @@ def update_resource(id):
     description = request.form['description']
     
     if title.strip() == "" or description.strip() == "":
-        return "Fields cannot be empty"
+        flash("Fields cannot be empty")
+        return redirect(url_for('edit_resource', id=id))
 
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
 
-    c.execute(
-        "UPDATE resources SET title=?, description=? WHERE id=?",
-        (title, description, id)
-    )
+        c.execute(
+            "UPDATE resources SET title=?, description=? WHERE id=?",
+            (title, description, id)
+        )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}"
+
+    finally:
+        conn.close()
 
     return redirect(url_for('resources_list', updated=1))
 
@@ -333,37 +358,77 @@ def resources_list():
     query = request.args.get('q')
     subject_filter = request.args.get('subject')
 
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
 
-    if subject_filter:
-        c.execute(
-            "SELECT * FROM resources WHERE subject = ?",
-            (subject_filter,)
-        )
-    elif query:
-        c.execute(
-            "SELECT * FROM resources WHERE title LIKE ? OR description LIKE ? OR subject LIKE ?",
-            ('%' + query + '%', '%' + query + '%', '%' + query + '%')
-        )
-    else:
-        c.execute("SELECT * FROM resources")
+        if subject_filter:
+            c.execute(
+                "SELECT * FROM resources WHERE subject = ?",
+                (subject_filter,)
+            )
 
-    data = c.fetchall()
-    conn.close()
+        elif query:
+            c.execute(
+                "SELECT * FROM resources WHERE title LIKE ? OR description LIKE ? OR subject LIKE ?",
+                ('%' + query + '%',
+                 '%' + query + '%',
+                 '%' + query + '%')
+            )
 
-    return render_template("resources_list.html", resources=data, query=query)
+        else:
+            c.execute("SELECT * FROM resources")
+
+        data = c.fetchall()
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}"
+
+    finally:
+        conn.close()
+
+    return render_template(
+        "resources_list.html",
+        resources=data,
+        query=query
+    )
 
 
 @app.route('/delete-resource/<int:id>')
 def delete_resource(id):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
 
-    c.execute("DELETE FROM resources WHERE id = ?", (id,))
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
 
-    conn.commit()
-    conn.close()
+        c.execute(
+            "SELECT file_name FROM resources WHERE id=?",
+            (id,)
+        )
+
+        resource = c.fetchone()
+
+        if resource and resource[0]:
+            filepath = os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                resource[0]
+            )
+
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+        c.execute(
+            "DELETE FROM resources WHERE id=?",
+            (id,)
+        )
+
+        conn.commit()
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}"
+
+    finally:
+        conn.close()
 
     return redirect(url_for('resources_list'))
 
