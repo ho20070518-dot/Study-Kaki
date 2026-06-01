@@ -16,28 +16,28 @@
         <form action="{{ url_for('edit_profile') }}" method="POST">
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">FULL NAME</label>
-                <input type="text" name="name" value="{{ user_data.name }}" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">FULL NAME</label>
+            <input type="text" name="name" value="{{ user_data.name }}" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; font-family: inherit;">
             </div>
 
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">STUDY GOALS / BIO</label>
-                <textarea name="bio" rows="3" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; resize: none;">{{ user_data.bio }}</textarea>
+                <textarea name="bio" rows="3" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; resize: none; font-family: inherit;">{{ user_data.bio }}</textarea>
             </div>
 
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">TECH STACK (E.G. PYTHON, SQL, FLASK)</label>
-                <input type="text" name="tech_stack" placeholder="Python, SQL, Flask..." style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #fdfaf6;">
+                <input type="text" name="tech_stack" placeholder="Python, SQL, Flask..." style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #fdfaf6; font-family: inherit;">
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                 <div>
-                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">EXP 1</label>
-                    <input type="text" name="exp_1" value="{{ user_data.exp_1 }}" placeholder="90kg / 60kg" style="..."> 
+                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">STATS</label>
+                    <input type="text" name="exp_1" value="{{ user_data.exp_1 }}" placeholder="90kg / 60kg" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; font-family: inherit; box-sizing: border-box;"> 
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">EXP 2</label>
-                    <input type="text" name="exp_2" value="{{ user_data.exp_2 }}" placeholder="Basketball" style="...">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 8px;">SPORTS & HOBBIES</label>
+                    <input type="text" name="exp_2" value="{{ user_data.exp_2 }}" placeholder="Basketball" style="width: 100%; padding: 12px 15px; border: 2px solid #111; border-radius: 10px; font-weight: 700; background: #f8f9fa; font-family: inherit; box-sizing: border-box;">
                 </div>
             </div>
 

@@ -173,9 +173,10 @@ def register():
             return render_template('register.html', error="User already exists!")
 
         # 写入数据库
-        db.execute("INSERT INTO users (username, student_id, password) VALUES (?, ?, ?)", 
-                   (u, sid, p)), 
-        
+        db.execute('''
+            INSERT INTO users (username, student_id, password) 
+            VALUES (?, ?, ?)
+        ''', (u, sid, p))
         conn.commit()
         conn.close()
 
