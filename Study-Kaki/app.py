@@ -108,7 +108,7 @@ init_db()
 # ==========================================
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('dashboard.html')
 
 
 # ==========================================
@@ -221,8 +221,8 @@ def edit_profile():
         new_name = request.form.get('name')
         new_bio = request.form.get('bio')
         new_tech = request.form.get('tech_stack')
-        new_exp1 = request.form.get('exp_1')
-        new_exp2 = request.form.get('exp_2')
+        new_stats = request.form.get('stats')
+        new_hobbies = request.form.get('hobbies')
 
         # 2. 更新到数据库
         conn = sqlite3.connect('database.db')
@@ -231,7 +231,7 @@ def edit_profile():
             UPDATE users 
             SET username = ?, bio = ?, tech_stack = ?, exp_1 = ?, exp_2 = ?
             WHERE student_id = ?
-        """, (new_name, new_bio, new_tech, new_exp1, new_exp2, session['user_id']))
+        """, (new_name, new_bio, new_tech, new_stats, new_hobbies, session['user_id']))
         
         conn.commit()
         conn.close()
