@@ -20,13 +20,15 @@ def get_db_connection():
 # Login checking helper
 # =========================
 def get_current_user_id():
+    # In this project, session["user_id"] stores student_id
     return session.get("user_id")
 
 
 def get_current_username():
-    user_id = session.get("user_id")
+    # Member 1 uses student_id as session["user_id"]
+    student_id = session.get("user_id")
 
-    if not user_id:
+    if not student_id:
         return "Unknown User"
 
     conn = get_db_connection()
@@ -34,8 +36,8 @@ def get_current_username():
     user = conn.execute("""
         SELECT username
         FROM users
-        WHERE id = ?
-    """, (user_id,)).fetchone()
+        WHERE student_id = ?
+    """, (student_id,)).fetchone()
 
     conn.close()
 
@@ -150,7 +152,7 @@ def sessions():
                 users.username AS creator_name
             FROM sessions
             LEFT JOIN users 
-            ON CAST(sessions.created_by AS TEXT) = CAST(users.id AS TEXT)
+            ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
             WHERE sessions.subject LIKE ?
             OR sessions.topic LIKE ?
             OR sessions.session_date LIKE ?
@@ -160,8 +162,10 @@ def sessions():
             OR sessions.physical_location LIKE ?
             OR sessions.meeting_link LIKE ?
             OR users.username LIKE ?
+            OR users.student_id LIKE ?
             ORDER BY sessions.session_date, sessions.session_time
         """, (
+            f"%{search_query}%",
             f"%{search_query}%",
             f"%{search_query}%",
             f"%{search_query}%",
@@ -179,14 +183,9 @@ def sessions():
                 users.username AS creator_name
             FROM sessions
             LEFT JOIN users 
-            ON CAST(sessions.created_by AS TEXT) = CAST(users.id AS TEXT)
+            ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
             ORDER BY sessions.session_date, sessions.session_time
         """).fetchall()
-
-    print("Total sessions found:", len(sessions))
-
-    for s in sessions:
-        print(dict(s))
 
     conn.close()
 
@@ -423,7 +422,7 @@ def join_session(session_id):
     add_notification(
         current_user_id,
         reminder_message,
-        "/dashboard"
+        "/sessions"
     )
 
     flash("You have joined this study session. A reminder notification has been added.")
@@ -470,7 +469,7 @@ def leave_session(session_id):
     add_notification(
         current_user_id,
         f"You left {study_session['subject']} study session.",
-        "/dashboard"
+        "/sessions"
     )
 
     flash("You have left this study session.")
