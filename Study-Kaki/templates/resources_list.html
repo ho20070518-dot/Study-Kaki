@@ -265,49 +265,24 @@ button:hover{
         {% endfor %}
 
         {% for subject, items in subjects.items() %}
-            <div style="margin-top:30px;">
-                
-                <h2 style="margin-top:25px;">
-                    📘 
-                   <a href="/resources-list?subject={{ subject }}"
-                      style="text-decoration:none; color:#111; border-bottom:2px solid #111;">
-                       {{ subject }}
-                   </a>
-                </h2>
 
-             <div class="grid">
-                {% for r in items %}
-                  <div class="card">
+        <div class="card">
 
-                    <h3>{{ r[1] }}</h3>
-                    <p>{{ r[2] }}</p>
+            <h2>📁 {{ subject }}</h2>
 
-                    {% if r[4] %}
-                        <a href="/uploads/{{ r[4] }}" download>
-                            <button class="download">{{ r[4] }}</button>
-                        </a>
-                    {% endif %}
+            <p>
+            {{ items|length }} resource(s)
+            </p>
 
-                    <div class="actions">
-                        <a href="/edit-resource/{{ r[0] }}">
-                            <button class="edit">Edit</button>
-                        </a>
+            <a href="/subject/{{ subject }}">
+                <button>
+                    Open Folder
+                </button>
+            </a>
 
-                        <a href="/delete-resource/{{ r[0] }}"
-                           onclick="return confirm('Delete this resource?')">
-                            <button class="delete">Delete</button>
-                        </a>
-                    </div>
+        </div>
 
-                  </div>
-                {% endfor %}
-             </div>
-            </div>
         {% endfor %}
-
-    {% if request.args.get('updated') %}
-    <p style="color:blue;">Resource updated successfully!</p>
-    {% endif %}
 
     </div>
 
