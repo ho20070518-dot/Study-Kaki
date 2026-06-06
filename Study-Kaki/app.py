@@ -6,6 +6,28 @@ import sqlite3
 import os
 from werkzeug.utils import secure_filename
 
+def get_user_role(student_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT role FROM users WHERE student_id = ?", (student_id,))
+    row = c.fetchone()
+    conn.close()
+
+    if row:
+        return row[0]
+    return 'mentee'
+
+from functools import wraps
+
+def mentor_only(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'mentor':
+            flash("Access denied: Mentor only.")
+            return redirect(url_for('resources_list'))
+        return f(*args, **kwargs)
+    return wrapper
+
 app = Flask(__name__)
 app.secret_key = 'studykaki_secret_key_123'
 
@@ -73,6 +95,7 @@ def init_db():
             tech_stack TEXT,
             exp_1 TEXT,
             exp_2 TEXT
+            role TEXT DEFAULT 'mentee'
         )
     ''')
 
@@ -142,6 +165,7 @@ def login():
             # 🌟 2. 核心修改：把你朋友要的“真实学号/名字”存进 session['user_id']
             session['user_id'] = result[1]  # 👈 以前这里存的是 result[0](数字)，现在改成 result[1](学号/名字)
             session['username'] = u
+            session['role'] = get_user_role(result[1])
             
             return redirect(url_for('dashboard'))
         else:
@@ -262,6 +286,7 @@ def resources():
 
 
 @app.route('/add-resource', methods=['POST'])
+@mentor_only
 def add_resource():
     subject = request.form['subject']
     title = request.form['title']
@@ -310,6 +335,7 @@ def add_resource():
     return redirect(url_for('resources_list', success=1))
 
 @app.route('/edit-resource/<int:id>')
+@mentor_only
 def edit_resource(id):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -325,6 +351,7 @@ def edit_resource(id):
     return render_template("edit_resources.html", resource=resource)
 
 @app.route('/update-resource/<int:id>', methods=['POST'])
+@mentor_only
 def update_resource(id):
     title = request.form['title']
     description = request.form['description']
@@ -393,8 +420,71 @@ def resources_list():
         query=query
     )
 
+@app.route('/subject/<subject_name>')
+def subject_folder(subject_name):
+
+    query = request.args.get('q')
+    sort = request.args.get('sort', 'newest')
+
+    order_by = "id DESC"
+
+    if sort == "oldest":
+        order_by = "id ASC"
+
+    elif sort == "az":
+        order_by = "title ASC"
+
+    elif sort == "za":
+        order_by = "title DESC"
+
+    try:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+
+        if query:
+
+            c.execute(
+                f"""
+                SELECT * FROM resources
+                WHERE subject = ?
+                AND (
+                    title LIKE ?
+                    OR description LIKE ?
+                )
+                ORDER BY {order_by}
+                """,
+                (
+                    subject_name,
+                    '%' + query + '%',
+                    '%' + query + '%'
+                )
+            )
+
+        else:
+
+            c.execute(
+                f"SELECT * FROM resources WHERE subject=? ORDER BY {order_by}",
+                (subject_name,)
+            )
+
+        resources = c.fetchall()
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}"
+
+    finally:
+        conn.close()
+
+    return render_template(
+        "subject_folder.html",
+        resources=resources,
+        subject=subject_name,
+        query=query,
+        sort=sort
+    )
 
 @app.route('/delete-resource/<int:id>')
+@mentor_only
 def delete_resource(id):
 
     try:
