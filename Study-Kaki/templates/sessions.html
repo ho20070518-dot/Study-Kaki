@@ -98,13 +98,18 @@
                     <strong>Created By:</strong>
                     {% if session.creator_name %}
                         {{ session.creator_name }}
+                    {% elif session.created_by|string == current_user_id|string %}
+                        {{ current_user }}
                     {% else %}
                         Unknown User
                     {% endif %}
                 </p>
 
                 {% if session.created_by|string == current_user_id|string %}
-                    <p><strong>Status:</strong> Your Session</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="status-joined">Your Session</span>
+                    </p>
 
                 {% elif session.joined == 1 %}
                     <p>
