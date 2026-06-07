@@ -3,6 +3,7 @@ import sqlite3
 import os
 from datetime import datetime
 
+
 study_session_routes = Blueprint("study_session_routes", __name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -186,6 +187,11 @@ def sessions():
             ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
             ORDER BY sessions.session_date, sessions.session_time
         """).fetchall()
+
+    print("Total sessions found:", len(sessions))
+
+    for s in sessions:
+        print(dict(s))
 
     conn.close()
 
