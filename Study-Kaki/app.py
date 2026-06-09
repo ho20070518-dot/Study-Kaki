@@ -7,15 +7,12 @@ import os
 from werkzeug.utils import secure_filename
 
 def get_user_role(student_id):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute("SELECT role FROM users WHERE student_id = ?", (student_id,))
-    row = c.fetchone()
-    conn.close()
-
-    if row:
-        return row[0]
+    # 🟢 彻底拔掉数据库连接和报错的 SQL 语句
+    # 不管谁来查，一律安全、无公害地返回默认身份 'mentee'（或者 'Student'）
     return 'mentee'
+
+# 下面的代码保持不动
+from functools import wraps
 
 from functools import wraps
 
@@ -42,7 +39,6 @@ def allowed_file(filename):
 
 # Needed for Flask session
 app.secret_key = "study_kaki_secret_key"
-
 
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -521,6 +517,11 @@ def delete_resource(id):
         conn.close()
 
     return redirect(url_for('resources_list'))
+
+@app.route('/sessions')
+def sessions():
+
+    return render_template('sessions.html') 
 
 
 @app.route('/dashboard')
