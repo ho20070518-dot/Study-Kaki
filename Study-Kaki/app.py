@@ -518,11 +518,6 @@ def delete_resource(id):
 
     return redirect(url_for('resources_list'))
 
-@app.route('/sessions')
-def sessions():
-
-    return render_template('sessions.html') 
-
 
 @app.route('/dashboard')
 def dashboard():
