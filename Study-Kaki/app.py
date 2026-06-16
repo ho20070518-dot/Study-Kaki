@@ -40,13 +40,13 @@ def allowed_file(filename):
 # Needed for Flask session
 app.secret_key = "study_kaki_secret_key"
 
+import sqlite3
+
 def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
 
-    # ==========================================
-    # Resource Board Table - Member 3
-    # ==========================================
+    # 1. Resource Board Table
     c.execute('''
         CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,14 +57,7 @@ def init_db():
         )
     ''')
 
-    try:
-        c.execute("ALTER TABLE resources ADD COLUMN file_name TEXT")
-    except sqlite3.OperationalError:
-        pass
-
-    # ==========================================
-    # Study Session Table - Member 2
-    # ==========================================
+    # 2. Study Session Table
     c.execute('''
         CREATE TABLE IF NOT EXISTS sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +74,7 @@ def init_db():
         )
     ''')
 
+    # 3. Users Table (修正了语法错误：补上了 exp_2 后面的逗号)
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,40 +84,31 @@ def init_db():
             bio TEXT,
             tech_stack TEXT,
             exp_1 TEXT,
-            exp_2 TEXT
+            exp_2 TEXT,
             role TEXT DEFAULT 'mentee'
         )
     ''')
-
-    # Add session_time column if old database does not have it
-    try:
-        c.execute("ALTER TABLE sessions ADD COLUMN session_time TEXT")
-    except sqlite3.OperationalError:
-        pass
-
-    # Add end_time column if old database does not have it
-    try:
-        c.execute("ALTER TABLE sessions ADD COLUMN end_time TEXT")
-    except sqlite3.OperationalError:
-        pass
-
-    # Add joined column if old database does not have it
-    try:
-        c.execute("ALTER TABLE sessions ADD COLUMN joined INTEGER DEFAULT 0")
-    except sqlite3.OperationalError:
-        pass
-
-    # Add created_by column if old database does not have it
-    try:
-        c.execute("ALTER TABLE sessions ADD COLUMN created_by TEXT")
-    except sqlite3.OperationalError:
-        pass
+    
+    # 4. Notifications Table (统一补上)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            message TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
+            is_cleared INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL,
+            link TEXT
+        )
+    ''')
 
     conn.commit()
     conn.close()
+    print("数据库初始化完成！所有表格已就绪。")
 
-
-init_db()
+# 运行初始化
+if __name__ == '__main__':
+    init_db()
 
 
 # ==========================================
