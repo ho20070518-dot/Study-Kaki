@@ -5,16 +5,31 @@ from flask import Flask, render_template, redirect, url_for, request, session, s
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
+from functools import wraps
 
+# ==========================================
+# 1. 绝对路径锁死（彻底解决外围生成问题）
+# ==========================================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
+app = Flask(__name__)
+app.secret_key = 'studykaki_secret_key_123'
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# ==========================================
+# 2. 角色与权限管理
+# ==========================================
 def get_user_role(student_id):
     # 🟢 彻底拔掉数据库连接和报错的 SQL 语句
-    # 不管谁来查，一律安全、无公害地返回默认身份 'mentee'（或者 'Student'）
+    # 不管谁来查，一律安全、无公害地返回默认身份 'mentee'
     return 'mentee'
-
-# 下面的代码保持不动
-from functools import wraps
-
-from functools import wraps
 
 def mentor_only(f):
     @wraps(f)
@@ -25,39 +40,35 @@ def mentor_only(f):
         return f(*args, **kwargs)
     return wrapper
 
-app = Flask(__name__)
-app.secret_key = 'studykaki_secret_key_123'
-
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# Needed for Flask session
-app.secret_key = "study_kaki_secret_key"
-
-import sqlite3
+# ==========================================
+# 3. 数据库连接与初始化 (统一使用 DB_PATH)
+# ==========================================
+def get_db_connection():
+    """全项目获取数据库连接的唯一入口"""
+    conn = sqlite3.connect(DB_PATH) # 🌟 必须使用绝对路径
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def init_db():
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection() # 直接调用上面的统一连接
     c = conn.cursor()
 
-    # 1. Resource Board Table
+    # 1. Users 表
     c.execute('''
-        CREATE TABLE IF NOT EXISTS resources (
+        CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT NOT NULL,
-            subject TEXT NOT NULL,
-            file_name TEXT
+            username TEXT NOT NULL,
+            student_id TEXT NOT NULL, 
+            password TEXT NOT NULL,
+            bio TEXT,
+            tech_stack TEXT,
+            exp_1 TEXT,
+            exp_2 TEXT,
+            role TEXT DEFAULT 'mentee'
         )
     ''')
 
-    # 2. Study Session Table
+    # 2. Sessions 表
     c.execute('''
         CREATE TABLE IF NOT EXISTS sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,22 +85,18 @@ def init_db():
         )
     ''')
 
-    # 3. Users Table (修正了语法错误：补上了 exp_2 后面的逗号)
+    # 3. Resources 表
     c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS resources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            student_id TEXT NOT NULL, 
-            password TEXT NOT NULL,
-            bio TEXT,
-            tech_stack TEXT,
-            exp_1 TEXT,
-            exp_2 TEXT,
-            role TEXT DEFAULT 'mentee'
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            file_name TEXT
         )
     ''')
     
-    # 4. Notifications Table (统一补上)
+    # 4. Notifications 表
     c.execute('''
         CREATE TABLE IF NOT EXISTS notifications (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,11 +111,11 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("数据库初始化完成！所有表格已就绪。")
+    # 这一行打印很重要，启动时你能立刻看到数据库真正生成在了哪里
+    print(f"✅ 数据库初始化完成！当前锁定路径: {DB_PATH}")
 
-# 运行初始化
-if __name__ == '__main__':
-    init_db()
+# 确保应用启动时强制执行建表
+init_db()
 
 
 # ==========================================
@@ -133,22 +140,19 @@ def login():
         u = request.form.get('username')
         p = request.form.get('password')
 
-        conn = sqlite3.connect('database.db')
-        db = conn.cursor()
+        conn = get_db_connection()
         
-        # 🌟 1. 修改修改：把 student_id 也查出来
-        # 现在 result[0]是id, result[1]是student_id, result[2]是password
-        db.execute("SELECT id, student_id, password FROM users WHERE username = ? OR student_id = ?", (u, u))
-        result = db.fetchone()
+        # 🌟 1. 改为 conn.execute，并直接在后面加上 .fetchone()
+        result = conn.execute("SELECT id, student_id, password FROM users WHERE username = ? OR student_id = ?", (u, u)).fetchone()
         conn.close()
 
         if result and result[2] == p: # 密码现在是索引 2
-            # 🌟 2. 核心修改：把你朋友要的“真实学号/名字”存进 session['user_id']
-            session['user_id'] = result[1]  # 👈 以前这里存的是 result[0](数字)，现在改成 result[1](学号/名字)
+            # 🌟 2. 核心修改：存入真实的 student_id
+            session['user_id'] = result[1]  
             session['username'] = u
             session['role'] = get_user_role(result[1])
             
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard')) # 确保你有 dashboard 这个路由，没有的话改成 home
         else:
             flash("Invalid Student ID or Password!", "danger")
             return redirect(url_for('login'))
@@ -164,25 +168,20 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # 🌟 名字必须和 HTML 里的 name="xxx" 一模一样
         u = request.form.get('username')   # 对应 HTML 的 fullname
         sid = request.form.get('studentid') # 对应 HTML 的 studentid
         p = request.form.get('password')
 
-        # 既然你的 HTML 删掉了“确认密码”，我们就先把那个 if p != cp 删掉
-        # 或者你在 HTML 里加一个 confirm_password 的输入框
+        conn = get_db_connection()
 
-        conn = sqlite3.connect('database.db')
-        db = conn.cursor()
-
-        # 检查是否已注册 (用 Student ID 检查更准)
-        db.execute("SELECT * FROM users WHERE username = ?", (u,))
-        if db.fetchone() is not None:
+        # 🌟 1. 改为 conn.execute，检查是否已注册
+        existing_user = conn.execute("SELECT * FROM users WHERE username = ?", (u,)).fetchone()
+        if existing_user is not None:
             conn.close()
             return render_template('register.html', error="User already exists!")
 
-        # 写入数据库
-        db.execute('''
+        # 🌟 2. 改为 conn.execute，写入数据库
+        conn.execute('''
             INSERT INTO users (username, student_id, password) 
             VALUES (?, ?, ?)
         ''', (u, sid, p))
@@ -190,7 +189,7 @@ def register():
         conn.close()
 
         print(f"🎉 注册成功: {u}")
-        return redirect(url_for('home')) # 或者跳到 login
+        return redirect(url_for('home')) # 注册成功后跳转
 
     return render_template('register.html')
 
@@ -276,7 +275,6 @@ def add_resource():
 
     if subject.strip() == "" or title.strip() == "" or description.strip() == "":
         error = "Please fill in all required fields"
-
         return render_template(
             "resources.html",
             error=error,
@@ -288,7 +286,6 @@ def add_resource():
     filename = None
 
     if file and file.filename != "":
-
         if not allowed_file(file.filename):
             flash("Invalid file type. Only PDF, DOCX, PPTX, PNG, JPG and JPEG are allowed.")
             return redirect(url_for('resources'))
@@ -297,14 +294,14 @@ def add_resource():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     try:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
-
-        c.execute(
+        # 🌟 1. 改用我们统一的绝对路径连接函数
+        conn = get_db_connection()
+        
+        # 🌟 2. 直接使用 conn.execute
+        conn.execute(
             "INSERT INTO resources (subject, title, description, file_name) VALUES (?, ?, ?, ?)",
             (subject, title, description, filename)
         )
-
         conn.commit()
 
     except sqlite3.Error as e:
@@ -506,7 +503,7 @@ def delete_resource(id):
 
 @app.route('/dashboard')
 def dashboard():
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     c = conn.cursor()
 
     c.execute("SELECT COUNT(*) FROM resources")
