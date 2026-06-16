@@ -189,11 +189,34 @@ button:hover{
       {% endif %}
     {% endwith %}
 
+    {% if session.get('role') == 'mentor' %}
+
     <form action="/add-resource" method="post" enctype="multipart/form-data">
 
-        <input type="text" name="subject" placeholder="Enter Subject Name (e.g. Math)"
-               value="{{ old_subject if old_subject else '' }}"
-               style="{% if error and not old_subject %}border:2px solid red{% endif %}">
+        {% if subjects|length == 0 %}
+
+        <div style="
+            padding:15px;
+            border:2px solid #111;
+            border-radius:12px;
+            margin-bottom:15px;
+        ">
+            No mentoring subjects found. Create a study session first.
+        </div>
+
+        {% endif %}
+
+        <select name="subject">
+
+            {% for subject in subjects %}
+
+                <option value="{{ subject['subject'] }}">
+                    {{ subject['subject'] }}
+                </option>
+
+            {% endfor %}
+
+        </select>
 
         {% if error and not old_subject is defined %}
         <p style="color:red; font-size:12px;">Subject is required</p>
@@ -222,6 +245,19 @@ button:hover{
         <button type="submit" style="background:#a7f3d0;">Add Resource</button>
 
     </form>
+    
+    {% else %}
+
+    <div style="
+    padding:15px;
+    border:2px solid #111;
+    border-radius:12px;
+    background:#f3f4f6;
+    ">
+        Create a study session first. Once you create a study session, you become a mentor and can upload resources for that subject.
+    </div>
+    
+    {% endif %}
 
 </div>
 

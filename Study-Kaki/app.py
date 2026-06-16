@@ -49,6 +49,24 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def is_mentor(student_id):
+
+    conn = get_db_connection()
+
+    mentor = conn.execute(
+        """
+        SELECT id
+        FROM sessions
+        WHERE created_by = ?
+        LIMIT 1
+        """,
+        (str(student_id),)
+    ).fetchone()
+
+    conn.close()
+
+    return mentor is not None
+
 def init_db():
     conn = get_db_connection() # 直接调用上面的统一连接
     c = conn.cursor()
@@ -150,7 +168,10 @@ def login():
             # 🌟 2. 核心修改：存入真实的 student_id
             session['user_id'] = result[1]  
             session['username'] = u
-            session['role'] = get_user_role(result[1])
+            if is_mentor(result[1]):
+                session['role'] = 'mentor'
+            else:
+                session['role'] = 'mentee'
             
             return redirect(url_for('dashboard')) # 确保你有 dashboard 这个路由，没有的话改成 home
         else:
@@ -262,7 +283,29 @@ def edit_profile():
 # ==========================================
 @app.route('/resources')
 def resources():
-    return render_template('resources.html')
+
+    if 'user_id' in session:
+
+        if is_mentor(session['user_id']):
+            session['role'] = 'mentor'
+        else:
+            session['role'] = 'mentee'
+
+    conn = get_db_connection()
+
+    subjects = conn.execute("""
+        SELECT DISTINCT subject
+        FROM sessions
+        WHERE created_by = ?
+        ORDER BY subject
+    """, (session['user_id'],)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        'resources.html',
+        subjects=subjects
+    )
 
 
 @app.route('/add-resource', methods=['POST'])
@@ -272,6 +315,25 @@ def add_resource():
     title = request.form['title']
     description = request.form['description']
     file = request.files['file']
+
+    conn = get_db_connection()
+
+    allowed_subject = conn.execute("""
+        SELECT 1
+        FROM sessions
+        WHERE created_by = ?
+        AND subject = ?
+        LIMIT 1
+    """, (
+        session['user_id'],
+        subject
+    )).fetchone()
+
+    conn.close()
+
+    if not allowed_subject:
+        flash("You can only upload resources for subjects you mentor.")
+        return redirect(url_for('resources'))
 
     if subject.strip() == "" or title.strip() == "" or description.strip() == "":
         error = "Please fill in all required fields"

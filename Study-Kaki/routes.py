@@ -249,6 +249,8 @@ def create_session():
         conn.commit()
         conn.close()
 
+        session['role'] = 'mentor'
+
         flash("Study session created successfully.")
         return redirect(url_for("study_session_routes.sessions"))
 
