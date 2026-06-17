@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}StudyKaki - 你的专属学习搭子{% endblock %}</title>
     
-    <!-- 引入你选择的 Outfit 字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* 基础重置 */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #fafaf9;
-            /* 你的手账风格网格背景 */
             background-image: 
                 linear-gradient(#e5e7eb 2px, transparent 2px),
                 linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
@@ -23,68 +24,104 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            color: #111;
         }
 
-        /* 👑 全局导航栏 */
+        /* Same navbar design as dashboard */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 5%;
+            padding: 20px 40px;
             background-color: #ffffff;
-            border-bottom: 3px solid #111; 
+            border-bottom: 4px solid #111;
+            width: 100%;
         }
 
-        .navbar-brand a {
+        .nav-left a {
+            text-decoration: none;
+            color: #111;
+        }
+
+        .nav-left h1 {
             font-size: 1.8rem;
-            font-weight: 800;
+            font-weight: 900;
+            margin: 0;
             color: #111;
-            text-decoration: none;
+            letter-spacing: 0;
         }
 
-        .navbar-brand span {
-            color: #6ee7b7; /* 配合你的薄荷绿 */
-            text-shadow: 1px 1px 0 #111;
+        .nav-left span {
+            color: #a7f3d0;
         }
 
-        .nav-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #111;
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-right span {
             font-weight: 700;
-            padding: 8px 16px;
-            border: 2px solid transparent;
-            transition: all 0.2s ease;
-            border-radius: 12px;
+            color: #111;
+            font-size: 1.1rem;
         }
 
-        .nav-links a:hover {
-            border: 2px solid #111;
-            background-color: #a7f3d0;
-            box-shadow: 3px 3px 0px #111;
+        .profile-box {
+            width: 50px;
+            height: 50px;
+            background: #c7d2fe;
+            border: 3px solid #111;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 4px 4px 0px #111;
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
-        /* 📦 核心内容区 */
+        .profile-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #111;
+        }
+
         .container {
             flex: 1;
             padding: 40px 20px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 居中你的卡片 */
+            align-items: center;
             justify-content: center;
             width: 100%;
         }
 
-        /* 🚨 报错提示条 */
-        .flash-messages { width: 100%; max-width: 450px; margin-bottom: 20px; }
-        .flash-message {
-            padding: 15px; border: 3px solid #111; border-radius: 15px;
-            margin-bottom: 10px; font-weight: 700; box-shadow: 4px 4px 0px #111;
+        .flash-messages {
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px;
         }
-        .flash-error { background-color: #ff6b6b; color: white; }
-        .flash-success { background-color: #a7f3d0; color: #111; }
 
-        /* --- 🎨 把你的 register-card 变成全局通用的 card-form --- */
+        .flash-message {
+            padding: 15px;
+            border: 3px solid #111;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            box-shadow: 4px 4px 0px #111;
+        }
+
+        .flash-error {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .flash-success {
+            background-color: #a7f3d0;
+            color: #111;
+        }
+
         .card-form {
             background: #ffffff;
             padding: 45px 40px;
@@ -93,7 +130,6 @@
             text-align: center;
             border-radius: 35px; 
             border: 3px solid #111111;
-            /* 你的浅绿色高级阴影 */
             box-shadow: 12px 12px 0px #dcfce7, 12px 12px 0px 3px #111111;
             transition: transform 0.2s ease;
         }
@@ -103,16 +139,45 @@
             box-shadow: 16px 16px 0px #dcfce7, 16px 16px 0px 3px #111111;
         }
 
-        .card-form h2 { color: #111; margin-bottom: 10px; font-size: 32px; font-weight: 700; letter-spacing: 1px; }
-        .card-form p.subtitle { color: #666; margin-bottom: 30px; font-weight: 600; }
-
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 8px; color: #111; font-size: 15px; font-weight: 600; }
-        .input-group input {
-            width: 100%; padding: 14px 18px; background-color: #f8f9fa;
-            border: 2px solid #111; border-radius: 20px; outline: none;
-            font-size: 15px; font-family: inherit; transition: all 0.3s;
+        .card-form h2 {
+            color: #111;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
+
+        .card-form p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #111;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #111;
+            border-radius: 20px;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
         .input-group input:focus {
             background-color: #fff;
             box-shadow: 4px 4px 0px #bbf7d0, 4px 4px 0px 2px #111;
@@ -120,32 +185,54 @@
         }
 
         .card-form button[type="submit"] {
-            width: 100%; padding: 16px; margin-top: 10px;
-            background: #a7f3d0; color: #111; font-size: 18px; font-weight: 700;
-            cursor: pointer; border: 3px solid #111; border-radius: 20px;
-            box-shadow: 4px 4px 0px #111; transition: all 0.2s;
-        }
-        .card-form button[type="submit"]:hover {
-            background: #6ee7b7; transform: translate(2px, 2px); box-shadow: 2px 2px 0px #111;
-        }
-        .card-form button[type="submit"]:active {
-            transform: translate(4px, 4px); box-shadow: 0px 0px 0px #111;
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            background: #a7f3d0;
+            color: #111;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 3px solid #111;
+            border-radius: 20px;
+            box-shadow: 4px 4px 0px #111;
+            transition: all 0.2s;
         }
 
-        .footer-links { margin-top: 25px; font-size: 15px; font-weight: 700; color: #666; }
-        .footer-links a {
-            color: #111; text-decoration: none; border-bottom: 2px solid transparent;
-            padding-bottom: 2px; transition: all 0.2s ease; margin-left: 5px;
+        .card-form button[type="submit"]:hover {
+            background: #6ee7b7;
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #111;
         }
-        .footer-links a:hover { border-bottom: 2px solid #111; transform: translateY(-1px); }
+
+        .footer-links {
+            margin-top: 25px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .footer-links a {
+            color: #111;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.2s ease;
+            margin-left: 5px;
+        }
+
+        .footer-links a:hover {
+            border-bottom: 2px solid #111;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
-<body>
-    
 
-    <!-- 核心内容区 -->
+<body>
+
+    {% block navbar %}{% endblock %}
+
     <main class="container">
-        <!-- 错误提示接收区 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -156,7 +243,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- 子页面填坑处 -->
         {% block content %}{% endblock %}
     </main>
 

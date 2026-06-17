@@ -1,39 +1,31 @@
-<nav style="
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 20px 40px; 
-    background-color: #fff; 
-    border-bottom: 4px solid #111; 
-    width: 100%;
-">
+{% extends "base.html" %}
+
+{% block title %}StudyKaki - 你的专属学习搭子{% endblock %}
+
+{% block navbar %}
+<nav class="navbar">
     <div class="nav-left">
-        <h1 style="font-size: 1.8rem; font-weight: 900; margin: 0;">STUDY<span style="color: #a7f3d0;">KAKI</span></h1>
+        <a href="{{ url_for('dashboard') }}">
+            <h1>STUDY<span>KAKI</span></h1>
+        </a>
     </div>
 
-    <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
-        <span style="font-weight: 700; color: #111; font-size: 1.1rem;">
+    <div class="nav-right">
+        <span>
             Hello, {{ session.get('username', 'User') }}
         </span>
+
         <a href="{{ url_for('profile') }}" style="text-decoration: none;">
-            <div class="profile-box" style="
-                width: 50px; height: 50px; background: #c7d2fe; 
-                border: 3px solid #111; border-radius: 50%; 
-                display: flex; justify-content: center; align-items: center; 
-                font-size: 1.5rem; box-shadow: 4px 4px 0px #111; 
-                transition: all 0.2s; cursor: pointer;
-            " 
-            onmouseover="this.style.transform='translate(-2px, -2px)'; this.style.boxShadow='6px 6px 0px #111';"
-            onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='4px 4px 0px #111';">
+            <div class="profile-box">
                 👤
             </div>
         </a>
     </div>
 </nav>
-
-{% extends "base.html" %}
+{% endblock %}
 
 {% block content %}
+
 <div class="bento-container">
     
     <div class="bento-column left-panel">
@@ -80,9 +72,9 @@
             </div>
 
             <a href="{{ url_for('study_session_routes.sessions') }}" 
-            class="portal-btn" 
-            style="background: #fde047; margin-top: 30px;">
-            Enter Study Rooms →
+               class="portal-btn" 
+               style="background: #fde047; margin-top: 30px;">
+                Enter Study Rooms →
             </a> 
 
         </div>
@@ -92,7 +84,6 @@
 </div>
 
 <style>
-    /* 2 列网格大布局 */
     .bento-container {
         display: grid;
         grid-template-columns: 1fr 1.4fr; 
@@ -109,7 +100,6 @@
         gap: 25px;
     }
     
-    /* 基础粗野主义框框 */
     .bento-item {
         background: #fff;
         border: 3px solid #111;
@@ -118,9 +108,10 @@
         box-shadow: 8px 8px 0px #111;
     }
 
-    .welcome-card { background: #c7d2fe; } 
+    .welcome-card {
+        background: #c7d2fe;
+    } 
 
-    /* 新设计的粗野主义传送门大按钮 */
     .portal-btn {
         display: block;
         text-align: center;
@@ -139,5 +130,12 @@
         transform: translate(3px, 3px);
         box-shadow: 2px 2px 0px #111;
     }
+
+    @media screen and (max-width: 900px) {
+        .bento-container {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
+
 {% endblock %}

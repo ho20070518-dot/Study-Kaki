@@ -1,59 +1,17 @@
-/* Page Background */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #ffffff;
-    background-image:
-        linear-gradient(#eeeeee 1px, transparent 1px),
-        linear-gradient(90deg, #eeeeee 1px, transparent 1px);
-    background-size: 30px 30px;
-    color: #111111;
-}
-
-/* Main Container */
 .edit-page {
-    width: 900px;
-    margin: 60px auto;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/* Logo */
-.logo-text {
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: 6px;
-    color: #111111;
-}
-
-.logo-text span {
-    color: #7ee0bd;
-}
-
-/* Clickable Logo Link */
-.logo-link {
-    text-decoration: none;
-    color: inherit;
-    display: inline-block;
-}
-
-.logo-link:hover {
-    cursor: pointer;
-}
-
-/* Top Line */
-.top-line {
-    border: none;
-    border-top: 4px solid #111111;
-    margin: 25px 0 55px 0;
-}
-
-/* Page Title */
-h1 {
+.edit-page h1 {
     font-size: 42px;
-    letter-spacing: 3px;
+    letter-spacing: 0;
     margin-bottom: 30px;
     font-weight: 900;
+    color: #111111;
 }
 
-/* Form Box */
 .edit-form {
     background-color: #ffffff;
     border: 3px solid #111111;
@@ -62,19 +20,17 @@ h1 {
     box-shadow: 10px 10px 0px #111111;
 }
 
-/* Form Group */
 .form-group {
     margin-bottom: 22px;
 }
 
 .form-group label {
     display: block;
-    font-weight: bold;
+    font-weight: 800;
     margin-bottom: 8px;
     font-size: 16px;
 }
 
-/* Inputs and Select */
 .form-group input,
 .form-group select {
     width: 100%;
@@ -85,6 +41,7 @@ h1 {
     background-color: #ffffff;
     box-sizing: border-box;
     outline: none;
+    font-family: inherit;
 }
 
 .form-group input:focus,
@@ -92,14 +49,12 @@ h1 {
     box-shadow: 4px 4px 0px #111111;
 }
 
-/* Date and Time Row */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 18px;
 }
 
-/* 24-hour Time Selector */
 .time-select-row {
     display: flex;
     align-items: center;
@@ -115,7 +70,8 @@ h1 {
     background-color: #ffffff;
     box-sizing: border-box;
     outline: none;
-    font-weight: bold;
+    font-weight: 800;
+    font-family: inherit;
 }
 
 .time-select-row select:focus {
@@ -128,26 +84,26 @@ h1 {
     color: #111111;
 }
 
-/* Button Area */
 .button-area {
     display: flex;
     gap: 15px;
     margin-top: 30px;
 }
 
-/* Buttons */
 .update-btn,
 .back-btn {
     padding: 14px 28px;
     border: 3px solid #111111;
     border-radius: 8px;
-    font-weight: bold;
+    font-weight: 800;
     text-decoration: none;
     box-shadow: 5px 5px 0px #111111;
+    font-family: inherit;
+    transition: all 0.15s ease;
 }
 
 .update-btn {
-    background-color: #9ff0d0;
+    background-color: #a7f3d0;
     color: #111111;
     cursor: pointer;
     font-size: 15px;
@@ -164,11 +120,9 @@ h1 {
     box-shadow: 3px 3px 0px #111111;
 }
 
-/* Responsive */
 @media screen and (max-width: 950px) {
     .edit-page {
-        width: 90%;
-        margin: 40px auto;
+        width: 100%;
     }
 
     .form-row {

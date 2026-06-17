@@ -2,19 +2,33 @@
 
 {% block title %}Study Sessions - StudyKaki{% endblock %}
 
+{% block navbar %}
+<nav class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('dashboard') }}">
+            <h1>STUDY<span>KAKI</span></h1>
+        </a>
+    </div>
+
+    <div class="nav-right">
+        <span>
+            Hello, {{ current_user if current_user is defined and current_user else 'User' }}
+        </span>
+
+        <a href="{{ url_for('profile') }}" style="text-decoration: none;">
+            <div class="profile-box">
+                👤
+            </div>
+        </a>
+    </div>
+</nav>
+{% endblock %}
+
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/session_style.css') }}">
 
 <div class="session-page">
-
-    <a href="/dashboard" class="logo-link">
-        <div class="logo-text">
-            STUDY<span>KAKI</span>
-        </div>
-    </a>
-
-    <hr class="top-line">
 
     <h1>Study Sessions</h1>
 
@@ -54,16 +68,6 @@
             Search result for: <strong>{{ search_query }}</strong>
         </p>
     {% endif %}
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="notification-box">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
 
     {% if sessions %}
 
