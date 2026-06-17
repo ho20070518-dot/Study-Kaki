@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, s
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import RequestEntityTooLarge
 from functools import wraps
 
 # ==========================================
@@ -16,7 +17,9 @@ DB_PATH = os.path.join(BASE_DIR, "database.db")
 app = Flask(__name__)
 app.secret_key = 'studykaki_secret_key_123'
 
-UPLOAD_FOLDER = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
 
@@ -110,9 +113,18 @@ def init_db():
             title TEXT NOT NULL,
             description TEXT NOT NULL,
             subject TEXT NOT NULL,
-            file_name TEXT
+            file_name TEXT,
+            uploaded_by TEXT
         )
     ''')
+
+    try:
+        c.execute("""
+            ALTER TABLE resources
+            ADD COLUMN uploaded_by TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
     
     # 4. Notifications 表
     c.execute('''
@@ -284,12 +296,13 @@ def edit_profile():
 @app.route('/resources')
 def resources():
 
-    if 'user_id' in session:
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
-        if is_mentor(session['user_id']):
-            session['role'] = 'mentor'
-        else:
-            session['role'] = 'mentee'
+    if is_mentor(session['user_id']):
+        session['role'] = 'mentor'
+    else:
+        session['role'] = 'mentee'
 
     conn = get_db_connection()
 
@@ -361,8 +374,18 @@ def add_resource():
         
         # 🌟 2. 直接使用 conn.execute
         conn.execute(
-            "INSERT INTO resources (subject, title, description, file_name) VALUES (?, ?, ?, ?)",
-            (subject, title, description, filename)
+            """
+            INSERT INTO resources
+            (subject, title, description, file_name, uploaded_by)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                subject,
+                title,
+                description,
+                filename,
+                session['user_id']
+            )
         )
         conn.commit()
 
@@ -382,11 +405,17 @@ def edit_resource(id):
 
     c.execute("SELECT * FROM resources WHERE id = ?", (id,))
     resource = c.fetchone()
+    
+    if resource is None:
+        conn.close()
+        return "Resource not found"
+
+    if resource[5] != session['user_id']:
+        conn.close()
+        flash("You are not allowed to edit this resource.")
+        return redirect(url_for('resources_list'))
 
     conn.close()
- 
-    if resource is None:
-        return "Resource not found"
 
     return render_template("edit_resources.html", resource=resource)
 
@@ -403,6 +432,22 @@ def update_resource(id):
     try:
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
+
+        c.execute(
+            "SELECT uploaded_by FROM resources WHERE id=?",
+            (id,)
+        )
+
+        resource = c.fetchone()
+
+        if resource is None:
+            conn.close()
+            return "Resource not found"
+
+        if resource[0] != session['user_id']:
+            conn.close()
+            flash("You are not allowed to update this resource.")
+            return redirect(url_for('resources_list'))
 
         c.execute(
             "UPDATE resources SET title=?, description=? WHERE id=?",
@@ -532,11 +577,24 @@ def delete_resource(id):
         c = conn.cursor()
 
         c.execute(
-            "SELECT file_name FROM resources WHERE id=?",
+            """
+            SELECT file_name, uploaded_by
+            FROM resources
+            WHERE id=?
+            """,
             (id,)
         )
 
         resource = c.fetchone()
+
+        if resource is None:
+            conn.close()
+            return "Resource not found"
+
+        if resource[1] != session['user_id']:
+            conn.close()
+            flash("You are not allowed to delete this resource.")
+            return redirect(url_for('resources_list'))
 
         if resource and resource[0]:
             filepath = os.path.join(
@@ -562,6 +620,15 @@ def delete_resource(id):
 
     return redirect(url_for('resources_list'))
 
+@app.errorhandler(RequestEntityTooLarge)
+def handle_file_too_large(e):
+
+    flash(
+        "File size exceeds 16 MB limit.",
+        "danger"
+    )
+
+    return redirect(url_for('resources'))
 
 @app.route('/dashboard')
 def dashboard():
