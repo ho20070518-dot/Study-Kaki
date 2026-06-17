@@ -5,98 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resource Board</title>
 
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/resources.css') }}">
 
-body{
-    font-family:Arial, sans-serif;
-    min-height:100vh;
-    margin:0;
-    padding:0;
-
-    background-color:#fdfaf6;
-    background-image:
-    linear-gradient(#e5e7eb 2px, transparent 2px), 
-    linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
-
-    background-size:40px 40px;
-}
-
-.container{
-    max-width:900px;
-    margin:40px auto;
-    background:white;
-    padding:35px;
-    border-radius:28px;
-    border:3px solid #111;
-    box-shadow:12px 12px 0px #111;
-}
-
-.navbar{
-    background:#111;
-    padding:16px 18px;
-    border-radius:18px;
-    margin-bottom:30px;
-    box-shadow:4px 4px 0px #514d4d;
-}
-
-.navbar a{
-    color:white;
-    text-decoration:none;
-    margin-right:18px;
-    font-weight:700;
-}
-
-h1{
-    margin-bottom:20px;
-    color:#111;
-}
-
-form{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    width:350px;
-}
-
-input, textarea{
-    padding:14px;
-    border:2px solid #111;
-    border-radius:16px;
-    background:#f8f9fa;
-}
-
-button{
-    padding:14px;
-
-    border:3px solid #111;
-    border-radius:18px;
-
-    background:#c7d2fe;
-
-    font-weight:bold;
-    font-size:15px;
-
-    cursor:pointer;
-
-    box-shadow:4px 4px 0px #111;
-
-    transition:0.2s;
-}
-
-button:hover{
-    transform:translate(2px,2px);
-    box-shadow:2px 2px 0px #111;
-}
-
-.link-btn{
-    margin-top:20px;
-}
-</style>
 </head>
 
 <body>
@@ -206,7 +117,11 @@ button:hover{
 
         {% endif %}
 
-        <select name="subject">
+        <select name="subject" required>
+
+            <option value="" disabled selected>
+                Select a Subject
+            </option>
 
             {% for subject in subjects %}
 
@@ -231,10 +146,8 @@ button:hover{
         {% endif %}
 
         <textarea name="description" 
-               placeholder="Enter description (e.g. Tutorial 1, Lecture Notes, Set 1)"
-                  style="{% if error and not old_description %}border:2px solid red{% endif %}">
-        {{ old_description if old_description else '' }}
-        </textarea>
+                  placeholder="Enter description (e.g. Tutorial 1, Lecture Notes, Set 1)"
+                  style="{% if error and not old_description %}border:2px solid red{% endif %}">{{ old_description if old_description else '' }}</textarea>
         
         {% if error and not old_description %}
         <p style="color:red; font-size:12px;">Description is required</p>

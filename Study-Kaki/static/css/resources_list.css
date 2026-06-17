@@ -1,0 +1,135 @@
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    min-height:100vh;
+    margin:0;
+    padding:0;
+
+    background-color:#fdfaf6;
+    background-image:
+    linear-gradient(#e5e7eb 2px, transparent 2px),
+    linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
+
+    background-size:40px 40px;
+}
+
+.container{
+    max-width:1000px;
+    margin:40px auto;
+    background:white;
+    padding:35px;
+    border-radius:28px;
+    border:3px solid #111;
+    box-shadow:12px 12px 0px #111;
+}
+
+.navbar{
+    background:#111;
+    padding:16px 18px;
+    border-radius:18px;
+    margin-bottom:30px;
+    box-shadow:4px 4px 0px #514d4d;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    margin-right:18px;
+    font-weight:700;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.search-box{
+    margin-bottom:20px;
+}
+
+input{
+    padding:12px;
+    width:260px;
+    border:2px solid #111;
+    border-radius:14px;
+}
+
+button{
+    padding:14px;
+
+    border:3px solid #111;
+    border-radius:18px;
+
+    background:#c7d2fe;
+
+    font-weight:bold;
+    font-size:15px;
+
+    cursor:pointer;
+
+    box-shadow:4px 4px 0px #111;
+
+    transition:0.2s;
+}
+
+button:hover{
+    transform:translate(2px,2px);
+    box-shadow:2px 2px 0px #111;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+    margin-top:20px;
+}
+
+.card{
+    background:#f8fafc;
+    border:2px solid #111;
+    padding:18px;
+    border-radius:18px;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    margin-bottom: 12px;
+}
+
+.card a {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.download{
+    background:#a7f3d0;
+    color:#111;
+    border:2px solid #111;
+}
+
+.download:hover{
+    background:#16a34a;
+    transform:translate(2px,2px);
+    box-shadow:2px 2px 0px #111;
+}
+
+.edit{
+    background:#fde68a;
+    color:#111;
+}
+
+.delete{
+    background:#ef4444;
+    color:#111;
+}
