@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Q&A Corner</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
 <link rel="stylesheet"
       href="{{ url_for('static', filename='css/resources.css') }}">
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/qna.css') }}">
 
 </head>
 
@@ -29,11 +32,7 @@
         <a href="{{ url_for('dashboard') }}"
            style="text-decoration:none;color:#111;">
 
-            <h1 style="
-                font-size:1.8rem;
-                font-weight:900;
-                margin:0;
-            ">
+            <h1 class="logo">
                 STUDY<span style="color:#a7f3d0;">KAKI</span>
             </h1>
 
@@ -86,11 +85,43 @@
 
     <h1>Q&A Corner</h1>
 
-    <a href="/ask-question" class="portal-btn">
-        Ask Question
-    </a>
+    <div class="qna-toolbar">
 
-    <br><br>
+        <a href="/ask-question" class="ask-btn">
+              Ask Question
+        </a>
+
+        <form method="GET" class="sort-form">
+
+            <select name="sort"
+                    onchange="this.form.submit()"
+                    class="sort-select">
+
+                <option value="newest"
+                    {% if sort == "newest" %}selected{% endif %}>
+                    📅 Newest
+                </option>
+
+               <option value="oldest"
+                    {% if sort == "oldest" %}selected{% endif %}>
+                    🕒 Oldest
+                </option>
+
+                <option value="az"
+                    {% if sort == "az" %}selected{% endif %}>
+                    🔤 Z-A
+                </option>
+
+                <option value="za"
+                    {% if sort == "za" %}selected{% endif %}>
+                    🔡 A-Z
+                </option>
+
+            </select>
+
+        </form>
+
+    </div>
 
     {% if questions|length == 0 %}
 
@@ -107,66 +138,91 @@
 
     {% for question in questions %}
 
-        <div style="
-            border:3px solid #111;
-            border-radius:18px;
-            padding:20px;
-            margin-top:18px;
-            background:white;
-            box-shadow:4px 4px 0px #111;
-        ">
+        <div class="question-card"
+             onclick="window.location='/question/{{ question['id'] }}'">
 
-            <h3>
-                <a href="/question/{{ question['id'] }}"
-                   style="
-                   color:#111;
-                   text-decoration:none;
-                   ">
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:15px;
+            ">
+
+                <h3 style="margin:0;">
                     {{ question['title'] }}
-                </a>
-            </h3>
+                </h3>
 
-           <p>
-                Subject:
+                {% if question['created_by'] == session['user_id'] %}
+
+                <div style="
+                    display:flex;
+                    gap:8px;
+                ">
+
+                    <a href="/edit-question/{{ question['id'] }}"
+                       onclick="event.stopPropagation();"
+                       style="
+                            text-decoration:none;
+                            background:#dbeafe;
+                            color:#1e3a8a;
+                            padding:8px 14px;
+                            border-radius:999px;
+                            border:2px solid #111;
+                            font-size:13px;
+                            font-weight:700;
+                       ">
+                        ✏️ Edit
+                    </a>
+
+                    <a href="/delete-question/{{ question['id'] }}"
+                       onclick="
+                            event.stopPropagation();
+                            return confirm('Delete this question?');
+                       "
+                       style="
+                            text-decoration:none;
+                            background:#fee2e2;
+                            color:#991b1b;
+                            padding:8px 14px;
+                            border-radius:999px;
+                            border:2px solid #111;
+                            font-size:13px;
+                            font-weight:700;
+                       ">
+                        🗑 Delete
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <p style="margin-top:12px;">
+                <strong>Subject:</strong>
                 {{ question['subject'] }}
             </p>
 
             <p>
-                Topic:
+                <strong>Topic:</strong>
                 {{ question['topic'] }}
             </p>
 
             <p>
-                {{ question['content'] }}
+                {{ question['content'][:200] }}
+                {% if question['content']|length > 200 %}
+                    ...
+                {% endif %}
             </p>
 
             <p style="
                 color:#6b7280;
                 font-size:14px;
+                margin-top:10px;
             ">
                 Posted By:
                 {{ question['created_by'] }}
             </p>
-
-            {% if question['created_by'] == session['user_id'] %}
-
-            <div style="margin-top:12px;">
-
-                <a href="/edit-question/{{ question['id'] }}"
-                   class="portal-btn"
-                   style="margin-right:10px;">
-                    Edit
-                </a>
-
-                <a href="/delete-question/{{ question['id'] }}"
-                   class="portal-btn"
-                   onclick="return confirm('Delete this question?')">
-                    Delete
-                </a>
-
-            </div>
-
-           {% endif %}
 
         </div>
 

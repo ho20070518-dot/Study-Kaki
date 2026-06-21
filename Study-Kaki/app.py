@@ -186,14 +186,14 @@ def init_db():
         )
         ''')
     
-    c.execute("""
+    c.execute('''
         CREATE TABLE IF NOT EXISTS answer_votes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             answer_id INTEGER NOT NULL,
             user_id TEXT NOT NULL,
             vote_type TEXT NOT NULL
-         )
-        """)
+        )
+    ''')
     
     c.execute("""
         CREATE TABLE IF NOT EXISTS question_votes (
@@ -604,23 +604,55 @@ def questions():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
+    sort = request.args.get('sort', 'newest')
+
     conn = get_db_connection()
 
-    questions = conn.execute("""
-        SELECT *
-        FROM questions
-        ORDER BY id DESC
-    """).fetchall()
+    if sort == 'oldest':
+
+        questions = conn.execute("""
+            SELECT *
+            FROM questions
+            ORDER BY id ASC
+        """).fetchall()
+
+    elif sort == 'az':
+
+        questions = conn.execute("""
+            SELECT *
+            FROM questions
+            ORDER BY title ASC
+        """).fetchall()
+
+    elif sort == 'za':
+
+        questions = conn.execute("""
+            SELECT *
+            FROM questions
+            ORDER BY title DESC
+        """).fetchall()
+
+    else:
+
+        questions = conn.execute("""
+            SELECT *
+            FROM questions
+            ORDER BY id DESC
+        """).fetchall()
 
     conn.close()
 
     return render_template(
         "questions.html",
-        questions=questions
+        questions=questions,
+        sort=sort
     )
 
 @app.route('/question/<int:id>')
 def question_detail(id):
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
 
@@ -629,6 +661,10 @@ def question_detail(id):
         FROM questions
         WHERE id = ?
     """, (id,)).fetchone()
+
+    if question is None:
+        conn.close()
+        return "Question not found"
 
     answers = conn.execute("""
         SELECT *
@@ -653,6 +689,13 @@ def add_answer(question_id):
 
     answer_text = request.form['answer_text']
 
+    if answer_text.strip() == "":
+        flash("Reply cannot be empty.")
+        return redirect(url_for(
+            'question_detail',
+            id=question_id
+        ))
+
     conn = get_db_connection()
 
     conn.execute("""
@@ -671,6 +714,221 @@ def add_answer(question_id):
     ))
 
     conn.commit()
+    conn.close()
+
+    return redirect(url_for(
+        'question_detail',
+        id=question_id
+    ))
+
+@app.route('/edit-answer/<int:answer_id>', methods=['GET', 'POST'])
+def edit_answer(answer_id):
+
+    conn = sqlite3.connect('studykaki.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM answers
+        WHERE id = ?
+    """, (answer_id,))
+
+    answer = cursor.fetchone()
+
+    if not answer:
+        conn.close()
+        flash("Reply not found.")
+        return redirect('/questions')
+
+    if answer['answered_by'] != session.get('user_id'):
+        conn.close()
+        flash("You can only edit your own reply.")
+        return redirect(f"/question/{answer['question_id']}")
+
+    if request.method == 'POST':
+
+        new_text = request.form['answer_text']
+
+        cursor.execute("""
+            UPDATE answers
+            SET answer_text = ?
+            WHERE id = ?
+        """, (new_text, answer_id))
+
+        conn.commit()
+        conn.close()
+
+        flash("Reply updated successfully.")
+        return redirect(f"/question/{answer['question_id']}")
+
+    conn.close()
+
+    return render_template(
+        'edit_answer.html',
+        answer=answer
+    )
+
+@app.route('/delete-answer/<int:answer_id>')
+def delete_answer(answer_id):
+
+    conn = sqlite3.connect('studykaki.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM answers
+        WHERE id = ?
+    """, (answer_id,))
+
+    answer = cursor.fetchone()
+
+    if not answer:
+        conn.close()
+        flash("Reply not found.")
+        return redirect('/questions')
+
+    if answer['answered_by'] != session.get('user_id'):
+        conn.close()
+        flash("You can only delete your own reply.")
+        return redirect(f"/question/{answer['question_id']}")
+
+    question_id = answer['question_id']
+
+    cursor.execute("""
+        DELETE FROM answers
+        WHERE id = ?
+    """, (answer_id,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Reply deleted successfully.")
+
+    return redirect(f"/question/{question_id}")
+
+@app.route('/vote-answer/<int:answer_id>/<vote_type>')
+def vote_answer(answer_id, vote_type):
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+
+    answer = conn.execute("""
+        SELECT question_id
+        FROM answers
+        WHERE id = ?
+    """, (answer_id,)).fetchone()
+
+    if answer is None:
+        conn.close()
+        return redirect(url_for('questions'))
+
+    existing_vote = conn.execute("""
+        SELECT *
+        FROM answer_votes
+        WHERE answer_id = ?
+        AND user_id = ?
+    """,
+    (
+        answer_id,
+        session['user_id']
+    )).fetchone()
+
+    if existing_vote:
+
+        if existing_vote['vote_type'] == vote_type:
+
+            conn.execute("""
+                DELETE FROM answer_votes
+                WHERE id = ?
+            """, (existing_vote['id'],))
+
+            if vote_type == "up":
+
+                conn.execute("""
+                    UPDATE answers
+                    SET upvotes = upvotes - 1
+                    WHERE id = ?
+                """, (answer_id,))
+
+            else:
+
+                conn.execute("""
+                    UPDATE answers
+                    SET downvotes = downvotes - 1
+                    WHERE id = ?
+                """, (answer_id,))
+
+        else:
+
+            conn.execute("""
+                UPDATE answer_votes
+                SET vote_type = ?
+                WHERE id = ?
+            """,
+            (
+                vote_type,
+                existing_vote['id']
+            ))
+
+            if vote_type == "up":
+
+                conn.execute("""
+                    UPDATE answers
+                    SET upvotes = upvotes + 1,
+                        downvotes = downvotes - 1
+                    WHERE id = ?
+                """, (answer_id,))
+
+            else:
+
+                conn.execute("""
+                    UPDATE answers
+                    SET downvotes = downvotes + 1,
+                        upvotes = upvotes - 1
+                    WHERE id = ?
+                """, (answer_id,))
+
+    else:
+
+        conn.execute("""
+            INSERT INTO answer_votes
+            (
+                answer_id,
+                user_id,
+                vote_type
+            )
+            VALUES (?, ?, ?)
+        """,
+        (
+            answer_id,
+            session['user_id'],
+            vote_type
+        ))
+
+        if vote_type == "up":
+
+            conn.execute("""
+                UPDATE answers
+                SET upvotes = upvotes + 1
+                WHERE id = ?
+            """, (answer_id,))
+
+        else:
+
+            conn.execute("""
+                UPDATE answers
+                SET downvotes = downvotes + 1
+                WHERE id = ?
+            """, (answer_id,))
+
+    conn.commit()
+
+    question_id = answer['question_id']
+
     conn.close()
 
     return redirect(
@@ -785,60 +1043,6 @@ def delete_question(id):
     conn.close()
 
     return redirect(url_for('questions'))
-
-@app.route('/edit-answer/<int:id>')
-def edit_answer(id):
-
-    conn = get_db_connection()
-
-    answer = conn.execute("""
-        SELECT *
-        FROM answers
-        WHERE id = ?
-    """,(id,)).fetchone()
-
-    if answer["answered_by"] != session["user_id"]:
-        conn.close()
-        return redirect(url_for('questions'))
-
-    conn.close()
-
-    return render_template(
-        "edit_answer.html",
-        answer=answer
-    )
-
-@app.route('/delete-answer/<int:id>')
-def delete_answer(id):
-
-    conn = get_db_connection()
-
-    answer = conn.execute("""
-        SELECT *
-        FROM answers
-        WHERE id = ?
-    """,(id,)).fetchone()
-
-    question_id = answer["question_id"]
-
-    if answer["answered_by"] != session["user_id"]:
-        conn.close()
-        return redirect(url_for('questions'))
-
-    conn.execute("""
-        DELETE FROM answers
-        WHERE id = ?
-    """,(id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(
-        url_for(
-            'question_detail',
-            id=question_id
-        )
-    )
 
 @app.route('/get-topics/<subject>')
 def get_topics(subject):
