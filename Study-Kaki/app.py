@@ -7,6 +7,7 @@ import os
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 from functools import wraps
+from flask import jsonify
 
 # ==========================================
 # 1. 绝对路径锁死（彻底解决外围生成问题）
@@ -114,7 +115,10 @@ def init_db():
             description TEXT NOT NULL,
             subject TEXT NOT NULL,
             file_name TEXT,
-            uploaded_by TEXT
+            uploaded_by TEXT,
+            post_type TEXT DEFAULT 'resource',
+            upvotes INTEGER DEFAULT 0,
+            downvotes INTEGER DEFAULT 0  
         )
     ''')
 
@@ -125,6 +129,80 @@ def init_db():
         """)
     except sqlite3.OperationalError:
         pass
+
+    try:
+        c.execute("""
+            ALTER TABLE resources
+            ADD COLUMN post_type TEXT DEFAULT 'resource'
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        c.execute("""
+            ALTER TABLE resources
+            ADD COLUMN upvotes INTEGER DEFAULT 0
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        c.execute("""
+            ALTER TABLE resources
+            ADD COLUMN downvotes INTEGER DEFAULT 0
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS questions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject TEXT NOT NULL,
+            topic TEXT NOT NULL,
+            resource_id INTEGER,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_by TEXT NOT NULL
+        )
+        ''')
+    
+    try:
+        c.execute("""
+            ALTER TABLE questions
+            ADD COLUMN resource_id INTEGER
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS answers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question_id INTEGER NOT NULL,
+            answer_text TEXT NOT NULL,
+            answered_by TEXT NOT NULL,
+            upvotes INTEGER DEFAULT 0,
+            downvotes INTEGER DEFAULT 0
+        )
+        ''')
+    
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS answer_votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            answer_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,
+            vote_type TEXT NOT NULL
+         )
+        """)
+    
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS question_votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,
+           vote_type TEXT NOT NULL
+        )
+        """)
     
     # 4. Notifications 表
     c.execute('''
@@ -418,11 +496,12 @@ def add_resource():
 @app.route('/edit-resource/<int:id>')
 @mentor_only
 def edit_resource(id):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+    conn = get_db_connection()
 
-    c.execute("SELECT * FROM resources WHERE id = ?", (id,))
-    resource = c.fetchone()
+    resource = conn.execute(
+        "SELECT * FROM resources WHERE id = ?",
+        (id,)
+    ).fetchone()
     
     if resource is None:
         conn.close()
@@ -448,15 +527,12 @@ def update_resource(id):
         return redirect(url_for('edit_resource', id=id))
 
     try:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
+        conn = get_db_connection()
 
-        c.execute(
+        resource = conn.execute(
             "SELECT uploaded_by FROM resources WHERE id=?",
             (id,)
-        )
-
-        resource = c.fetchone()
+        ).fetchone()
 
         if resource is None:
             conn.close()
@@ -467,7 +543,7 @@ def update_resource(id):
             flash("You are not allowed to update this resource.")
             return redirect(url_for('resources_list'))
 
-        c.execute(
+        conn.execute(
             "UPDATE resources SET title=?, description=? WHERE id=?",
             (title, description, id)
         )
@@ -489,27 +565,26 @@ def resources_list():
     subject_filter = request.args.get('subject')
 
     try:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
+        conn = get_db_connection()
 
         if subject_filter:
-            c.execute(
+            data = conn.execute(
                 "SELECT * FROM resources WHERE subject = ?",
                 (subject_filter,)
-            )
+            ).fetchall()
 
         elif query:
-            c.execute(
+            data = conn.execute(
                 "SELECT * FROM resources WHERE title LIKE ? OR description LIKE ? OR subject LIKE ?",
                 ('%' + query + '%',
                  '%' + query + '%',
                  '%' + query + '%')
-            )
+            ).fetchall()
 
         else:
-            c.execute("SELECT * FROM resources")
-
-        data = c.fetchall()
+            data = conn.execute(
+                "SELECT * FROM resources"
+            ).fetchall()
 
     except sqlite3.Error as e:
         return f"Database Error: {e}"
@@ -522,6 +597,322 @@ def resources_list():
         resources=data,
         query=query
     )
+
+@app.route('/questions')
+def questions():
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+
+    questions = conn.execute("""
+        SELECT *
+        FROM questions
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "questions.html",
+        questions=questions
+    )
+
+@app.route('/question/<int:id>')
+def question_detail(id):
+
+    conn = get_db_connection()
+
+    question = conn.execute("""
+        SELECT *
+        FROM questions
+        WHERE id = ?
+    """, (id,)).fetchone()
+
+    answers = conn.execute("""
+        SELECT *
+        FROM answers
+        WHERE question_id = ?
+        ORDER BY id DESC
+    """, (id,)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "question_detail.html",
+        question=question,
+        answers=answers
+    )
+
+@app.route('/add-answer/<int:question_id>', methods=['POST'])
+def add_answer(question_id):
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    answer_text = request.form['answer_text']
+
+    conn = get_db_connection()
+
+    conn.execute("""
+        INSERT INTO answers
+        (
+            question_id,
+            answer_text,
+            answered_by
+        )
+        VALUES (?, ?, ?)
+    """,
+    (
+        question_id,
+        answer_text,
+        session['user_id']
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            'question_detail',
+            id=question_id
+        )
+    )
+
+@app.route('/ask-question')
+def ask_question():
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+
+    subjects = conn.execute("""
+        SELECT DISTINCT subject
+        FROM resources
+        ORDER BY subject
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "ask_question.html",
+        subjects=subjects
+    )
+
+@app.route('/edit-question/<int:id>')
+def edit_question(id):
+
+    conn = get_db_connection()
+
+    question = conn.execute("""
+        SELECT *
+        FROM questions
+        WHERE id = ?
+    """,(id,)).fetchone()
+
+    if question["created_by"] != session["user_id"]:
+        conn.close()
+        flash("Permission denied")
+        return redirect(url_for('questions'))
+
+    conn.close()
+
+    return render_template(
+        "edit_question.html",
+        question=question
+    )
+
+@app.route('/update-question/<int:id>', methods=['POST'])
+def update_question(id):
+
+    conn = get_db_connection()
+
+    question = conn.execute("""
+        SELECT *
+        FROM questions
+        WHERE id = ?
+    """,(id,)).fetchone()
+
+    if question["created_by"] != session["user_id"]:
+        conn.close()
+        return redirect(url_for('questions'))
+
+    conn.execute("""
+        UPDATE questions
+        SET title = ?,
+            content = ?
+        WHERE id = ?
+    """,
+    (
+        request.form["title"],
+        request.form["content"],
+        id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('questions'))
+
+@app.route('/delete-question/<int:id>')
+def delete_question(id):
+
+    conn = get_db_connection()
+
+    question = conn.execute("""
+        SELECT *
+        FROM questions
+        WHERE id = ?
+    """,(id,)).fetchone()
+
+    if question["created_by"] != session["user_id"]:
+        conn.close()
+        return redirect(url_for('questions'))
+
+    conn.execute("""
+        DELETE FROM answers
+        WHERE question_id = ?
+    """,(id,))
+
+    conn.execute("""
+        DELETE FROM questions
+        WHERE id = ?
+    """,(id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('questions'))
+
+@app.route('/edit-answer/<int:id>')
+def edit_answer(id):
+
+    conn = get_db_connection()
+
+    answer = conn.execute("""
+        SELECT *
+        FROM answers
+        WHERE id = ?
+    """,(id,)).fetchone()
+
+    if answer["answered_by"] != session["user_id"]:
+        conn.close()
+        return redirect(url_for('questions'))
+
+    conn.close()
+
+    return render_template(
+        "edit_answer.html",
+        answer=answer
+    )
+
+@app.route('/delete-answer/<int:id>')
+def delete_answer(id):
+
+    conn = get_db_connection()
+
+    answer = conn.execute("""
+        SELECT *
+        FROM answers
+        WHERE id = ?
+    """,(id,)).fetchone()
+
+    question_id = answer["question_id"]
+
+    if answer["answered_by"] != session["user_id"]:
+        conn.close()
+        return redirect(url_for('questions'))
+
+    conn.execute("""
+        DELETE FROM answers
+        WHERE id = ?
+    """,(id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            'question_detail',
+            id=question_id
+        )
+    )
+
+@app.route('/get-topics/<subject>')
+def get_topics(subject):
+
+    conn = get_db_connection()
+
+    topics = conn.execute("""
+        SELECT id, title
+        FROM resources
+        WHERE subject = ?
+        ORDER BY title
+    """, (subject,)).fetchall()
+
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "title": row["title"]
+        }
+        for row in topics
+    ])
+
+@app.route('/add-question', methods=['POST'])
+def add_question():
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    resource_id = request.form['resource_id']
+    title = request.form['title']
+    content = request.form['content']
+
+    conn = get_db_connection()
+
+    resource = conn.execute("""
+        SELECT subject, title
+        FROM resources
+        WHERE id = ?
+    """, (resource_id,)).fetchone()
+
+    if resource is None:
+        conn.close()
+        flash("Topic not found.")
+        return redirect(url_for('ask_question'))
+
+    subject = resource["subject"]
+    topic = resource["title"]
+
+    conn.execute("""
+        INSERT INTO questions
+        (
+            subject,
+            topic,
+            resource_id,
+            title,
+            content,
+            created_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    """,
+    (
+        subject,
+        topic,
+        resource_id,
+        title,
+        content,
+        session['user_id']
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('questions'))
 
 @app.route('/subject/<subject_name>')
 def subject_folder(subject_name):
@@ -541,12 +932,11 @@ def subject_folder(subject_name):
         order_by = "title DESC"
 
     try:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
+        conn = get_db_connection()
 
         if query:
 
-            c.execute(
+           resources = conn.execute(
                 f"""
                 SELECT * FROM resources
                 WHERE subject = ?
@@ -561,16 +951,14 @@ def subject_folder(subject_name):
                     '%' + query + '%',
                     '%' + query + '%'
                 )
-            )
+            ).fetchall()
 
         else:
 
-            c.execute(
+            resources = conn.execute(
                 f"SELECT * FROM resources WHERE subject=? ORDER BY {order_by}",
                 (subject_name,)
-            )
-
-        resources = c.fetchall()
+            ).fetchall()
 
     except sqlite3.Error as e:
         return f"Database Error: {e}"
@@ -591,19 +979,17 @@ def subject_folder(subject_name):
 def delete_resource(id):
 
     try:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
+        conn = get_db_connection()
 
-        c.execute(
+        resource = conn.execute(
             """
             SELECT file_name, uploaded_by
             FROM resources
             WHERE id=?
             """,
             (id,)
-        )
+        ).fetchone()
 
-        resource = c.fetchone()
 
         if resource is None:
             conn.close()
@@ -623,7 +1009,7 @@ def delete_resource(id):
             if os.path.exists(filepath):
                 os.remove(filepath)
 
-        c.execute(
+        conn.execute(
             "DELETE FROM resources WHERE id=?",
             (id,)
         )
@@ -637,6 +1023,44 @@ def delete_resource(id):
         conn.close()
 
     return redirect(url_for('resources_list'))
+
+@app.route('/upvote/<int:id>')
+def upvote_resource(id):
+
+    conn = get_db_connection()
+
+    conn.execute(
+        """
+        UPDATE resources
+        SET upvotes = upvotes + 1
+        WHERE id = ?
+        """,
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer)
+
+@app.route('/downvote/<int:id>')
+def downvote_resource(id):
+
+    conn = get_db_connection()
+
+    conn.execute(
+        """
+        UPDATE resources
+        SET downvotes = downvotes + 1
+        WHERE id = ?
+        """,
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer)
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_file_too_large(e):

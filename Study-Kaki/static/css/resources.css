@@ -5,7 +5,7 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:'Outfit', sans-serif;
     min-height:100vh;
     margin:0;
     padding:0;
@@ -40,11 +40,13 @@ body{
     color:white;
     text-decoration:none;
     margin-right:18px;
-    font-weight:700;
+    font-weight:800;
 }
 
 h1{
     margin-bottom:20px;
+    font-size:2rem;
+    font-weight:900;
     color:#111;
 }
 
@@ -56,6 +58,7 @@ form{
 }
 
 input, textarea{
+    font-family:'Outfit', sans-serif;
     padding:14px;
     border:2px solid #111;
     border-radius:16px;
@@ -70,7 +73,7 @@ button{
 
     background:#c7d2fe;
 
-    font-weight:bold;
+    font-weight:800;
     font-size:15px;
 
     cursor:pointer;
@@ -90,6 +93,8 @@ button:hover{
 }
 
 select{
+    font-family:'Outfit', sans-serif;
+
     width:100%;
 
     padding:16px;
@@ -119,4 +124,37 @@ select:focus{
     box-shadow:
         4px 4px 0px #dbeafe,
         4px 4px 0px 2px #111;
+}
+
+.logo{
+    font-size:1.8rem;
+    font-weight:900;
+    margin:0;
+}
+
+.cancel-btn{
+    flex:1;
+
+    text-align:center;
+    text-decoration:none;
+
+    padding:15px;
+
+    background:#f3f4f6;
+    color:#111;
+
+    border:3px solid #111;
+    border-radius:18px;
+
+    font-weight:700;
+
+    box-shadow:4px 4px 0px #111;
+
+    transition:0.2s;
+}
+
+.cancel-btn:hover{
+    transform:translate(2px,2px);
+
+    box-shadow:2px 2px 0px #111;
 }

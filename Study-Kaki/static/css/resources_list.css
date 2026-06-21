@@ -5,7 +5,7 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:'Outfit', sans-serif;
     min-height:100vh;
     margin:0;
     padding:0;
@@ -40,11 +40,14 @@ body{
     color:white;
     text-decoration:none;
     margin-right:18px;
-    font-weight:700;
+    font-weight:800;
 }
 
 h1{
     margin-bottom:20px;
+    font-size:2rem;
+    font-weight:900;
+    color:#111;
 }
 
 .search-box{
@@ -66,7 +69,7 @@ button{
 
     background:#c7d2fe;
 
-    font-weight:bold;
+    font-weight:800;
     font-size:15px;
 
     cursor:pointer;
@@ -97,6 +100,8 @@ button:hover{
 
 .card h3{
     margin-bottom:10px;
+    font-weight:800;
+    color:#111;
 }
 
 .card p{
