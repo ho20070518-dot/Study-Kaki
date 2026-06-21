@@ -650,16 +650,39 @@ def handle_file_too_large(e):
 
 @app.route('/dashboard')
 def dashboard():
+    # 1. 检查用户是否已登录 (必须要有，否则下面获取 user_id 会报错)
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    
     conn = get_db_connection()
     c = conn.cursor()
 
+    # 2. 保留你原本的逻辑：获取全站所有资源总数 (保留以防你原本的 HTML 里还有用到)
     c.execute("SELECT COUNT(*) FROM resources")
-    total = c.fetchone()[0]
+    total_resources = c.fetchone()[0]
+
+    # 3. 新增：计算【当前用户】上传的资源总数
+    c.execute("SELECT COUNT(*) FROM resources WHERE uploaded_by = ?", (user_id,))
+    resources_uploaded_count = c.fetchone()[0]
+
+    # 4. 新增：计算【当前用户】相关的 Session 数量
+    # (目前计算的是用户创建的 Session，因为数据库当前没有追踪具体的参与者)
+    c.execute("SELECT COUNT(*) FROM sessions WHERE created_by = ?", (str(user_id),))
+    sessions_joined_count = c.fetchone()[0]
 
     conn.close()
 
-    return render_template("dashboard.html", total_resources=total)
+    # 5. 将这三个变量一起传给前端
+    return render_template(
+        "dashboard.html", 
+        total_resources=total_resources,
+        resources_uploaded_count=resources_uploaded_count,
+        sessions_joined_count=sessions_joined_count
+    )
 
+# 下面这个保持原样即可
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

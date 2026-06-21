@@ -1,0 +1,112 @@
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+.edit-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 顶部小导航 */
+.edit-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.btn-cancel {
+    text-decoration: none;
+    color: #111;
+    font-weight: 800;
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+}
+
+.btn-cancel:hover {
+    transform: translateX(-3px);
+}
+
+.edit-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #111;
+}
+
+/* 表单主卡片 */
+.edit-card {
+    background: #fff;
+    border: 3px solid #111;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 10px 10px 0px #fde047; /* 活力黄阴影 */
+}
+
+/* 表单元素布局 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #888;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* 输入框通用样式 */
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #111;
+    border-radius: 10px;
+    font-weight: 700;
+    background: #f8f9fa;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+textarea.form-input {
+    resize: none;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #fde047;
+    background: #fff;
+}
+
+/* 保存按钮 */
+.btn-save {
+    width: 100%;
+    padding: 15px;
+    background: #111;
+    color: #fff;
+    border: 2px solid #111;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #a7f3d0; /* 清新绿阴影 */
+    transition: all 0.2s;
+    font-family: inherit;
+    margin-top: 10px;
+}
+
+.btn-save:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #a7f3d0;
+}

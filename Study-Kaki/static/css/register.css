@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 页面背景（如果你的 base.html 没有全局背景的话，这一段能确保居中和点阵背景） */
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #fdfaf6;
+    background-image: radial-gradient(#d1d5db 2px, transparent 2px);
+    background-size: 30px 30px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 主卡片容器 */
+.card-form {
+    background: #ffffff;
+    padding: 45px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border-radius: 35px;
+    border: 3px solid #111111;
+    box-shadow: 12px 12px 0px #ebf4ff, 12px 12px 0px 3px #111111;
+    transition: transform 0.2s ease;
+    margin: 40px auto; /* 保证在各个屏幕上都有边距 */
+}
+
+.card-form:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 16px 16px 0px #ebf4ff, 16px 16px 0px 3px #111111;
+}
+
+/* 顶部撤回键区 */
+.back-nav {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    text-decoration: none;
+    color: #111;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s;
+}
+
+.btn-back:hover {
+    transform: translateX(-3px);
+}
+
+/* 左右分栏标题栏 */
+.register-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #111;
+    padding-bottom: 10px;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    font-weight: 800;
+    color: #111;
+}
+
+.btn-switch-login {
+    color: #111;
+    text-decoration: none;
+    font-weight: 800

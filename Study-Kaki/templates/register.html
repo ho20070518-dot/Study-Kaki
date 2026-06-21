@@ -3,43 +3,41 @@
 {% block title %}Join StudyKaki - Register{% endblock %}
 
 {% block content %}
-<div class="card-form">
-    <!-- 1. 顶部撤回键 -->
-    <!-- 1. 顶部撤回键 -->
-    <div style="text-align: left; margin-bottom: 20px;">
-        <a href="{{ url_for('index') }}" style="text-decoration: none; color: #111; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
-            ← Back to Home
-        </a>
-    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 
-    <!-- 2. 🌟 左右分栏标题栏（与登录页镜像对称） -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 3px solid #111; padding-bottom: 10px;">
-        <h2 style="margin: 0; font-size: 1.8rem; letter-spacing: 1px;">StudyKaki</h2>
-        <a href="{{ url_for('login') }}" style="color: #111; text-decoration: none; font-weight: 800; font-size: 15px; background: #c7d2fe; padding: 5px 12px; border: 2px solid #111; border-radius: 10px; box-shadow: 2px 2px 0px #111;">
-            Log In
-        </a>
-    </div>
-
-    <p class="subtitle" style="text-align: left; margin-bottom: 25px;">Welcome to Study Kaki!</p>
-    
-    <form action="{{ url_for('register') }}" method="POST">
-        <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" name="username" placeholder="exp: Ali Bin Abu" required>
+    <div class="card-form">
+        <div class="back-nav">
+            <a href="{{ url_for('index') }}" class="btn-back">
+                ← Back to Home
+            </a>
         </div>
 
-        <div class="input-group">
-            <label>Student ID</label>
-            <input type="text" name="studentid" placeholder="TP000000" required>
+        <div class="register-header">
+            <h2 class="header-title">StudyKaki</h2>
+            <a href="{{ url_for('login') }}" class="btn-switch-login">
+                Log In
+            </a>
         </div>
+
+        <p class="subtitle">Welcome to Study Kaki!</p>
         
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="set a strong password" required>
-        </div>
-        
-        <!-- 保持你喜欢的薄荷绿 -->
-        <button type="submit" style="background: #a7f3d0;">Create Account</button>
-    </form>
-</div>
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" name="username" placeholder="exp: Ali Bin Abu" required>
+            </div>
+
+            <div class="input-group">
+                <label>Student ID</label>
+                <input type="text" name="studentid" placeholder="TP000000" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="set a strong password" required>
+            </div>
+            
+            <button type="submit" class="btn-register">Create Account</button>
+        </form>
+    </div>
 {% endblock %}

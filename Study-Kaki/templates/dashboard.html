@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}StudyKaki - 你的专属学习搭子{% endblock %}
+{% block title %}StudyKaki{% endblock %}
 
 {% block navbar %}
 <nav class="navbar">
@@ -23,8 +23,9 @@
     </div>
 </nav>
 {% endblock %}
-
 {% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=2">
 
 <div class="bento-container">
     
@@ -54,7 +55,19 @@
 
     <div class="bento-column right-panel">
         
-        <div class="bento-item session-container" style="height: 100%; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="stats-wrapper">
+            <div class="stat-box sessions">
+                <span class="stat-number">{{ sessions_joined_count }}</span>
+                <span class="stat-label">Sessions Joined</span>
+            </div>
+            
+            <div class="stat-box resources">
+                <span class="stat-number">{{ resources_uploaded_count }}</span>
+                <span class="stat-label">Uploads</span>
+            </div>
+        </div>
+        
+        <div class="bento-item session-container" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
             
             <div>
                 <div style="border-bottom: 3px solid #111; padding-bottom: 15px; margin-bottom: 20px;">
@@ -82,60 +95,5 @@
     </div>
 
 </div>
-
-<style>
-    .bento-container {
-        display: grid;
-        grid-template-columns: 1fr 1.4fr; 
-        gap: 25px;
-        width: 100%;
-        max-width: 1100px;
-        margin: 0 auto;
-        align-items: stretch;
-    }
-    
-    .bento-column {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-    
-    .bento-item {
-        background: #fff;
-        border: 3px solid #111;
-        border-radius: 25px;
-        padding: 30px;
-        box-shadow: 8px 8px 0px #111;
-    }
-
-    .welcome-card {
-        background: #c7d2fe;
-    } 
-
-    .portal-btn {
-        display: block;
-        text-align: center;
-        text-decoration: none;
-        color: #111;
-        font-size: 1.1rem;
-        font-weight: 900;
-        padding: 16px;
-        border: 3px solid #111;
-        border-radius: 14px;
-        box-shadow: 5px 5px 0px #111;
-        transition: all 0.15s ease;
-    }
-
-    .portal-btn:hover {
-        transform: translate(3px, 3px);
-        box-shadow: 2px 2px 0px #111;
-    }
-
-    @media screen and (max-width: 900px) {
-        .bento-container {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
 
 {% endblock %}

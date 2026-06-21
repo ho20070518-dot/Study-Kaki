@@ -1,0 +1,100 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.landing-page {
+    padding: 0 50px;
+    min-height: 100vh;
+}
+
+/* 顶部导航栏 */
+.landing-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 3px solid #111;
+    margin-bottom: 50px;
+}
+
+.landing-logo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0;
+    display: inline-block;
+}
+
+.logo-highlight {
+    color: #a7f3d0; /* 清新绿 */
+}
+
+/* Hero Section 核心区域 */
+.hero-section {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+/* 左侧文字区 */
+.hero-text-side {
+    flex: 1.2;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 25px;
+}
+
+.title-highlight {
+    background: #a7f3d0;
+    border: 3px solid #111;
+    padding: 0 10px;
+    box-shadow: 6px 6px 0px #111;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #444;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+/* 右侧按钮区 */
+.hero-btn-side {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.big-neo-btn {
+    text-decoration: none;
+    text-align: center;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border: 3px solid #111;
+    border-radius: 15px;
+    box-shadow: 6px 6px 0px #111;
+    color: #111;
+    transition: all 0.2s ease;
+}
+
+.btn-register {
+    background: #a7f3d0;
+}
+
+.btn-login {
+    background: #fff;
+}
+
+/* 按钮点击交互效果 */
+.big-neo-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px #111;
+}
