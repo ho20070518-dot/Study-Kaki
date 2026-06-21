@@ -235,13 +235,12 @@ def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    db = conn.cursor()
+    # 🌟 核心修改：使用统一的绝对路径连接
+    conn = get_db_connection() 
+    # 删掉了 row_factory，因为 get_db_connection() 里面已经帮你写过了
     
-    # 2. 去数据库找人
-    db.execute("SELECT * FROM users WHERE student_id = ? OR id = ?", (session['user_id'], session['user_id']))
-    user_data = db.fetchone()
+    # 2. 去数据库找人 (直接用 conn.execute)
+    user_data = conn.execute("SELECT * FROM users WHERE student_id = ? OR id = ?", (session['user_id'], session['user_id'])).fetchone()
     conn.close()
 
     # 🌟 3. 核心防爆机制：如果数据库查不到这个人（比如删库重造了）
@@ -265,10 +264,9 @@ def edit_profile():
         new_stats = request.form.get('stats')
         new_hobbies = request.form.get('hobbies')
 
-        # 2. 更新到数据库
-        conn = sqlite3.connect('database.db')
-        db = conn.cursor()
-        db.execute("""
+        # 🌟 2. 更新到数据库：使用统一的绝对路径连接
+        conn = get_db_connection()
+        conn.execute("""
             UPDATE users 
             SET username = ?, bio = ?, tech_stack = ?, exp_1 = ?, exp_2 = ?
             WHERE student_id = ?
@@ -281,14 +279,34 @@ def edit_profile():
         return redirect(url_for('profile'))
 
     # 如果是 GET 请求（刚点开编辑页面），我们要先把旧数据查出来，填在输入框里
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    db = conn.cursor()
-    db.execute("SELECT * FROM users WHERE student_id = ?", (session['user_id'],))
-    user_data = db.fetchone()
+    # 🌟 再次使用统一连接，并简化查询语句
+    conn = get_db_connection()
+    user_data = conn.execute("SELECT * FROM users WHERE student_id = ?", (session['user_id'],)).fetchone()
     conn.close()
 
     return render_template('edit_profile.html', user_data=user_data)
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    # 1. 检查是否登录
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+
+    # 2. 连接数据库，执行删除命令
+    conn = get_db_connection()
+    # 彻底从 users 表里删掉这个人
+    conn.execute("DELETE FROM users WHERE student_id = ? OR id = ?", (user_id, user_id))
+    conn.commit()
+    conn.close()
+
+    # 3. 清空该用户的登录记忆（Session）
+    session.clear()
+    
+    # 4. 跳转回登录页面
+    flash("Your account has been successfully deleted.", "success")
+    return redirect(url_for('login'))
 
 # ==========================================
 # 4. Resource Board Module - Member 3

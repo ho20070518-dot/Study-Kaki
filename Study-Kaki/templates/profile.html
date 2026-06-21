@@ -228,9 +228,23 @@
     </div>
 
     <!-- 指向 Python 里的 edit_profile 函数 -->
-    <a href="{{ url_for('edit_profile') }}"class="btn-edit";style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        Edit Profile    
-    </a>
+    <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
+        
+        <a href="{{ url_for('edit_profile') }}" class="btn-edit" style="text-align: center; text-decoration: none;">
+            Edit Profile
+        </a>
+
+        <a href="{{ url_for('logout') }}" class="btn-edit" style="text-align: center; text-decoration: none; background: #fff; color: #111;">
+            Log Out
+        </a>
+
+        <form action="{{ url_for('delete_account') }}" method="POST" onsubmit="return confirm('⚠️ WARNING: Are you sure you want to permanently delete your account? This action cannot be undone!');" style="margin: 0;">
+            <button type="submit" class="btn-edit" style="width: 100%; background: #ef4444; color: #fff; border-color: #7f1d1d; box-shadow: 4px 4px 0px #7f1d1d;">
+                Delete Account
+            </button>
+        </form>
+
+    </div>
 </div>
 
 </body>
