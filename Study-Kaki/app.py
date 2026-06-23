@@ -125,6 +125,21 @@ def init_db():
     try:
         c.execute("""
             ALTER TABLE resources
+            ADD COLUMN subject TEXT DEFAULT 'Uncategorized'
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    c.execute("""
+        UPDATE resources
+        SET subject = 'Uncategorized'
+        WHERE subject IS NULL
+        OR TRIM(subject) = ''
+    """)
+
+    try:
+        c.execute("""
+            ALTER TABLE resources
             ADD COLUMN uploaded_by TEXT
         """)
     except sqlite3.OperationalError:
@@ -724,17 +739,13 @@ def add_answer(question_id):
 @app.route('/edit-answer/<int:answer_id>', methods=['GET', 'POST'])
 def edit_answer(answer_id):
 
-    conn = sqlite3.connect('studykaki.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = get_db_connection()
 
-    cursor.execute("""
+    answer = conn.execute("""
         SELECT *
         FROM answers
         WHERE id = ?
-    """, (answer_id,))
-
-    answer = cursor.fetchone()
+    """, (answer_id,)).fetchone()
 
     if not answer:
         conn.close()
@@ -750,7 +761,7 @@ def edit_answer(answer_id):
 
         new_text = request.form['answer_text']
 
-        cursor.execute("""
+        conn.execute("""
             UPDATE answers
             SET answer_text = ?
             WHERE id = ?
@@ -772,17 +783,13 @@ def edit_answer(answer_id):
 @app.route('/delete-answer/<int:answer_id>')
 def delete_answer(answer_id):
 
-    conn = sqlite3.connect('studykaki.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = get_db_connection()
 
-    cursor.execute("""
+    answer = conn.execute("""
         SELECT *
         FROM answers
         WHERE id = ?
-    """, (answer_id,))
-
-    answer = cursor.fetchone()
+    """, (answer_id,)).fetchone()
 
     if not answer:
         conn.close()
@@ -796,7 +803,7 @@ def delete_answer(answer_id):
 
     question_id = answer['question_id']
 
-    cursor.execute("""
+    conn.execute("""
         DELETE FROM answers
         WHERE id = ?
     """, (answer_id,))
@@ -949,6 +956,8 @@ def ask_question():
     subjects = conn.execute("""
         SELECT DISTINCT subject
         FROM resources
+        WHERE subject IS NOT NULL
+        AND TRIM(subject) != ''
         ORDER BY subject
     """).fetchall()
 
