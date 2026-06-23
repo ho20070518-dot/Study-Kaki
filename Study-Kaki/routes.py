@@ -17,16 +17,11 @@ def get_db_connection():
     return conn
 
 
-# =========================
-# Login checking helper
-# =========================
 def get_current_user_id():
-    # In this project, session["user_id"] stores student_id
     return session.get("user_id")
 
 
 def get_current_username():
-    # Member 1 uses student_id as session["user_id"]
     student_id = session.get("user_id")
 
     if not student_id:
@@ -55,9 +50,6 @@ def require_login():
     return True
 
 
-# =========================
-# Notifications database table
-# =========================
 def create_notifications_table():
     conn = get_db_connection()
 
@@ -92,13 +84,30 @@ def create_notifications_table():
     conn.close()
 
 
+def create_session_participants_table():
+    conn = get_db_connection()
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS session_participants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,
+            joined_at TEXT NOT NULL,
+            UNIQUE(session_id, user_id)
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
 def add_notification(user_id, message, link="/sessions"):
     create_notifications_table()
 
     conn = get_db_connection()
 
     conn.execute("""
-        INSERT INTO notifications 
+        INSERT INTO notifications
         (user_id, message, is_read, is_cleared, created_at, link)
         VALUES (?, ?, 0, 0, ?, ?)
     """, (
@@ -129,31 +138,47 @@ def get_unread_notification_count(user_id):
     return unread_count
 
 
-# =========================
-# Sessions page
-# =========================
 @study_session_routes.route("/sessions")
 def sessions():
     if not require_login():
         return redirect("/login")
 
     create_notifications_table()
+    create_session_participants_table()
 
-    current_user_id = get_current_user_id()
+    current_user_id = str(get_current_user_id())
     current_username = get_current_username()
     search_query = request.args.get("search", "").strip()
     unread_count = get_unread_notification_count(current_user_id)
 
     conn = get_db_connection()
 
+    base_select = """
+        SELECT
+            sessions.id,
+            sessions.subject,
+            sessions.topic,
+            sessions.session_date,
+            sessions.session_time,
+            sessions.end_time,
+            sessions.location_type,
+            sessions.physical_location,
+            sessions.meeting_link,
+            sessions.created_by,
+            users.username AS creator_name,
+            EXISTS (
+                SELECT 1
+                FROM session_participants
+                WHERE session_participants.session_id = sessions.id
+                AND session_participants.user_id = ?
+            ) AS joined
+        FROM sessions
+        LEFT JOIN users
+        ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
+    """
+
     if search_query:
-        sessions = conn.execute("""
-            SELECT 
-                sessions.*,
-                users.username AS creator_name
-            FROM sessions
-            LEFT JOIN users 
-            ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
+        sessions = conn.execute(base_select + """
             WHERE sessions.subject LIKE ?
             OR sessions.topic LIKE ?
             OR sessions.session_date LIKE ?
@@ -166,6 +191,7 @@ def sessions():
             OR users.student_id LIKE ?
             ORDER BY sessions.session_date, sessions.session_time
         """, (
+            current_user_id,
             f"%{search_query}%",
             f"%{search_query}%",
             f"%{search_query}%",
@@ -178,36 +204,22 @@ def sessions():
             f"%{search_query}%"
         )).fetchall()
     else:
-        sessions = conn.execute("""
-            SELECT 
-                sessions.*,
-                users.username AS creator_name
-            FROM sessions
-            LEFT JOIN users 
-            ON CAST(sessions.created_by AS TEXT) = CAST(users.student_id AS TEXT)
+        sessions = conn.execute(base_select + """
             ORDER BY sessions.session_date, sessions.session_time
-        """).fetchall()
-
-    print("Total sessions found:", len(sessions))
-
-    for s in sessions:
-        print(dict(s))
+        """, (current_user_id,)).fetchall()
 
     conn.close()
 
     return render_template(
         "sessions.html",
         sessions=sessions,
-        current_user_id=str(current_user_id),
+        current_user_id=current_user_id,
         current_user=current_username,
         search_query=search_query,
         unread_count=unread_count
     )
 
 
-# =========================
-# Create session
-# =========================
 @study_session_routes.route("/create_session", methods=["GET", "POST"])
 def create_session():
     if not require_login():
@@ -249,7 +261,7 @@ def create_session():
         conn.commit()
         conn.close()
 
-        session['role'] = 'mentor'
+        session["role"] = "mentor"
 
         flash("Study session created successfully.")
         return redirect(url_for("study_session_routes.sessions"))
@@ -260,9 +272,6 @@ def create_session():
     )
 
 
-# =========================
-# Edit session
-# =========================
 @study_session_routes.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
 def edit_session(session_id):
     if not require_login():
@@ -338,13 +347,12 @@ def edit_session(session_id):
     )
 
 
-# =========================
-# Delete session
-# =========================
 @study_session_routes.route("/delete_session/<int:session_id>")
 def delete_session(session_id):
     if not require_login():
         return redirect("/login")
+
+    create_session_participants_table()
 
     current_user_id = str(get_current_user_id())
 
@@ -366,6 +374,11 @@ def delete_session(session_id):
         return redirect(url_for("study_session_routes.sessions"))
 
     conn.execute(
+        "DELETE FROM session_participants WHERE session_id = ?",
+        (session_id,)
+    )
+
+    conn.execute(
         "DELETE FROM sessions WHERE id = ?",
         (session_id,)
     )
@@ -377,15 +390,13 @@ def delete_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# =========================
-# Join session
-# =========================
 @study_session_routes.route("/join_session/<int:session_id>")
 def join_session(session_id):
     if not require_login():
         return redirect("/login")
 
     create_notifications_table()
+    create_session_participants_table()
 
     current_user_id = str(get_current_user_id())
 
@@ -406,13 +417,22 @@ def join_session(session_id):
         flash("You cannot join your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    conn.execute(
-        "UPDATE sessions SET joined = 1 WHERE id = ?",
-        (session_id,)
-    )
+    join_result = conn.execute("""
+        INSERT OR IGNORE INTO session_participants
+        (session_id, user_id, joined_at)
+        VALUES (?, ?, ?)
+    """, (
+        session_id,
+        current_user_id,
+        datetime.now().strftime("%Y-%m-%d %H:%M")
+    ))
 
     conn.commit()
     conn.close()
+
+    if join_result.rowcount == 0:
+        flash("You have already joined this study session.")
+        return redirect(url_for("study_session_routes.sessions"))
 
     if study_session["location_type"] == "Physical":
         location_text = study_session["physical_location"]
@@ -437,15 +457,13 @@ def join_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# =========================
-# Leave session
-# =========================
 @study_session_routes.route("/leave_session/<int:session_id>")
 def leave_session(session_id):
     if not require_login():
         return redirect("/login")
 
     create_notifications_table()
+    create_session_participants_table()
 
     current_user_id = str(get_current_user_id())
 
@@ -466,13 +484,21 @@ def leave_session(session_id):
         flash("You cannot leave your own study session.")
         return redirect(url_for("study_session_routes.sessions"))
 
-    conn.execute(
-        "UPDATE sessions SET joined = 0 WHERE id = ?",
-        (session_id,)
-    )
+    leave_result = conn.execute("""
+        DELETE FROM session_participants
+        WHERE session_id = ?
+        AND user_id = ?
+    """, (
+        session_id,
+        current_user_id
+    ))
 
     conn.commit()
     conn.close()
+
+    if leave_result.rowcount == 0:
+        flash("You have not joined this study session.")
+        return redirect(url_for("study_session_routes.sessions"))
 
     add_notification(
         current_user_id,
@@ -484,9 +510,6 @@ def leave_session(session_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# =========================
-# Notifications page
-# =========================
 @study_session_routes.route("/notifications")
 def notifications():
     if not require_login():
@@ -518,9 +541,6 @@ def notifications():
     )
 
 
-# =========================
-# Read one notification
-# =========================
 @study_session_routes.route("/notification/read/<int:notification_id>")
 def read_notification(notification_id):
     if not require_login():
@@ -556,9 +576,6 @@ def read_notification(notification_id):
     return redirect(url_for("study_session_routes.sessions"))
 
 
-# =========================
-# Mark all notifications as read
-# =========================
 @study_session_routes.route("/mark_notifications_read", methods=["POST"])
 def mark_notifications_read():
     if not require_login():
@@ -584,11 +601,6 @@ def mark_notifications_read():
     return redirect(url_for("study_session_routes.notifications"))
 
 
-# =========================
-# Clear all notifications
-# This does NOT delete database rows
-# It only hides notifications from the page
-# =========================
 @study_session_routes.route("/notifications/clear", methods=["POST"])
 def clear_notifications():
     if not require_login():
