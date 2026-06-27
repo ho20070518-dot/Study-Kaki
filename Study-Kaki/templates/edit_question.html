@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Edit Question</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/edit_resources.css') }}">
+
+</head>
+
+<body>
+
+<nav style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:white;
+    border-bottom:4px solid #111;
+    width:100%;
+">
+
+    <div class="nav-left">
+
+        <a href="{{ url_for('dashboard') }}"
+           style="text-decoration:none;color:#111;">
+
+            <h1 style="
+                font-size:1.8rem;
+                font-weight:900;
+                margin:0;
+            ">
+                STUDY<span style="color:#a7f3d0;">KAKI</span>
+            </h1>
+
+        </a>
+
+    </div>
+
+    <div class="nav-right"
+         style="display:flex;align-items:center;gap:20px;">
+
+        <span style="
+            font-weight:700;
+            color:#111;
+            font-size:1.1rem;
+        ">
+            Hello, {{ session.get('user_id') }}
+        </span>
+
+        <a href="{{ url_for('profile') }}"
+           style="text-decoration:none;">
+
+            <div style="
+                width:50px;
+                height:50px;
+                background:#c7d2fe;
+                border:3px solid #111;
+                border-radius:50%;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                font-size:1.5rem;
+                box-shadow:4px 4px 0px #111;
+            ">
+                👤
+            </div>
+
+        </a>
+
+    </div>
+
+</nav>
+
+<div class="container">
+
+    <div class="top-bar">
+        <h1>Edit Question</h1>
+    </div>
+
+    <p class="subtitle">
+        Update your question below.
+    </p>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div style="
+                    background:#fee2e2;
+                    color:#991b1b;
+                    padding:12px;
+                    border-radius:12px;
+                    margin-bottom:15px;
+                    border:2px solid #111;
+                    font-weight:bold;
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST"
+          action="{{ url_for('update_question', id=question['id']) }}">
+
+        <div>
+
+            <label>Question Title</label>
+
+            <input
+                type="text"
+                name="title"
+                value="{{ question['title'] }}"
+                required>
+
+        </div>
+
+        <div>
+
+            <label>Question Details</label>
+
+            <textarea
+                name="content"
+                required>{{ question['content'] }}</textarea>
+
+        </div>
+
+        <div class="button-group">
+
+            <button
+                type="submit"
+                class="update-btn">
+                Update Question
+            </button>
+
+            <a href="{{ url_for('question_detail', id=question['id']) }}"
+               class="cancel-btn">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
