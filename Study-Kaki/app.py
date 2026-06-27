@@ -180,14 +180,6 @@ def init_db():
             created_by TEXT NOT NULL
         )
         ''')
-    
-    try:
-        c.execute("""
-            ALTER TABLE questions
-            ADD COLUMN resource_id INTEGER
-        """)
-    except sqlite3.OperationalError:
-        pass
 
 
     c.execute('''
@@ -209,15 +201,6 @@ def init_db():
             vote_type TEXT NOT NULL
         )
     ''')
-    
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS question_votes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            question_id INTEGER NOT NULL,
-            user_id TEXT NOT NULL,
-           vote_type TEXT NOT NULL
-        )
-        """)
     
     # 4. Notifications 表
     c.execute('''
