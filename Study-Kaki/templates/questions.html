@@ -93,6 +93,13 @@
 
         <form method="GET" class="sort-form">
 
+            <input
+                type="text"
+                name="search"
+                placeholder="Search questions..."
+                value="{{ search }}"
+                class="search-input">
+
             <select name="sort"
                     onchange="this.form.submit()"
                     class="sort-select">
@@ -118,6 +125,10 @@
                 </option>
 
             </select>
+
+            <button type="submit">
+                Search
+            </button>
 
         </form>
 
@@ -227,6 +238,63 @@
         </div>
 
     {% endfor %}
+
+    {% if total_pages > 1 %}
+
+    <div class="pagination">
+
+        {% if page > 1 %}
+
+        <a href="{{ url_for(
+            'questions',
+            page=page-1,
+            sort=sort,
+            search=search
+        ) }}">
+            ← Previous
+        </a>
+
+        {% endif %}
+
+        {% for p in range(1, total_pages+1) %}
+
+            {% if p == page %}
+
+                <span class="current-page">
+                    {{ p }}
+                </span>
+
+            {% else %}
+
+                <a href="{{ url_for(
+                    'questions',
+                    page=p,
+                    sort=sort,
+                    search=search
+                ) }}">
+                    {{ p }}
+                </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+        {% if page < total_pages %}
+
+        <a href="{{ url_for(
+            'questions',
+            page=page+1,
+            sort=sort,
+            search=search
+        ) }}">
+            Next →
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
 
 </div>
 

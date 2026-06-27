@@ -620,47 +620,80 @@ def questions():
         return redirect(url_for('login'))
 
     sort = request.args.get('sort', 'newest')
+    search = request.args.get('search', '').strip()
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
+    offset = (page - 1) * per_page
 
     conn = get_db_connection()
 
-    if sort == 'oldest':
+    sql = "SELECT * FROM questions"
+    count_sql = "SELECT COUNT(*) FROM questions"
 
-        questions = conn.execute("""
-            SELECT *
-            FROM questions
-            ORDER BY id ASC
-        """).fetchall()
+    params = []
 
-    elif sort == 'az':
+    if search:
 
-        questions = conn.execute("""
-            SELECT *
-            FROM questions
-            ORDER BY title ASC
-        """).fetchall()
+        sql += """
+        WHERE title LIKE ?
+        OR content LIKE ?
+        OR subject LIKE ?
+        OR topic LIKE ?
+        """
 
-    elif sort == 'za':
+        count_sql += """
+        WHERE title LIKE ?
+        OR content LIKE ?
+        OR subject LIKE ?
+        OR topic LIKE ?
+        """
 
-        questions = conn.execute("""
-            SELECT *
-            FROM questions
-            ORDER BY title DESC
-        """).fetchall()
+        keyword = f"%{search}%"
+
+        params = [
+            keyword,
+            keyword,
+            keyword,
+            keyword
+        ]
+
+    if sort == "oldest":
+        sql += " ORDER BY id ASC"
+
+    elif sort == "az":
+        sql += " ORDER BY title ASC"
+
+    elif sort == "za":
+        sql += " ORDER BY title DESC"
 
     else:
+        sql += " ORDER BY id DESC"
 
-        questions = conn.execute("""
-            SELECT *
-            FROM questions
-            ORDER BY id DESC
-        """).fetchall()
+    sql += " LIMIT ? OFFSET ?"
+
+    questions = conn.execute(
+        sql,
+        params + [per_page, offset]
+    ).fetchall()
+
+    total_questions = conn.execute(
+        count_sql,
+        params
+    ).fetchone()[0]
 
     conn.close()
+
+    total_pages = (total_questions + per_page - 1) // per_page
 
     return render_template(
         "questions.html",
         questions=questions,
-        sort=sort
+        sort=sort,
+        search=search,
+        page=page,
+        total_pages=total_pages
     )
 
 @app.route('/question/<int:id>')
