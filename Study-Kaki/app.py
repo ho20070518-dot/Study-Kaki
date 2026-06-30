@@ -492,8 +492,9 @@ def add_resource():
         )
         conn.commit()
 
-    except sqlite3.Error as e:
-        return f"Database Error: {e}"
+    except sqlite3.Error:
+        flash("Something went wrong while uploading the resource. Please try again.")
+        return redirect(url_for('resources'))
 
     finally:
         conn.close()
@@ -512,7 +513,8 @@ def edit_resource(id):
     
     if resource is None:
         conn.close()
-        return "Resource not found"
+        flash("Resource not found.")
+        return redirect(url_for('resources_list'))
 
     if resource[5] != session['user_id']:
         conn.close()
@@ -543,7 +545,8 @@ def update_resource(id):
 
         if resource is None:
             conn.close()
-            return "Resource not found"
+            flash("Resource not found.")
+            return redirect(url_for('resources_list'))
 
         if resource[0] != session['user_id']:
             conn.close()
@@ -557,8 +560,9 @@ def update_resource(id):
 
         conn.commit()
 
-    except sqlite3.Error as e:
-        return f"Database Error: {e}"
+    except sqlite3.Error:
+        flash("Something went wrong while updating the resource. Please try again.")
+        return redirect(url_for('resources_list'))
 
     finally:
         conn.close()
@@ -593,8 +597,9 @@ def resources_list():
                 "SELECT * FROM resources"
             ).fetchall()
 
-    except sqlite3.Error as e:
-        return f"Database Error: {e}"
+    except sqlite3.Error:
+        flash("Something went wrong while loading resources. Please try again.")
+        return redirect(url_for('dashboard'))
 
     finally:
         conn.close()
@@ -704,7 +709,8 @@ def question_detail(id):
 
     if question is None:
         conn.close()
-        return "Question not found"
+        flash("Question not found.")
+        return redirect(url_for('questions'))
 
     answers = conn.execute("""
         SELECT *
@@ -1198,8 +1204,9 @@ def subject_folder(subject_name):
                 (subject_name,)
             ).fetchall()
 
-    except sqlite3.Error as e:
-        return f"Database Error: {e}"
+    except sqlite3.Error:
+        flash("Something went wrong while loading this subject. Please try again.")
+        return redirect(url_for('resources_list'))
 
     finally:
         conn.close()
@@ -1231,7 +1238,8 @@ def delete_resource(id):
 
         if resource is None:
             conn.close()
-            return "Resource not found"
+            flash("Resource not found.")
+            return redirect(url_for('resources_list'))
 
         if resource[1] != session['user_id']:
             conn.close()
@@ -1255,7 +1263,8 @@ def delete_resource(id):
         conn.commit()
 
     except sqlite3.Error as e:
-        return f"Database Error: {e}"
+        flash("Something went wrong while deleting the resource. Please try again.")
+        return redirect(url_for('resources_list'))
 
     finally:
         conn.close()
