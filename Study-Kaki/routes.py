@@ -300,8 +300,8 @@ def edit_session(session_id):
         return redirect(url_for("study_session_routes.sessions"))
 
     if request.method == "POST":
-        subject = request.form["subject"]
-        topic = request.form["topic"]
+        subject = request.form["subject"].strip()
+        topic = request.form["topic"].strip()
         session_date = request.form["session_date"]
         session_time = request.form["session_time"]
         end_time = request.form["end_time"]
