@@ -232,6 +232,15 @@ def init_db():
         )
     ''')
 
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS session_participants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,
+            joined_at TEXT NOT NULL,
+            UNIQUE(session_id, user_id)
+        )
+    ''')
     conn.commit()
     conn.close()
     # 这一行打印很重要，启动时你能立刻看到数据库真正生成在了哪里
