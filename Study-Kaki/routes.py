@@ -231,8 +231,8 @@ def create_session():
     unread_count = get_unread_notification_count(current_user_id)
 
     if request.method == "POST":
-        subject = request.form["subject"]
-        topic = request.form["topic"]
+        subject = request.form["subject"].strip()
+        topic = request.form["topic"].strip()
         session_date = request.form["session_date"]
         session_time = request.form["session_time"]
         end_time = request.form["end_time"]
