@@ -418,9 +418,9 @@ def resources():
 @app.route('/add-resource', methods=['POST'])
 @mentor_only
 def add_resource():
-    subject = request.form['subject']
-    title = request.form['title']
-    description = request.form['description']
+    subject = request.form['subject'].strip()
+    title = request.form['title'].strip()
+    description = request.form['description'].strip()
     file = request.files['file']
 
     conn = get_db_connection()
@@ -517,8 +517,8 @@ def edit_resource(id):
 @app.route('/update-resource/<int:id>', methods=['POST'])
 @mentor_only
 def update_resource(id):
-    title = request.form['title']
-    description = request.form['description']
+    title = request.form['title'].strip()
+    description = request.form['description'].strip()
     
     if title.strip() == "" or description.strip() == "":
         flash("Fields cannot be empty")
