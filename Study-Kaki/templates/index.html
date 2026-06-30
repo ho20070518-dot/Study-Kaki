@@ -2,15 +2,21 @@
 
 {% block title %}StudyKaki - Find Your Partner{% endblock %}
 
+{% block navbar %}
+<nav class="navbar" style="background: #fff; border-bottom: 3px solid #111; padding: 15px 40px; display: flex; align-items: center; width: 100%;">
+    <div class="nav-left">
+    <a href="{{ url_for('dashboard') }}">
+        <h1>STUDY<span>KAKI</span></h1>
+    </a>
+</div>
+</nav>
+{% endblock %}
+
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 
     <div class="landing-page">
         
-        <nav class="landing-nav">
-            <h1 class="landing-logo">STUDY<span class="logo-highlight">KAKI</span></h1>
-        </nav>
-
         <div class="hero-section">
             
             <div class="hero-text-side">
@@ -20,7 +26,7 @@
                 </h2>
                 
                 <p class="hero-description">
-                    Tired of debugging alone in MMU? Join <span class="landing-logo">STUDY<span class="logo-highlight">KAKI</span></span> to find partners, post quests,
+                    Tired of debugging alone in MMU? Join <span style="font-weight: 900; color: #111;">STUDY<span style="color: #a7f3d0; -webkit-text-stroke: 1px #111;">KAKI</span></span> to find partners, post quests,
                     and earn Kaki Coins with the brightest minds.
                 </p>
             </div>

@@ -5,7 +5,8 @@
 }
 
 .landing-page {
-    padding: 0 50px;
+    /* 🌟 修改点：把 padding-top 从原本的 40px 改为 100px 或更大 */
+    padding: 100px 50px 0 50px; 
     min-height: 100vh;
 }
 
@@ -16,18 +17,31 @@
     align-items: center;
     padding: 20px 0;
     border-bottom: 3px solid #111;
-    margin-bottom: 50px;
+    margin-bottom: 80px; /* 🌟 增加这行，让导航栏和下方的 Hero 区域拉开距离 */
 }
 
 .landing-logo {
     font-size: 1.8rem;
     font-weight: 900;
-    margin: 0;
+    color: #111;
+}
+
+.kaki-highlight {
+    color: #a7f3d0;            /* 绿色 */
+    -webkit-text-stroke: 1px #111; /* 加上黑边 */
+}
+
+/* 统一的 Logo 样式 */
+.logo-main {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #111;
     display: inline-block;
 }
 
 .logo-highlight {
-    color: #a7f3d0; /* 清新绿 */
+    color: #a7f3d0;            /* 清新绿 */
+    -webkit-text-stroke: 1px #111; /* 统一加黑边 */
 }
 
 /* Hero Section 核心区域 */
