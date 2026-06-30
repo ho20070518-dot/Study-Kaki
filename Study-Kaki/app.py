@@ -180,14 +180,6 @@ def init_db():
             created_by TEXT NOT NULL
         )
         ''')
-    
-    try:
-        c.execute("""
-            ALTER TABLE questions
-            ADD COLUMN resource_id INTEGER
-        """)
-    except sqlite3.OperationalError:
-        pass
 
 
     c.execute('''
@@ -209,15 +201,6 @@ def init_db():
             vote_type TEXT NOT NULL
         )
     ''')
-    
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS question_votes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            question_id INTEGER NOT NULL,
-            user_id TEXT NOT NULL,
-           vote_type TEXT NOT NULL
-        )
-        """)
     
     # 4. Notifications 表
     c.execute('''
@@ -444,9 +427,9 @@ def resources():
 @app.route('/add-resource', methods=['POST'])
 @mentor_only
 def add_resource():
-    subject = request.form['subject']
-    title = request.form['title']
-    description = request.form['description']
+    subject = request.form['subject'].strip()
+    title = request.form['title'].strip()
+    description = request.form['description'].strip()
     file = request.files['file']
 
     conn = get_db_connection()
@@ -543,8 +526,8 @@ def edit_resource(id):
 @app.route('/update-resource/<int:id>', methods=['POST'])
 @mentor_only
 def update_resource(id):
-    title = request.form['title']
-    description = request.form['description']
+    title = request.form['title'].strip()
+    description = request.form['description'].strip()
     
     if title.strip() == "" or description.strip() == "":
         flash("Fields cannot be empty")
