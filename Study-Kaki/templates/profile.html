@@ -30,7 +30,6 @@
             <div class="avatar">{{ user_data.username[0] }}</div>
             <div class="user-title">
                 <h2>{{ user_data.username }}</h2>
-                <p>IT & Software Engineering | TP06XXXX</p> 
             </div>
         </div>
         
@@ -66,24 +65,24 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 800; color: #888; margin-bottom: 12px;">BEYOND CODING</label>
+        <div class="profile-extra-section">
+            <label class="profile-extra-label">BEYOND CODING</label>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div>
-                    <span style="display: inline-block; font-size: 0.7rem; font-weight: 900; color: #111; background: #fde047; border: 2px solid #111; border-radius: 6px; padding: 2px 8px; margin-bottom: 8px; letter-spacing: 0.5px; box-shadow: 2px 2px 0px #111;">
-                        📊 STATS
+            <div class="profile-details-grid">
+                <div class="profile-detail-item">
+                    <span class="profile-detail-tag">
+                        MOOD
                     </span>
-                    <div style="padding: 12px 15px; border: 2px solid #111; border-radius: 10px; background: #f8f9fa; box-sizing: border-box;">
+                    <div class="profile-detail-box">
                         <span style="font-weight: 700; font-family: inherit;">{{ user_data.exp_1 }}</span>
                     </div>
                 </div>
                 
-                <div>
-                    <span style="display: inline-block; font-size: 0.7rem; font-weight: 900; color: #111; background: #fde047; border: 2px solid #111; border-radius: 6px; padding: 2px 8px; margin-bottom: 8px; letter-spacing: 0.5px; box-shadow: 2px 2px 0px #111;">
-                       🏀 SPORTS & HOBBIES
+                <div class="profile-detail-item">
+                    <span class="profile-detail-tag">
+                        HOBBIES
                     </span>
-                    <div style="padding: 12px 15px; border: 2px solid #111; border-radius: 10px; background: #f8f9fa; box-sizing: border-box;">
+                    <div class="profile-detail-box">
                         <span style="font-weight: 700; font-family: inherit;">{{ user_data.exp_2 }}</span>
                     </div>
                 </div>

@@ -8,7 +8,7 @@
     <div class="card-form">
         <div class="back-nav">
             <a href="{{ url_for('index') }}" class="btn-back">
-                ← Back to Home
+                Back to Home
             </a>
         </div>
 
@@ -20,6 +20,12 @@
         </div>
 
         <p class="subtitle">Welcome to Study Kaki!</p>
+
+        {% if error %}
+            <div style="background: #fee2e2; color: #b91c1c; padding: 12px; border: 2px solid #111; border-radius: 10px; margin-bottom: 20px; box-shadow: 3px 3px 0px #111; font-weight: 600; font-size: 14px;">
+                {{ error }}
+            </div>
+        {% endif %}
         
         <form action="{{ url_for('register') }}" method="POST">
             <div class="input-group">
@@ -35,6 +41,21 @@
             <div class="input-group">
                 <label>Password</label>
                 <input type="password" name="password" placeholder="set a strong password" required>
+            </div>
+
+            <div class="input-group">
+                <label>Security Question</label>
+                <select name="security_question" required style="width: 100%; padding: 12px; border: 2px solid #111; border-radius: 10px; font-weight: 600; background: #fff;">
+                    <option value="" disabled selected>Select a security question</option>
+                    {% for question in security_questions %}
+                        <option value="{{ question }}">{{ question }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Security Answer</label>
+                <input type="text" name="security_answer" placeholder="Your answer" required>
             </div>
             
             <button type="submit" class="btn-register">Create Account</button>
