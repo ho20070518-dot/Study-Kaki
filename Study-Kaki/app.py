@@ -27,6 +27,14 @@ ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'png', 'jpg', 'jpeg'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+SECURITY_QUESTIONS = [
+    "What is your favourite subject?",
+    "What is your favourite food?",
+    "What city were you born in?",
+    "What is your favourite teacher's name?",
+    "What is your favourite hobby?"
+]
+
 # ==========================================
 # 2. 角色与权限管理
 # ==========================================
@@ -86,9 +94,20 @@ def init_db():
             tech_stack TEXT,
             exp_1 TEXT,
             exp_2 TEXT,
+            security_question TEXT,
+            security_answer TEXT,
             role TEXT DEFAULT 'mentee'
         )
     ''')
+
+    for column_name, column_type in [
+        ("security_question", "TEXT"),
+        ("security_answer", "TEXT")
+    ]:
+        try:
+            c.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}")
+        except sqlite3.OperationalError:
+            pass
 
     # 2. Sessions 表
     c.execute('''
@@ -286,30 +305,101 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        u = request.form.get('username')   # 对应 HTML 的 fullname
-        sid = request.form.get('studentid') # 对应 HTML 的 studentid
-        p = request.form.get('password')
+        u = request.form.get('username', '').strip()
+        sid = request.form.get('studentid', '').strip()
+        p = request.form.get('password', '')
+        security_question = request.form.get('security_question', '')
+        security_answer = request.form.get('security_answer', '').strip().lower()
+
+        if not u or not sid or not p or security_question not in SECURITY_QUESTIONS or not security_answer:
+            return render_template(
+                'register.html',
+                error="Please fill in all required fields.",
+                security_questions=SECURITY_QUESTIONS
+            )
 
         conn = get_db_connection()
 
-        # 🌟 1. 改为 conn.execute，检查是否已注册
-        existing_user = conn.execute("SELECT * FROM users WHERE username = ?", (u,)).fetchone()
+        # Check for duplicate username or student ID
+        existing_user = conn.execute("""
+            SELECT *
+            FROM users
+            WHERE LOWER(TRIM(username)) = LOWER(TRIM(?))
+            OR student_id = ?
+        """, (u, sid)).fetchone()
         if existing_user is not None:
             conn.close()
-            return render_template('register.html', error="User already exists!")
+            return render_template(
+                'register.html',
+                error="User already exists!",
+                security_questions=SECURITY_QUESTIONS
+            )
 
-        # 🌟 2. 改为 conn.execute，写入数据库
+        # Store the new user and security recovery details
         conn.execute('''
-            INSERT INTO users (username, student_id, password) 
-            VALUES (?, ?, ?)
-        ''', (u, sid, p))
+            INSERT INTO users
+            (username, student_id, password, security_question, security_answer)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (u, sid, p, security_question, security_answer))
         conn.commit()
         conn.close()
 
-        print(f"🎉 注册成功: {u}")
-        return redirect(url_for('home')) # 注册成功后跳转
+        print('Registered successfully: ' + u)
+        return redirect(url_for('home'))
 
-    return render_template('register.html')
+    return render_template('register.html', security_questions=SECURITY_QUESTIONS)
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        student_id = request.form.get('studentid', '').strip()
+        security_question = request.form.get('security_question', '')
+        security_answer = request.form.get('security_answer', '').strip().lower()
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        if not username or not student_id or security_question not in SECURITY_QUESTIONS or not security_answer or not new_password or not confirm_password:
+            flash("Please fill in all fields correctly.", "danger")
+            return render_template('forgot_password.html', security_questions=SECURITY_QUESTIONS)
+
+        if new_password != confirm_password:
+            flash("New password and confirm password do not match.", "danger")
+            return render_template('forgot_password.html', security_questions=SECURITY_QUESTIONS)
+
+        conn = get_db_connection()
+        user = conn.execute("""
+            SELECT id
+            FROM users
+            WHERE LOWER(TRIM(username)) = LOWER(TRIM(?))
+            AND student_id = ?
+            AND security_question = ?
+            AND LOWER(TRIM(security_answer)) = ?
+        """, (
+            username,
+            student_id,
+            security_question,
+            security_answer
+        )).fetchone()
+
+        if user is None:
+            conn.close()
+            flash("The details do not match our records.", "danger")
+            return render_template('forgot_password.html', security_questions=SECURITY_QUESTIONS)
+
+        conn.execute("""
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        """, (new_password, user['id']))
+
+        conn.commit()
+        conn.close()
+
+        flash("Password reset successfully. Please log in with your new password.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html', security_questions=SECURITY_QUESTIONS)
 
 # ==========================================
 # 3. Core Application Module

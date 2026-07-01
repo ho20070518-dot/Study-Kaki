@@ -50,6 +50,7 @@ body {
 .profile-card {
     background: #ffffff;
     padding: 40px;
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
     border-radius: 30px; 
@@ -118,6 +119,56 @@ body {
     color: #111;
 }
 
+.profile-extra-section {
+    margin-bottom: 20px;
+}
+
+.profile-extra-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+.profile-detail-item {
+    min-width: 0;
+    width: 100%;
+}
+
+.profile-detail-tag {
+    display: inline-block;
+    max-width: 100%;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #111;
+    background: #fde047;
+    border: 2px solid #111;
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    box-shadow: 2px 2px 0px #111;
+    overflow-wrap: anywhere;
+}
+
+.profile-detail-box {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 15px;
+    border: 2px solid #111;
+    border-radius: 10px;
+    background: #f8f9fa;
+    overflow-wrap: anywhere;
+}
+
 .btn-edit {
     width: 100%;
     padding: 16px;
@@ -137,4 +188,19 @@ body {
     background: #333;
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0px #fde047;
+}
+
+@media (max-width: 560px) {
+    body {
+        padding: 24px 14px;
+    }
+
+    .profile-card {
+        padding: 28px 20px;
+        border-radius: 22px;
+    }
+
+    .profile-details-grid {
+        grid-template-columns: 1fr;
+    }
 }
