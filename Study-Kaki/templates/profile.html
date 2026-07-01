@@ -52,7 +52,7 @@
                         {% set clean_tech = tech.strip() %}
                         
                         {% if clean_tech %}
-                            <span style="border: 2px solid #111; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; background: {% if loop.index == 1 %}#fde047{% else %}#fff{% endif %};">
+                            <span class="tech-tag {% if loop.index == 1 %}tech-tag-highlight{% endif %}">
                                 {{ clean_tech }}
                             </span>
                         {% endif %}
