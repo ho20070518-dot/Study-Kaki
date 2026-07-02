@@ -1,7 +1,6 @@
-/* =========================
-   Q&A PAGE HEADER
-========================= */
-
+/* ======================================
+   Q&A TOOLBAR
+====================================== */
 .qna-toolbar{
     display:flex;
     justify-content:space-between;
@@ -56,10 +55,9 @@
 }
 
 
-/* =========================
-   QUESTION CARD
-========================= */
-
+/* ======================================
+   QUESTION LIST
+====================================== */
 .question-card{
     border:3px solid #111;
     border-radius:18px;
@@ -137,120 +135,9 @@
     font-weight:700;
 }
 
-
-/* =========================
-   QUESTION DETAIL
-========================= */
-
-.question-wrapper{
-    border:3px solid #111;
-    border-radius:18px;
-
-    padding:20px;
-
-    background:white;
-
-    box-shadow:4px 4px 0px #111;
-}
-
-.question-inner{
-    border:3px solid #111;
-    border-radius:18px;
-
-    padding:25px;
-
-    background:white;
-
-    box-shadow:6px 6px 0px #111;
-}
-
-.question-detail-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-}
-
-.question-posted-by{
-    color:#6b7280;
-    margin-top:15px;
-    font-size:14px;
-}
-
-
-/* =========================
-   ANSWERS
-========================= */
-
-.answer-card{
-    border:2px solid #111;
-    border-radius:16px;
-
-    padding:18px;
-    margin-top:15px;
-
-    background:#fafafa;
-}
-
-.answer-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin-top:10px;
-
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-.answer-author{
-    color:#6b7280;
-    font-size:14px;
-}
-
-.answer-actions{
-    display:flex;
-    gap:8px;
-}
-
-.vote-section{
-    margin-top:12px;
-    display:flex;
-    gap:10px;
-}
-
-.vote-up{
-    text-decoration:none;
-
-    border:2px solid #111;
-    border-radius:999px;
-
-    padding:6px 12px;
-
-    background:#dcfce7;
-    color:#166534;
-
-    font-weight:700;
-}
-
-.vote-down{
-    text-decoration:none;
-
-    border:2px solid #111;
-    border-radius:999px;
-
-    padding:6px 12px;
-
-    background:#fee2e2;
-    color:#991b1b;
-
-    font-weight:700;
-}
-
-/* =========================
+/* ======================================
    QUESTION DETAIL PAGE
-========================= */
-
+====================================== */
 .question-detail-card{
     border:3px solid #111;
     border-radius:18px;
@@ -259,14 +146,9 @@
     box-shadow:4px 4px 0px #111;
 }
 
-.question-content-box{
-    border:3px solid #111;
-    border-radius:18px;
-    padding:25px;
-    background:white;
-    box-shadow:6px 6px 0px #111;
-}
-
+/* ======================================
+   QUESTION DETAIL PAGE
+====================================== */
 .reply-card{
     border:2px solid #111;
     border-radius:16px;
@@ -284,12 +166,18 @@
     gap:10px;
 }
 
+/* ======================================
+   VOTING BUTTONS
+====================================== */
 .vote-section{
     margin-top:12px;
     display:flex;
     gap:10px;
 }
 
+/* ======================================
+   SEARCH BAR
+====================================== */
 .search-form{
     display:flex;
     gap:12px;
@@ -298,113 +186,69 @@
 }
 
 .search-input{
-
     width:260px;
-
     padding:12px 16px;
-
     border:2px solid #111;
-
     border-radius:14px;
-
     font-family:'Outfit',sans-serif;
-
     font-size:15px;
 }
 
 .search-input:focus{
-
     outline:none;
-
     box-shadow:4px 4px 0px #111;
-
 }
 
 .search-form button{
-
     padding:12px 20px;
-
     border:2px solid #111;
-
     border-radius:14px;
-
     background:#a7f3d0;
-
     font-weight:700;
-
     cursor:pointer;
-
     box-shadow:4px 4px 0px #111;
-
     transition:.2s;
 }
 
 .search-form button:hover{
-
     transform:translate(2px,2px);
-
     box-shadow:2px 2px 0px #111;
-
 }
 
+/* ======================================
+   PAGINATION
+====================================== */
 .pagination{
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
     gap:10px;
-
     margin-top:40px;
-
     flex-wrap:wrap;
-
 }
 
 .pagination a{
-
     text-decoration:none;
-
     padding:10px 18px;
-
     background:white;
-
     border:2px solid #111;
-
     border-radius:12px;
-
     color:#111;
-
     font-weight:700;
-
     box-shadow:4px 4px 0px #111;
-
     transition:.2s;
-
 }
 
 .pagination a:hover{
-
     transform:translate(2px,2px);
-
     box-shadow:2px 2px 0px #111;
-
 }
 
 .current-page{
-
     padding:10px 18px;
-
     background:#a7f3d0;
-
     border:2px solid #111;
-
     border-radius:12px;
-
     font-weight:800;
-
     box-shadow:4px 4px 0px #111;
-
 }

@@ -14,6 +14,9 @@
 
 <body>
 
+<!-- ===============================
+     Navigation Bar
+================================ -->    
 <nav style="
     display:flex;
     justify-content:space-between;
@@ -76,6 +79,9 @@
 
 </nav>    
 
+<!-- ===============================
+     Main Container
+================================ -->
 <div class="container" style="margin-top:30px;">
 
     <div class="navbar">
@@ -90,6 +96,9 @@
             <button type="submit">Search</button>
         </form>
 
+<!-- ===============================
+     Success / Status Messages
+================================ -->        
     {% if request.args.get('deleted') %}
 <div style="
     background:#ffe5e5;
@@ -125,6 +134,9 @@
         <p style="margin-top:25px;">No resources found.</p>
     {% endif %}
 
+<!-- ===============================
+     Subject Folder List
+================================ -->    
     <div class="grid">
 
         {% set subjects = {} %}

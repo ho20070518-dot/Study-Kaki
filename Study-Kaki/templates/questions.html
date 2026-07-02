@@ -17,6 +17,9 @@
 
 <body>
 
+<!-- ===============================
+     Navigation Bar
+================================ -->    
 <nav style="
     display:flex;
     justify-content:space-between;
@@ -85,6 +88,9 @@
 
     <h1>Q&A Corner</h1>
 
+<!-- ===============================
+     Q&A Toolbar
+================================ -->
     <div class="qna-toolbar">
 
         <a href="/ask-question" class="ask-btn">
@@ -147,6 +153,9 @@
 
     {% endif %}
 
+<!-- ===============================
+     Question List
+================================ -->
     {% for question in questions %}
 
         <div class="question-card"
@@ -241,6 +250,9 @@
 
     {% if total_pages > 1 %}
 
+<!-- ===============================
+     Pagination
+================================ -->    
     <div class="pagination">
 
         {% if page > 1 %}

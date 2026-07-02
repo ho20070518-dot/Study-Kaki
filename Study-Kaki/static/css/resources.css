@@ -1,3 +1,6 @@
+/* ======================================
+   GLOBAL
+====================================== */
 *{
     box-sizing:border-box;
     margin:0;
@@ -9,15 +12,16 @@ body{
     min-height:100vh;
     margin:0;
     padding:0;
-
     background-color:#fdfaf6;
     background-image:
     linear-gradient(#e5e7eb 2px, transparent 2px), 
     linear-gradient(90deg, #e5e7eb 2px, transparent 2px);
-
     background-size:40px 40px;
 }
 
+/* ======================================
+   MAIN CONTAINER
+====================================== */
 .container{
     max-width:900px;
     margin:40px auto;
@@ -28,6 +32,9 @@ body{
     box-shadow:12px 12px 0px #111;
 }
 
+/* ======================================
+   NAVIGATION BAR
+====================================== */
 .navbar{
     background:#111;
     padding:16px 18px;
@@ -50,6 +57,9 @@ h1{
     color:#111;
 }
 
+/* ======================================
+   FORMS
+====================================== */
 form{
     display:flex;
     flex-direction:column;
@@ -64,21 +74,18 @@ input, textarea{
     background:#f8f9fa;
 }
 
+/* ======================================
+   BUTTONS
+====================================== */
 button{
     padding:14px;
-
     border:3px solid #111;
     border-radius:18px;
-
     background:#c7d2fe;
-
     font-weight:800;
     font-size:15px;
-
     cursor:pointer;
-
     box-shadow:4px 4px 0px #111;
-
     transition:0.2s;
 }
 
@@ -87,39 +94,27 @@ button:hover{
     box-shadow:2px 2px 0px #111;
 }
 
-.link-btn{
-    margin-top:20px;
-}
-
+/* ======================================
+   DROPDOWN MENU
+====================================== */
 select{
     font-family:'Outfit', sans-serif;
-
     width:100%;
-
     padding:16px;
-
     border:2px solid #111;
     border-radius:18px;
-
     background:#f8fafc;
-
     font-size:15px;
     font-family:inherit;
-
     box-shadow:none;
-
     transition:0.2s;
-
     cursor:pointer;
 }
 
 select:focus{
     outline:none;
-
     background:white;
-
     transform:translate(-2px,-2px);
-
     box-shadow:
         4px 4px 0px #dbeafe,
         4px 4px 0px 2px #111;
@@ -133,28 +128,20 @@ select:focus{
 
 .cancel-btn{
     flex:1;
-
     text-align:center;
     text-decoration:none;
-
     padding:15px;
-
     background:#f3f4f6;
     color:#111;
-
     border:3px solid #111;
     border-radius:18px;
-
     font-weight:700;
-
     box-shadow:4px 4px 0px #111;
-
     transition:0.2s;
 }
 
 .cancel-btn:hover{
     transform:translate(2px,2px);
-
     box-shadow:2px 2px 0px #111;
 }
 
