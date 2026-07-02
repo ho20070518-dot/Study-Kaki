@@ -19,6 +19,9 @@
 
 <body>
 
+<!-- ===============================
+     Navigation Bar
+================================ -->        
 <nav style="
     display:flex;
     justify-content:space-between;
@@ -86,6 +89,9 @@
 
     <br><br>
 
+<!-- ===============================
+     Question Details
+================================ -->    
     <div class="question-detail-card">
 
             <div style="
@@ -172,6 +178,9 @@
 
     <h2>Replies</h2>
 
+ <!-- ===============================
+     Replies
+================================ -->   
     {% if answers %}
 
         {% for answer in answers %}
@@ -279,6 +288,9 @@
 
     <h2>Add Reply</h2>
 
+<!-- ===============================
+     Reply Form
+================================ -->    
     <form action="/add-answer/{{ question['id'] }}"
           method="POST">
 

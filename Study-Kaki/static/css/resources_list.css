@@ -4,6 +4,9 @@
     padding:0;
 }
 
+/* =========================
+   Page Layout
+========================= */
 body{
     font-family:'Outfit', sans-serif;
     min-height:100vh;
@@ -28,6 +31,9 @@ body{
     box-shadow:12px 12px 0px #111;
 }
 
+/* =========================
+   Navigation Tabs
+========================= */
 .navbar{
     background:#111;
     padding:16px 18px;
@@ -50,10 +56,9 @@ h1{
     color:#111;
 }
 
-.search-box{
-    margin-bottom:20px;
-}
-
+/* =========================
+   Search Bar
+========================= */
 input{
     padding:12px;
     width:260px;
@@ -84,6 +89,9 @@ button:hover{
     box-shadow:2px 2px 0px #111;
 }
 
+/* =========================
+   Subject Folder Cards
+========================= */
 .grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -111,30 +119,4 @@ button:hover{
 .card a {
     display: inline-block;
     margin-bottom: 10px;
-}
-.actions{
-    display:flex;
-    gap:10px;
-}
-
-.download{
-    background:#a7f3d0;
-    color:#111;
-    border:2px solid #111;
-}
-
-.download:hover{
-    background:#16a34a;
-    transform:translate(2px,2px);
-    box-shadow:2px 2px 0px #111;
-}
-
-.edit{
-    background:#fde68a;
-    color:#111;
-}
-
-.delete{
-    background:#ef4444;
-    color:#111;
 }

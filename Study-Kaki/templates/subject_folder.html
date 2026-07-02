@@ -13,6 +13,9 @@
 
 <body>
 
+<!-- ===============================
+     Navigation Bar
+================================ -->        
 <nav style="
     display:flex;
     justify-content:space-between;
@@ -177,24 +180,20 @@
 
             {% if r[4] %}
 
-                {% set ext = r[4].split('.')[-1].upper() %}
-
-                <span style="
-                    display:inline-block;
-                    margin-bottom:10px;
-                    padding:6px 12px;
-                    background:#c7d2fe;
-                    border:2px solid #111;
-                    border-radius:12px;
-                    font-size:12px;
-                    font-weight:bold;
-                ">
-                    {{ ext }}
-                </span>
+            <p style="
+                margin-bottom:12px;
+                font-weight:700;
+                color:#374151;
+                word-break:break-word;
+            ">
+                📄 {{ r[4] }}
+            </p>
 
             {% endif %}
 
-            <p>{{ r[2] }}</p>
+            <p style="margin-top:8px;">
+               {{ r[2] }}
+            </p>
 
             {% if r[4] %}
              
